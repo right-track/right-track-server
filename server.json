@@ -1,0 +1,26 @@
+{
+    "name": "Right Track API Server",
+    "version": "0.0.1",
+    "host": "localhost",
+    "port": 3000,
+    "timeout": 10,
+    "maintainer": {
+        "name": "David Waring",
+        "email": "webmaster@righttrack.io",
+        "source": "https://github.com/dwaring87/right-track-api-server"
+    },
+    "database": {
+        "host": "127.0.0.1",
+        "username": "mysql_username",
+        "password": "mysql_password",
+        "name": "rt_api"
+    },
+    "agencies": [
+        {
+            "id": "example",
+            "require": "right-track-agency-example",
+            "config": "/path/to/optional/agency/config.json"
+        }
+    ],
+    "allowDebugAccess": false
+}

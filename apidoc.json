@@ -1,0 +1,17 @@
+{
+    "name": "Right Track API Server Documentation",
+    "description": "This website fully documents the current Right Track API Server endpoints, their parameters and responses.",
+    "title": "API Documentation",
+    "template": {
+        "withCompare": false
+    },
+    "order": [
+        "getAbout",
+        "getAgencies",
+        "getAgency",
+        "getAgencyIcon",
+        "getAgencyLinks",
+        "getAdminConfig",
+        "getAdminReload"
+    ]
+}

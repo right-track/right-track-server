@@ -1,0 +1,23 @@
+{
+  "name": "right-track-api-server",
+  "version": "0.0.1",
+  "description": "Right Track API Server",
+  "author": "David Waring <dev@davidwaring.net>",
+  "license": "MIT",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "apidocs": "node node_modules/apidoc/bin/apidoc -i src/ -o doc/"
+  },
+  "dependencies": {
+    "deepmerge": "^1.5.1",
+    "mysql": "^2.14.1",
+    "restify": "^6.0.0",
+    "restify-errors": "^5.0.0",
+    "right-track-core": "file:../core",
+    "right-track-db-sqlite3": "file:../db-sqlite3"
+  },
+  "devDependencies": {
+    "apidoc": "^0.17.6"
+  }
+}
