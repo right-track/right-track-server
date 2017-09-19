@@ -7,7 +7,7 @@ let routes = function(server) {
 
 
     /**
-     * @api {get} /admin/config Server Config
+     * @api {get} /admin/config Get Server Config
      * @apiName getAdminConfig
      * @apiGroup Admin
      * @apiDescription Display the API Server Configuration

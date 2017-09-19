@@ -7,7 +7,7 @@ let routes = function(server) {
 
 
     /**
-     * @api {get} /about Server Information
+     * @api {get} /about Get Server Information
      * @apiName getAbout
      * @apiGroup About
      * @apiDescription Get information about the Right Track API Server
@@ -18,7 +18,7 @@ let routes = function(server) {
 
 
     /**
-     * @api {get} /about/agencies All Agency Information
+     * @api {get} /about/agencies Get All Agency Information
      * @apiName getAgencies
      * @apiGroup About
      * @apiDescription Get information about app agencies supported
@@ -29,7 +29,7 @@ let routes = function(server) {
 
 
     /**
-     * @api {get} /about/agencies/:agency Agency Information
+     * @api {get} /about/agencies/:agency Get Agency Information
      * @apiName getAgency
      * @apiGroup About
      * @apiDescription Get information about the specified app agency.
@@ -41,7 +41,7 @@ let routes = function(server) {
 
 
     /**
-     * @api {get} /about/agencies/:agency/icon Agency Icon
+     * @api {get} /about/agencies/:agency/icon Get Agency Icon
      * @apiName getAgencyIcon
      * @apiGroup About
      * @apiDescription Get the icon for the specified app agency.
@@ -53,7 +53,7 @@ let routes = function(server) {
 
 
     /**
-     * @api {get} /about/agencies/:agency/links Agency Links
+     * @api {get} /about/agencies/:agency/links Get Agency Links
      * @apiName getAgencyLinks
      * @apiGroup About
      * @apiDescription Get the set of additional resource links for

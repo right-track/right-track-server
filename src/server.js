@@ -72,6 +72,8 @@ server.use(timeout);
 // LOAD ROUTES
 require("./about/routes.js")(server);
 require("./admin/routes.js")(server);
+require("./routes/routes.js")(server);
+require("./stops/routes.js")(server);
 
 
 
