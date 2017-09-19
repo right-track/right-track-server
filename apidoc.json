@@ -12,6 +12,10 @@
         "getAgencyIcon",
         "getAgencyLinks",
         "getAdminConfig",
-        "getAdminReload"
+        "getAdminReload",
+        "getRoutes",
+        "getRoute",
+        "getStops",
+        "getStop"
     ]
 }
