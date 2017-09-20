@@ -70,10 +70,11 @@ server.use(timeout);
 
 
 // LOAD ROUTES
-require("./about/routes.js")(server);
-require("./admin/routes.js")(server);
-require("./routes/routes.js")(server);
-require("./stops/routes.js")(server);
+require("./routes/about/routes.js")(server);
+require("./routes/admin/routes.js")(server);
+require("./routes/routes/routes.js")(server);
+require("./routes/stops/routes.js")(server);
+require("./routes/trips/routes.js")(server);
 
 
 

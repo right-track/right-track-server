@@ -1,10 +1,10 @@
 'use strict';
 
 const path = require("path");
-const auth = require("../handlers/auth.js");
-const config = require("../config.js");
-const Response = require("../response");
-const mysql = require("../db/mysql.js");
+const auth = require("../../handlers/auth.js");
+const config = require("../../config.js");
+const Response = require("../../response");
+const mysql = require("../../db/mysql.js");
 
 
 // ==== BUILD MODELS ==== //
@@ -90,7 +90,7 @@ let reloadConfig = function(req, res, next) {
 
         // Reload the config files
         config.clear();
-        config.read(path.join(__dirname + "/../../server.json"));
+        config.read(path.join(__dirname + "/../../../server.json"));
         if ( process.argv.length === 3 ) {
             config.read(process.argv[2]);
         }

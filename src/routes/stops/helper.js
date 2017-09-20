@@ -1,9 +1,9 @@
 'use strict';
 
 const core = require("right-track-core");
-const auth = require("../handlers/auth.js");
-const c = require("../config.js");
-const Response = require("../response");
+const auth = require("../../handlers/auth.js");
+const c = require("../../config.js");
+const Response = require("../../response");
 
 
 // ==== BUILD MODELS ==== //
@@ -177,5 +177,6 @@ let getStop = function(req, res, next) {
 // Export the functions
 module.exports = {
     getStops: getStops,
-    getStop: getStop
+    getStop: getStop,
+    buildStop: buildStop
 };

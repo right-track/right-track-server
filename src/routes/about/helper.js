@@ -2,8 +2,8 @@
 
 const fs = require("fs");
 const core = require("right-track-core");
-const c = require("../config.js");
-const Response = require("../response");
+const c = require("../../config.js");
+const Response = require("../../response");
 
 
 // ==== BUILD MODELS ==== //

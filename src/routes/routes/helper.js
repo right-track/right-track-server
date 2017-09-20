@@ -1,9 +1,9 @@
 'use strict';
 
 const core = require("right-track-core");
-const auth = require("../handlers/auth.js");
-const c = require("../config.js");
-const Response = require("../response");
+const auth = require("../../handlers/auth.js");
+const c = require("../../config.js");
+const Response = require("../../response");
 
 
 // ==== BUILD MODELS ==== //
@@ -140,7 +140,7 @@ let getRoute = function(req, res, next) {
             if (route !== undefined) {
 
                 // Build the Route Model
-                let routeModel = buildRoute(route)
+                let routeModel = buildRoute(route);
 
                 // Set the Response Model
                 let response = Response.buildResponse(
@@ -181,5 +181,6 @@ let getRoute = function(req, res, next) {
 // Export the functions
 module.exports = {
     getRoutes: getRoutes,
-    getRoute: getRoute
+    getRoute: getRoute,
+    buildRoute: buildRoute
 };
