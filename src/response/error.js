@@ -2,26 +2,13 @@
 
 
 /**
- * Build the Error Response
+ * Build an Error API Response
  * @param {int} code Error Code
- * @param {string} p1 Error Type    | Error Message
- * @param {string} p2 Error Message | undefined
- * @returns {{status: string, error: {code: int, type: string, message: string}}}
+ * @param {string} type Error Type
+ * @param {string} message Error Message
+ * @returns {{status: string, error: {code: int, type: string, message: string}}} API Response
  */
-let build = function(code, p1, p2) {
-
-    let type = undefined;
-    let message = undefined;
-
-    // Parse function parameters
-    if ( p2 !== undefined ) {
-        type = p1;
-        message = p2;
-    }
-    else {
-        message = p1;
-    }
-
+let build = function(code, type, message) {
     return {
         status: "error",
         error: {

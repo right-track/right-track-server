@@ -281,7 +281,11 @@ let getAboutAgencyIcon = function(req, res, next) {
 
         // Icon file could not be read, most likely file not found
         if (err) {
-            let error = Response.buildError(404, "File Not Found", "Agency icon file not found on server");;
+            let error = Response.buildError(
+                4049,
+                "File Not Found",
+                "Agency icon file not found on server"
+            );
             res.send(error.code, error.response);
             next();
         }

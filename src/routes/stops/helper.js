@@ -156,7 +156,7 @@ let getStop = function(req, res, next) {
             else {
 
                 let error = Response.buildError(
-                    404,
+                    4042,
                     "Stop Not Found",
                     "The requested Stop (" + id + ") could not be found."
                 );

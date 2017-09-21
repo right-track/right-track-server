@@ -14,8 +14,8 @@ let timeoutHandler = function(req, res, next) {
     setTimeout(function() {
         if ( !res.finished ) {
             let error = Response.buildError(
-                500,
-                "Server Timeout",
+                5001,
+                "API Server Timeout",
                 "The Server could not return a response in time.  Please try again later.  If this continues, please contact the server maintainer at " + config.maintainer.email + "."
             );
             res.send(error.code, error.response);

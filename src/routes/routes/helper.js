@@ -103,7 +103,7 @@ let getRoutes = function(req, res, next) {
             else {
 
                 let error = Response.buildError(
-                    404,
+                    4042,
                     "Routes Not Found",
                     "The requested Routes for Agency (" + agency + ") could not be found."
                 );
@@ -160,7 +160,7 @@ let getRoute = function(req, res, next) {
             else {
 
                 let error = Response.buildError(
-                    404,
+                    4042,
                     "Route Not Found",
                     "The requested Route (" + id + ") could not be found."
                 );

@@ -1,5 +1,7 @@
 'use strict';
 
+const Response = require("../response");
+
 
 /**
  * If an agency parameter is provided, make sure the agency is
@@ -20,8 +22,8 @@ let checkAgencySupported = function(req, res, next) {
 
         // Agency is not supported...
         if ( !c.isAgencySupported(agency) ) {
-            let error = require("../response").buildError(
-                400,
+            let error = Response.buildError(
+                4041,
                 "Unsupported Agency",
                 "The agency code {" + agency + "} does not correspond to a supported agency."
             );

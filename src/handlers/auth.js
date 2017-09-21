@@ -41,7 +41,11 @@ let getAuthAccess = function(req, res, next) {
 
         // Incorrect header format
         else {
-            let error = Response.buildError(400, "Authorization Format Error", "The 'Authorization' Header must be in the form of 'Token {API TOKEN}");
+            let error = Response.buildError(
+                4039,
+                "Authorization Header Format Error",
+                "The 'Authorization' Header must be in the form of 'Token {API TOKEN}"
+            );
             res.send(error.code, error.response);
             return next(false);
         }
@@ -75,7 +79,7 @@ let checkAuthAccess = function(access, req, res, next) {
         (!allowDebug && req.access.indexOf("debug") !== -1)  // Deny requests using a client key with debug access
     ) {
         let error = Response.buildError(
-            403,
+            4031,
             "Debug Access Denied",
             "Debug client keys and functions have been prohibited on this server."
         );

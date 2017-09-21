@@ -142,7 +142,7 @@ let getTrip = function(req, res, next) {
             else {
 
                 let error = Response.buildError(
-                    404,
+                    4042,
                     "Trip Not Found",
                     "The requested Trip (" + id + ") could not be found."
                 );
