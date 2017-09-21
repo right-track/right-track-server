@@ -39,8 +39,18 @@ let server = restify.createServer({
 });
 
 
+// Set server error handler
+server.on('error', function (err) {
+    mysql.close();
+    console.error("===================== SERVER ERROR =====================");
+    console.error(err);
+    console.error("========================================================");
+    process.exit(1);
+});
+
+
 // Start the Server
-server.listen(props.port, props.host, function() {
+server.listen({port: props.port, host: props.host}, function() {
     console.log("===========================================================");
     console.info("==> API Server is up and running @ " + server.url + "...");
 });
