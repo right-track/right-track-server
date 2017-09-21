@@ -24,7 +24,8 @@ let connect = function() {
     });
 
     // Test connection to the database
-    pool.getConnection(function(err) {
+    pool.getConnection(function(err, connection) {
+        connection.release();
         if ( err ) {
             console.error("COULD NOT CONNECT TO THE MYSQL DATABASE");
             console.error(config.database);
@@ -42,7 +43,6 @@ let connect = function() {
         console.error(err.sql);
         console.error(err);
     });
-
 };
 
 
@@ -57,6 +57,7 @@ let getConnection = function(callback) {
     else {
         pool.getConnection(function(err, connection) {
             if (err) {
+                connection.release();
                 console.error("Lost connection to MySQL database");
                 console.error(err);
             }
@@ -78,6 +79,7 @@ let getConnection = function(callback) {
 let select = function(statement, callback) {
     getConnection(function(connection) {
         connection.query(statement, function(error, results) {
+            connection.release();
             if ( error ) {
                 console.warn("COULD NOT PERFORM SELECT QUERY");
                 console.warn(statement);
@@ -99,10 +101,12 @@ let select = function(statement, callback) {
  */
 let get = function(statement, callback) {
     select(statement, function(results) {
+        let rtn = {};
         if ( results !== undefined ) {
-            if ( callback !== undefined ) {
-                callback(results[0]);
-            }
+            rtn = results[0];
+        }
+        if ( callback !== undefined ) {
+            callback(rtn);
         }
     })
 };
