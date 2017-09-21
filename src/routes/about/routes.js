@@ -11,7 +11,7 @@ let routes = function(server) {
      * @apiName getAbout
      * @apiGroup About
      * @apiDescription Get information about the Right Track API Server
-     * and its supported app and transit agencies.
+     * and its supported agencies and transit agencies.
      * @apiPermission public
      */
     server.get("/about", helper.getAbout);
@@ -21,7 +21,7 @@ let routes = function(server) {
      * @api {get} /about/agencies Get All Agency Information
      * @apiName getAgencies
      * @apiGroup About
-     * @apiDescription Get information about app agencies supported
+     * @apiDescription Get information about agencies supported
      * by the Right Track API Server.
      * @apiPermission public
      */
@@ -32,10 +32,10 @@ let routes = function(server) {
      * @api {get} /about/agencies/:agency Get Agency Information
      * @apiName getAgency
      * @apiGroup About
-     * @apiDescription Get information about the specified app agency.
+     * @apiDescription Get information about the specified agency.
      * @apiPermission public
      *
-     * @apiParam {string} agency App Agency Code
+     * @apiParam (Path) {string} agency RT Agency Code
      */
     server.get("/about/agencies/:agency", helper.getAboutAgency);
 
@@ -44,10 +44,10 @@ let routes = function(server) {
      * @api {get} /about/agencies/:agency/icon Get Agency Icon
      * @apiName getAgencyIcon
      * @apiGroup About
-     * @apiDescription Get the icon for the specified app agency.
+     * @apiDescription Get the icon for the specified agency.
      * @apiPermission public
      *
-     * @apiParam {string} agency App Agency Code
+     * @apiParam (Path) {string} agency RT Agency Code
      */
     server.get("/about/agencies/:agency/icon", helper.getAboutAgencyIcon);
 
@@ -57,10 +57,10 @@ let routes = function(server) {
      * @apiName getAgencyLinks
      * @apiGroup About
      * @apiDescription Get the set of additional resource links for
-     * the specified app agency.
+     * the specified agency.
      * @apiPermission public
      *
-     * @apiParam {string} agency App Agency Code
+     * @apiParam (Path) {string} agency RT Agency Code
      */
     server.get("/about/agencies/:agency/links", helper.getAboutAgencyLinks);
 

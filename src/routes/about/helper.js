@@ -20,33 +20,31 @@ const Response = require("../../response");
 /**
  * Build the Server model
  * @param req API Request
- * @param {buildCallback} callback Callback function(ServerModel)
+ * @return Server Model
  */
-let buildServer = function(req, callback) {
+let buildServer = function(req) {
     let config = c.get();
-    callback(
-        {
-            name: config.name,
-            version: config.version,
-            url: config.url,
-            host: req.headers.host
-        }
-    );
+
+    return {
+        name: config.name,
+        version: config.version,
+        url: config.url,
+        host: req.headers.host,
+        hostname: req.log.fields.hostname
+    }
 };
 
 /**
  * Build the Maintainer Model
- * @param {buildCallback} callback Callback function(MaintainerModel)
+ * @return Maintainer Model
  */
-let buildMaintainer = function(callback) {
+let buildMaintainer = function() {
     let config = c.get();
-    callback(
-        {
-            name: config.maintainer.name,
-            email: config.maintainer.email,
-            source: config.maintainer.source
-        }
-    );
+    return {
+        name: config.maintainer.name,
+        email: config.maintainer.email,
+        source: config.maintainer.source
+    }
 };
 
 /**
@@ -55,13 +53,15 @@ let buildMaintainer = function(callback) {
  * @param {buildCallback} callback Callback function(AgencyModel)
  */
 let buildAgency = function(agencyCode, callback) {
-    core.query.about.getAbout(c.getAgencyDB(agencyCode), function(about) {
-        let agency = c.getAgencyConfig(agencyCode);
+    let db = c.getAgencyDB(agencyCode);
+    let agencyConfig = c.getAgencyConfig(agencyCode);
+
+    core.query.about.getAbout(db, function(about) {
         let version = about.version;
         callback(
             {
-                id: agency.id,
-                name: agency.name,
+                id: agencyConfig.id,
+                name: agencyConfig.name,
                 version: version
             }
         );
@@ -73,16 +73,28 @@ let buildAgency = function(agencyCode, callback) {
  * @param {buildCallback} callback Callback function(AgencyList)
  */
 let buildAgencies = function(callback) {
-    let codes = c.getAgencies();
-    let agencies = [];
+    let agencyCodes = c.getAgencies();
+    let agencyModels = [];
 
+    // Loop through each agency code
     let rtn = 0;
-    for ( let i = 0; i < codes.length; i++ ) {
-        buildAgency(codes[i], function(response) {
+    for ( let i = 0; i < agencyCodes.length; i++ ) {
+        let agencyCode = agencyCodes[i];
+
+        // Build the Agency Model
+        buildAgency(agencyCode, function(agencyModel) {
             rtn++;
-            agencies.push(response);
-            if ( rtn === codes.length ) {
-                callback(agencies);
+            agencyModels.push(agencyModel);
+
+            // Return the Agency Models
+            if ( rtn === agencyCodes.length ) {
+
+                // Sort the agency models by name
+                agencyModels.sort(function(a, b) {
+                    return a.name.localeCompare(b.name);
+                });
+
+                callback(agencyModels);
             }
         });
     }
@@ -94,39 +106,36 @@ let buildAgencies = function(callback) {
  * @param {buildCallback} callback Callback function(AboutModel)
  */
 let buildAbout = function(req, callback) {
-    buildServer(req, function(server) {
-        buildMaintainer(function(maintainer) {
-            buildAgencies(function(agencies) {
-                callback(
-                    {
-                        server: server,
-                        maintainer: maintainer,
-                        agencies: agencies
-                    }
-                )
-            })
-        });
+    let server = buildServer(req);
+    let maintainer = buildMaintainer();
+
+    buildAgencies(function(agencies) {
+        callback(
+            {
+                server: server,
+                maintainer: maintainer,
+                agencies: agencies
+            }
+        )
     });
 };
 
 /**
  * Build the Link Model
  * @param {Link} link RT Link Class
- * @param {buildCallback} callback Callback function(LinkModel)
+ * @return Link Model
  */
-let buildLink = function(link, callback) {
-    callback(
-        {
-            title: link.title,
-            description: link.description,
-            url: link.url
-        }
-    )
+let buildLink = function(link) {
+    return {
+        title: link.title,
+        description: link.description,
+        url: link.url
+    }
 };
 
 /**
  * Build the Link category Model, category name and list of links
- * @param {string} agency App Agency Code
+ * @param {string} agency RT Agency Code
  * @param {string} category Link Category Name
  * @param {buildCallback} callback Callback function(LinkCategoryModel)
  */
@@ -139,34 +148,29 @@ let buildLinkCategory = function(agency, category, callback) {
         let linkModels = [];
 
         // Parse each of the links
-        let rtn = 0;
         for ( let i = 0; i < links.length; i++ ) {
             let link = links[i];
 
-            // Build the link model
-            buildLink(link, function(linkModel) {
-                linkModels.push(linkModel);
-                rtn++;
-
-                // Last link returned, send back the link category model
-                if ( rtn === links.length) {
-                    callback(
-                        {
-                            category: category,
-                            links: linkModels
-                        }
-                    );
-                }
-            })
-
+            // Build the Link Model
+            let linkModel = buildLink(link);
+            linkModels.push(linkModel);
         }
 
+        // Return the Link Category Model
+        callback(
+            {
+                category: category,
+                links: linkModels
+            }
+        );
+
     })
+
 };
 
 /**
  * Build the Agency Links Model (a list of link category models, which contain the links)
- * @param {string} agency App Agency Code
+ * @param {string} agency RT Agency Code
  * @param {buildCallback} callback Callback function(linkModel)
  */
 let buildLinks = function(agency, callback) {
@@ -191,13 +195,17 @@ let buildLinks = function(agency, callback) {
                 if ( rtn === categories.length ) {
                     callback(
                         {
+                            agency: agency,
                             links: categoryModels
                         }
                     );
                 }
             });
+
         }
+
     })
+
 };
 
 

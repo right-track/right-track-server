@@ -64,9 +64,7 @@ let getConfig = function(req, res, next) {
     // Check for API Access
     if ( auth.checkAuthAccess("debug", req, res, next) ) {
 
-        let response = Response.buildResponse(
-            buildConfig()
-        );
+        let response = Response.buildResponse(buildConfig());
         res.send(response.code, response.response);
         next();
 
@@ -103,9 +101,7 @@ let reloadConfig = function(req, res, next) {
 
         // When debug is enabled, display the reloaded config
         if ( req.access.indexOf("debug") !== -1 ) {
-            let response = Response.buildResponse(
-                buildConfig()
-            );
+            let response = Response.buildResponse(buildConfig());
             res.send(response.code, response.response);
             next();
         }

@@ -13,7 +13,8 @@ let routes = function(server) {
      * @apiDescription Get the GTFS Routes for the specified agency.
      * @apiPermission gtfs
      *
-     * @apiParam {string} agency App Agency Code
+     * @apiParam (Header) Authorization Token {API Key}
+     * @apiParam (Path) {string} agency RT Agency Code
      */
     server.get("/routes/:agency", helper.getRoutes);
 
@@ -25,8 +26,9 @@ let routes = function(server) {
      * @apiDescription Get the specified GTFS Route for the specified agency.
      * @apiPermission gtfs
      *
-     * @apiParam {string} agency App Agency Code
-     * @apiParam {string} id GTFS Route ID
+     * @apiParam (Header) Authorization Token {API Key}
+     * @apiParam (Path) {string} agency RT Agency Code
+     * @apiParam (Path) {string} id GTFS Route ID
      */
     server.get("/routes/:agency/:id", helper.getRoute);
 

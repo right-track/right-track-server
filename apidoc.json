@@ -16,6 +16,7 @@
         "getRoutes",
         "getRoute",
         "getStops",
-        "getStop"
+        "getStop",
+        "getTrip"
     ]
 }

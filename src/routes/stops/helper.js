@@ -72,43 +72,79 @@ let getStops = function(req, res, next) {
     // Check for API Access
     if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
 
-        // Query the DB for the list of stops for this agency
-        core.query.stops.getStops(db, function (stops) {
+        // Just stops with a Status ID requested...
+        if ( req.query.hasOwnProperty("hasFeed") && req.query.hasFeed.toLowerCase() === 'true' ) {
 
-            // Check if any stops were found...
-            if (stops.length > 0) {
+            // Query the DB for the list of stops with a status id
+            core.query.stops.getStopsWithStatus(db, function(stops) {
 
-                // Build the Stop Models
-                let stopModels = buildStops(stops);
+                // Continue to build the Response...
+                getStopsResponse(req, res, next, agency, stops);
 
-                // Set the Response Model
-                let response = Response.buildResponse(
-                    {
-                        agency: agency,
-                        stops: stopModels
-                    }
-                );
+            });
 
-                // Send the Response
-                res.send(response.code, response.response);
-                next();
+        }
 
+
+        // All stops requested...
+        else {
+
+            // Query the DB for the list of all stops for this agency
+            core.query.stops.getStops(db, function(stops) {
+
+                // Continue to build the Response...
+                getStopsResponse(req, res, next, agency, stops);
+
+            });
+
+        }
+
+    }
+
+};
+
+
+/**
+ * The 2nd part of the getStops() helper.  This builds
+ * the Response from the queried stops
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ * @param {string} agency RT Agency Code
+ * @param {Stop[]} stops list of Stops
+ */
+let getStopsResponse = function(req, res, next, agency, stops) {
+
+    // Check if any stops were found...
+    if (stops.length > 0) {
+
+        // Build the Stop Models
+        let stopModels = buildStops(stops);
+
+        // Set the Response Model
+        let response = Response.buildResponse(
+            {
+                agency: agency,
+                stops: stopModels
             }
+        );
 
-            // No stops were found...
-            else {
+        // Send the Response
+        res.send(response.code, response.response);
+        next();
 
-                let error = Response.buildError(
-                    404,
-                    "Stops Not Found",
-                    "The requested Stops for Agency (" + agency + ") could not be found."
-                );
-                res.send(error.code, error.response);
-                next();
+    }
 
-            }
+    // No stops were found...
+    else {
 
-        });
+        let error = Response.buildError(
+            4042,
+            "Stops Not Found",
+            "The requested Stops for Agency (" + agency + ") could not be found."
+        );
+        res.send(error.code, error.response);
+        next();
 
     }
 

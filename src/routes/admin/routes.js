@@ -12,6 +12,8 @@ let routes = function(server) {
      * @apiGroup Admin
      * @apiDescription Display the API Server Configuration
      * @apiPermission debug
+     *
+     * @apiParam (Header) Authorization Token {API Key}
      */
     server.get("/admin/config", helper.getConfig);
 
@@ -24,6 +26,8 @@ let routes = function(server) {
      * well as reload the agency databases and reconnect to the server's
      * MySQL database.
      * @apiPermission admin
+     *
+     * @apiParam (Header) Authorization Token {API Key}
      */
     server.get("/admin/reload", helper.reloadConfig);
 
