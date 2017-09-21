@@ -11,11 +11,14 @@
   },
   "dependencies": {
     "deepmerge": "^1.5.1",
+    "email-validator": "^1.1.1",
     "mysql": "^2.14.1",
+    "password-validator": "^4.0.0",
     "restify": "^6.0.0",
     "restify-errors": "^5.0.0",
     "right-track-core": "file:../core",
-    "right-track-db-sqlite3": "file:../db-sqlite3"
+    "right-track-db-sqlite3": "file:../db-sqlite3",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "apidoc": "^0.17.6"

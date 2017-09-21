@@ -66,6 +66,8 @@ server.use(headers);
 server.use(agency);
 server.use(auth.getAuthAccess);
 server.use(timeout);
+server.use(restify.plugins.queryParser());
+server.use(restify.plugins.bodyParser());
 
 
 
@@ -75,6 +77,7 @@ require("./routes/admin/routes.js")(server);
 require("./routes/routes/routes.js")(server);
 require("./routes/stops/routes.js")(server);
 require("./routes/trips/routes.js")(server);
+require("./routes/auth/routes.js")(server);
 
 
 

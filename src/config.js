@@ -94,8 +94,20 @@ let read = function(location) {
     // Load the config file to add
     let add = JSON.parse(fs.readFileSync(location, 'utf8'));
 
-    // Parse relative agency require and config paths
+    // Get directory of config file
     let dirname = path.dirname(location);
+
+    // Parse relative blacklist path
+    if ( add.registration !== undefined && add.registration.password !== undefined ) {
+        let blacklist = add.registration.password.blacklist;
+        if (blacklist !== undefined) {
+            if (blacklist.charAt(0) === ".") {
+                add.registration.password.blacklist = path.join(dirname, "/", blacklist);
+            }
+        }
+    }
+
+    // Parse relative agency require and config paths
     for ( let i = 0; i < add.agencies.length; i++ ) {
         let agency = add.agencies[i];
 
