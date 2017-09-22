@@ -113,16 +113,60 @@ let get = function(statement, callback) {
 
 
 /**
+ * Perform an INSERT statement on the API Server database
+ * @param statement INSERT statement
+ * @param callback Callback function
+ */
+let insert = function(statement, callback) {
+    getConnection(function(connection) {
+        connection.query(statement, function(error, results) {
+            connection.release();
+            if ( error ) {
+                console.warn("MySQL INSERT ERROR:");
+                console.warn(error);
+                callback(false);
+            }
+            else {
+                callback(true);
+            }
+        });
+    });
+};
+
+
+/**
+ * Perform a DELETE statement on the API Server database
+ * @param statement DELETE statement
+ * @param callback Callback function
+ */
+let delet = function(statement, callback) {
+    getConnection(function(connection) {
+        connection.query(statement, function(error, results) {
+            connection.release();
+            if ( error ) {
+                console.warn("MySQL DELETE ERROR:");
+                console.warn(error);
+                callback(false);
+            }
+            else {
+                callback(true);
+            }
+        });
+    });
+};
+
+
+/**
  * Close the connection to the Right Track API Server database
  * @param error Optional error callback function
  * @param callback Optional callback function
  */
 let close = function(error, callback) {
     if ( pool !== undefined ) {
-        console.log("Closing connection to MySQL server...");
+        console.log("--> Closing connection to MySQL server...");
         pool.end(function (err) {
             if (err) {
-                console.warn("...could not close connection to MySQL server");
+                console.warn("... could not close connection to MySQL server");
                 if (error !== undefined) {
                     error(err);
                 }
@@ -135,6 +179,20 @@ let close = function(error, callback) {
 };
 
 
+/**
+ * Remove inactive and expired sessions from the Database
+ */
+let clearInvalidSessions = function() {
+    let now = DateTime.now().toMySQLString();
+    let del = "DELETE FROM sessions WHERE inactive <= '" + now + "' OR expires <= '" + now + "';";
+    delet(del, function(success) {
+        if ( success ) {
+            console.log("... Invalid sessions removed from the database...");
+        }
+    });
+};
+
+
 
 // Export the connection
 module.exports = {
@@ -142,5 +200,7 @@ module.exports = {
     getConnection: getConnection,
     get: get,
     select: select,
+    insert: insert,
+    delet: delet,
     close: close
 };
