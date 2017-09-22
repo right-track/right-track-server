@@ -19,8 +19,8 @@ let routes = function(server) {
 
 
     /**
-     * @api {post} /users Register User
-     * @apiName registerUser
+     * @api {post} /users Add User
+     * @apiName addUser
      * @apiGroup Users
      * @apiDescription Register a new user and add their information to the API
      * database. This will first check to make sure the User's email, username,
@@ -33,21 +33,6 @@ let routes = function(server) {
      * @apiParam (Body) {string} password The new User's password
      */
     server.post("/users", helper.registerUser);
-
-
-    /**
-     * @api {get} /users Get Users
-     * @apiName getUsers
-     * @apiGroup Users
-     * @apiDescription Get the registration and session information for all registered
-     * Users.  Optionally filter by email and/or username
-     * @apiPermission debug
-     *
-     * @apiParam (Header) Authorization Token {API Key}
-     * @apiParam (Query) {string} [email] Filter by User's email address
-     * @apiParam (Query) {string} [username] Filter by User's username
-     */
-    server.get("/users", helper.getUsers);
 
 
     /**
@@ -76,6 +61,20 @@ let routes = function(server) {
      * @apiParam (Path) {string} id User Public ID
      */
     server.del("/users/:userPID", helper.removeUser);
+
+    /**
+     * @api {get} /users Get Users
+     * @apiName getUsers
+     * @apiGroup Users
+     * @apiDescription Get the registration and session information for all registered
+     * Users.  Optionally filter by email and/or username
+     * @apiPermission debug
+     *
+     * @apiParam (Header) Authorization Token {API Key}
+     * @apiParam (Query) {string} [email] Filter by User's email address
+     * @apiParam (Query) {string} [username] Filter by User's username
+     */
+    server.get("/users", helper.getUsers);
 
 
 };

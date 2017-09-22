@@ -11,12 +11,17 @@
         "getAgency",
         "getAgencyIcon",
         "getAgencyLinks",
-        "getAdminConfig",
-        "getAdminReload",
         "getRoutes",
         "getRoute",
         "getStops",
         "getStop",
-        "getTrip"
+        "getTrip",
+        "registrationRequirements",
+        "addUser",
+        "getUser",
+        "removeUser",
+        "getUsers",
+        "getAdminConfig",
+        "getAdminReload"
     ]
 }

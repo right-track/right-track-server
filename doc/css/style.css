@@ -2,7 +2,7 @@
  * Content
  * ------------------------------------------------------------------------------------------ */
 body {
-  min-width: 980px;
+  min-width: 860px;
   max-width: 1280px;
 }
 
@@ -23,6 +23,7 @@ td.code {
   padding-top: 16px;
   z-Index: -1;
   margin-left: 270px;
+  margin-right: 25px;
 }
 
 p {
