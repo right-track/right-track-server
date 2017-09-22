@@ -1,6 +1,7 @@
 'use strict';
 
 const mysql = require("mysql");
+const DateTime = require("right-track-core").utils.DateTime;
 
 
 // Set initial state of variables
@@ -34,6 +35,7 @@ let connect = function() {
         }
         else {
             console.log("--> Connected to MySQL server @ " + config.database.host + "...");
+            clearInvalidSessions();
         }
     });
 
