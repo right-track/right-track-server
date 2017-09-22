@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require("path");
-const auth = require("../../handlers/auth.js");
+const auth = require("../../handlers/authorization.js");
 const config = require("../../config.js");
 const Response = require("../../response");
 const mysql = require("../../db/mysql.js");

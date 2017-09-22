@@ -1,7 +1,7 @@
 'use strict';
 
 const core = require("right-track-core");
-const auth = require("../../handlers/auth.js");
+const auth = require("../../handlers/authorization.js");
 const c = require("../../config.js");
 const Response = require("../../response");
 

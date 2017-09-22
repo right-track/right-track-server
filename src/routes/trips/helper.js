@@ -2,7 +2,7 @@
 
 const core = require("right-track-core");
 const DateTime = core.utils.DateTime;
-const auth = require("../../handlers/auth.js");
+const auth = require("../../handlers/authorization.js");
 const c = require("../../config.js");
 const Response = require("../../response");
 const routeHelper = require("../routes/helper.js");
