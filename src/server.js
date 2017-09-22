@@ -11,7 +11,8 @@ const mysql = require("./db/mysql.js");
 const errors = require("./handlers/errors.js");
 const headers = require("./handlers/headers.js");
 const agency = require("./handlers/agency.js");
-const auth = require("./handlers/auth.js");
+const auth = require("./handlers/authorization.js");
+const authentication = require("./handlers/authentication.js");
 const timeout = require("./handlers/timeout.js");
 
 
@@ -75,6 +76,7 @@ server.on('Error', errors.handleServerError);
 server.use(headers);
 server.use(agency);
 server.use(auth.getAuthAccess);
+server.use(authentication);
 server.use(timeout);
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
@@ -88,6 +90,7 @@ require("./routes/routes/routes.js")(server);
 require("./routes/stops/routes.js")(server);
 require("./routes/trips/routes.js")(server);
 require("./routes/auth/routes.js")(server);
+require("./routes/users/routes.js")(server);
 
 
 
