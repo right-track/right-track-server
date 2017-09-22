@@ -39,9 +39,9 @@
  */
 
 /**
- * @apiDefine authadmin API-Access: auth-admin
+ * @apiDefine registration API-Access: registration
  * These API endpoints require an API client key with
- * 'auth-admin' privileges.  These endpoints allow the
+ * 'registration' privileges.  These endpoints allow the
  * client to register new Users and remove existing Users.
  */
 
