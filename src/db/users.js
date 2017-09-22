@@ -1,9 +1,13 @@
 'use strict';
 
-const crypto = require("crypto");
-const uuid = require("uuid/v4");
 const mysql = require("./mysql.js");
+const utils = require("./utils.js");
 const DateTime = require("right-track-core").utils.DateTime;
+
+
+
+// ==== REGISTRATION METHODS ==== //
+
 
 /**
  * Check if the specified email is registered
@@ -60,37 +64,6 @@ let isUsernameRegistered = function(username, callback) {
 
 };
 
-/**
- * Generate a new random User PID
- * @returns {string} base64 encoded UUID
- */
-let genPid = function() {
-    let pid = uuid();
-    while ( pid.indexOf('-') > -1 ) {
-        pid = pid.replace('-', '');
-    }
-    return pid;
-};
-
-/**
- * Generate a random 32 byte salt
- * @returns base64 encoded salt
- */
-let genSalt = function() {
-   return crypto.randomBytes(32).toString('base64');
-};
-
-/**
- * Hash the salt and password using SHA512
- * @param salt Base64 encoded salt
- * @param password Password string
- */
-let genHash = function(salt, password) {
-    let hmac = crypto.createHmac('sha512', salt);
-    hmac.update(password);
-    return hmac.digest('base64').toString('base64');
-};
-
 
 /**
  * Add the validated user information to the Server Database
@@ -102,13 +75,13 @@ let genHash = function(salt, password) {
 let addUser = function(email, username, password, callback) {
 
     // Generate PID, remove all '-'
-    let pid = genPid();
+    let pid = utils.genPid();
 
     // Generate Salt
-    let salt = genSalt();
+    let salt = utils.genSalt();
 
     // Generate Password Hash
-    let password_hash = genHash(salt, password);
+    let password_hash = utils.genHash(salt, password);
 
     // Get DateTime
     let datetime = DateTime.now().toMySQLString();
@@ -142,6 +115,11 @@ let removeUser = function(pid, callback) {
         callback(success);
     });
 };
+
+
+
+
+// ==== USER METHODS ==== //
 
 
 /**
@@ -181,78 +159,42 @@ let getUser = function(pid, callback) {
 
 
 /**
- * Get the saved User Sessions for the specified User
- * @param {string} pid User Public ID
- * @param callback Callback function accepting Sessions
+ * Get the User's Public ID by their email or username
+ * @param {string} login User email or username
+ * @param callback Callback function accepting User PID
  */
-let getSessions = function(pid, callback) {
-
-    // Build sessions SELECT Statement
-    let sessionSelect = "SELECT pid, client_name, created, accessed, inactive, expires " +
-        "FROM sessions " +
-        "INNER JOIN clients ON sessions.client_id=clients.id " +
-        "WHERE pid='" + pid + "';";
-
-    // Select the session info from the DB
-    mysql.select(sessionSelect, function(sessions) {
-        callback(sessions);
-    });
-
-};
-
-
-/**
- * Check to see if the provided user PID and session PID match
- * @param {string} userPID User PID
- * @param {string} sessionPID Session PID
- * @param callback Callback function accepting boolean match
- */
-let checkSessionUser = function(userPID, sessionPID, callback) {
-
-    // Check if Session and User PIDs match
-    let select = "SELECT users.pid FROM sessions " +
-        "INNER JOIN users ON users.id=sessions.user_id " +
-        "WHERE sessions.pid='" + sessionPID + "';";
-
-    // Query the DB
-    mysql.get(select, function(user) {
-
-        let match = false;
-
-        // A user was found...
-        if ( user !== undefined ) {
-
-            // User PID matches session PID
-            if ( user.pid.toLowerCase() === userPID.toLowerCase() ) {
-                match = true;
-            }
-
+let getUserPIDByLogin = function(login, callback) {
+    let select = "SELECT pid FROM users WHERE email='" + login + "' OR username='" + login + "'";
+    mysql.select(select, function(results) {
+        if ( results.length === 1 ) {
+            callback(results[0].pid);
         }
-
-        // Return match status
-        callback(match);
-
+        else {
+            callback(undefined);
+        }
     })
-
 };
 
 
 /**
- * Check the validity (not inactive or expired) of the specified session
- * @param {string} sessionPID Session PID
- * @param callback Callback function accepting boolean validity
+ * Check if the provided User password is correct
+ * @param {string} pid User Public ID
+ * @param {string} password User password to check
+ * @param callback Callback function accepting boolean of correct password
  */
-let checkSessionValid = function(sessionPID, callback) {
+let checkUserPassword = function(pid, password, callback) {
 
-    let now = DateTime.now().toMySQLString();
+    // Get saved password hash
+    let select = "SELECT salt, password FROM users WHERE pid='" + pid + "';";
+    mysql.get(select, function(result) {
+        let correctPassHash = result.password;
+        let salt = result.salt;
 
-    // Check if the Session is Valid
-    let select = "SELECT pid FROM sessions WHERE pid='" + sessionPID + "' " +
-        "AND inactive > '" + now + "' AND expires > '" + now + "';";
+        // Calculate hash of provided password
+        let checkHash = utils.genHash(salt, password);
 
-    // Query the DB
-    mysql.get(select, function(session) {
-        callback(session !== undefined);
+        // Return if match
+        callback(correctPassHash === checkHash);
     });
 
 };
@@ -265,9 +207,8 @@ module.exports = {
     isUsernameRegistered: isUsernameRegistered,
     addUser: addUser,
     removeUser: removeUser,
+    getUserPIDByLogin: getUserPIDByLogin,
     getUsers: getUsers,
     getUser: getUser,
-    getSessions: getSessions,
-    checkSessionUser: checkSessionUser,
-    checkSessionValid: checkSessionValid
+    checkUserPassword: checkUserPassword
 };

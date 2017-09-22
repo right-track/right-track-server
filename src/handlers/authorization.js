@@ -30,6 +30,7 @@ let getAuthAccess = function(req, res, next) {
 
             // Parse the API Key out of the header
             let key = header.toLowerCase().replace("token", "").replace(":", "").replace(/ /g,'');
+            req.APIClientKey = key;
 
             // Get client access codes from the database
             clients.getClientAccess(key, function(access) {

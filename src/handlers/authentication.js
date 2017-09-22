@@ -1,7 +1,7 @@
 'use strict';
 
 const Response = require("../response");
-const users = require("../db/users.js");
+const sessions = require("../db/sessions.js");
 
 
 /**
@@ -18,18 +18,21 @@ let authenticateUser = function(req, res, next) {
     if ( req.params.hasOwnProperty("userPID") ) {
         let id = req.params.userPID;
         let session = req.header("X-session-token");
+        let key = req.APIClientKey;
 
         // Check the Session Token...
         if ( session !== undefined ) {
 
             // Make sure it matches the same user
-            users.checkSessionUser(id, session, function(match) {
+            sessions.checkSessionUser(id, session, function(match) {
 
                 // User and Session match...
                 if ( match ) {
 
+                    // TODO: Make sure session and client match
+
                     // Check to make sure session is still valid
-                    users.checkSessionValid(session, function(valid) {
+                    sessions.checkSessionValid(session, function(valid) {
 
                         // Session is still valid...
                         if ( valid ) {

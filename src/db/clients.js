@@ -26,6 +26,22 @@ let getClientAccess = function(client_key, callback) {
 };
 
 
+/**
+ * Get all of the client information for the specified client API Key
+ * @param {string} key Client API Key
+ * @param callback Callback function accepting client information
+ */
+let getClientByKey = function(key, callback) {
+    let select = "SELECT id, user, email, client_name, client_id, client_key, access, " +
+        "session_length_max, session_length_inactive FROM clients WHERE client_key='" + key + "';";
+    mysql.get(select, function(result) {
+        callback(result);
+    })
+};
+
+
+
 module.exports = {
-    getClientAccess: getClientAccess
+    getClientAccess: getClientAccess,
+    getClientByKey: getClientByKey
 };

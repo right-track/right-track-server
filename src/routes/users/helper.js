@@ -1,11 +1,12 @@
 'use strict';
 
-const core = require("right-track-core");
-const auth = require("../../handlers/authorization.js");
 const c = require("../../config.js");
+const auth = require("../../handlers/authorization.js");
 const Response = require("../../response");
 const validators = require("./validators.js");
 const users = require("../../db/users.js");
+const sessions = require("../../db/sessions.js");
+const authHelper = require("../auth/helper.js");
 
 
 
@@ -18,22 +19,6 @@ const users = require("../../db/users.js");
  * @param {object} the Response Model
  */
 
-
-/**
- * Build the User Session Model
- * @param {Object} session User sessions query result
- * @param {Object} User Session Model
- */
-let buildSession = function(session) {
-    return {
-        id: session.pid,
-        client_name: session.client_name,
-        created: session.created,
-        accessed: session.accessed,
-        inactive: session.inactive,
-        expires: session.expires
-    }
-};
 
 
 /**
@@ -48,7 +33,7 @@ let buildUser = function(user, sessions) {
     let sessionModels = [];
     for ( let i = 0; i < sessions.length; i++ ) {
         let session = sessions[i];
-        let sessionModel = buildSession(session);
+        let sessionModel = authHelper.buildSession(session);
         sessionModels.push(sessionModel);
     }
 
@@ -56,6 +41,7 @@ let buildUser = function(user, sessions) {
     return {
         id: user.pid,
         username: user.username,
+        email: user.email,
         verified: user.verified === 1,
         lastModifiedUser: user.user_modified,
         lastModifiedPassword: user.password_modified,
@@ -93,8 +79,8 @@ let getRegistrationRequirements = function(req, res, next) {
                 password: config.password
             }
         };
-        let response = Response.buildResponse(reqs);
 
+        let response = Response.buildResponse(reqs);
         res.send(response.code, response.response);
         next();
 
@@ -135,7 +121,7 @@ let registerUser = function(req, res, next) {
 
                             // Get the user and user's sessions
                             users.getUser(pid, function(user) {
-                                users.getSessions(pid, function(sessions) {
+                                sessions.getSessions(pid, function(sessions) {
 
                                     // Build the User Model
                                     let userModel = buildUser(user, sessions);
@@ -251,7 +237,7 @@ let getUsers = function(req, res, next) {
                 let user = userResults[i];
 
                 // Get Sessions for user
-                users.getSessions(user.pid, function(sessions) {
+                sessions.getSessions(user.pid, function(sessions) {
 
                     // Build User Model
                     let userModel = buildUser(user, sessions);
@@ -302,7 +288,7 @@ let getUser = function(req, res, next) {
             if ( user !== undefined ) {
 
                 // Get sessions for the user
-                users.getSessions(user.pid, function(sessions) {
+                sessions.getSessions(user.pid, function(sessions) {
 
                     // Build the User model
                     let userModel = buildUser(user, sessions);
@@ -350,5 +336,6 @@ module.exports = {
     registerUser: registerUser,
     removeUser: removeUser,
     getUsers: getUsers,
-    getUser: getUser
+    getUser: getUser,
+    buildUser: buildUser
 };
