@@ -28,6 +28,7 @@ let buildStopTime = function(stopTime) {
     let stop = stopHelper.buildStop(stopTime.stop);
     let arrivalTime = DateTime.createFromTime(stopTime.arrivalTimeSeconds).getTimeReadable();
     let departureTime = DateTime.createFromTime(stopTime.departureTimeSeconds).getTimeReadable();
+    if (stopTime.date === 19700101) stopTime.date = undefined;
 
     return {
         stop: stop,
@@ -108,15 +109,11 @@ let getTrip = function(req, res, next) {
     let id = req.params.id;
     let db = c.getAgencyDB(agency);
 
-    console.log("GET TRIP: " + agency + " " + id);
-
     // Check for API Access
     if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
 
-        // TODO: Get trip date
-
         // Query the DB for the specified trip
-        core.query.trips.getTrip(db, id, 20170919, function (trip) {
+        core.query.trips.getTrip(db, id, 19700101, function (trip) {
 
             // If a trip was found...
             if (trip !== undefined) {
