@@ -21,8 +21,8 @@ let routes = function(server) {
 
 
     /**
-     * @api {post} /auth/logout User Logout
-     * @apiName login
+     * @api {post} /auth/logout/:id User Logout
+     * @apiName logout
      * @apiGroup Auth
      * @apiDescription User logout: If the session is valid for the User,
      * remove it from the Server database, invalidating from any further uses.
@@ -30,6 +30,7 @@ let routes = function(server) {
      *
      * @apiParam (Header) Authorization Token {API Key}
      * @apiParam (Header) X-Session-Token {User Session Token}
+     * @apiParam (Path) {string} id User Public ID
      */
     server.post("/auth/logout/:userPID", helper.logout);
 

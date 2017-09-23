@@ -15,19 +15,14 @@ const DateTime = require("right-track-core").utils.DateTime;
  * @param callback Callback function accepting Sessions
  */
 let getSessions = function(userPID, callback) {
-
-    // Build sessions SELECT Statement
     let sessionSelect = "SELECT sessions.pid, client_name, created, accessed, inactive, expires " +
         "FROM sessions " +
         "INNER JOIN clients ON sessions.client_id=clients.id " +
         "INNER JOIN users ON users.id=sessions.user_id " +
         "WHERE users.pid='" + userPID + "';";
-
-    // Select the session info from the DB
     mysql.select(sessionSelect, function(sessions) {
         callback(sessions);
     });
-
 };
 
 
@@ -152,11 +147,25 @@ let createSession = function(userPID, clientKey, callback) {
 };
 
 
+/**
+ * Remove the specified Session from the Server database
+ * @param {string} sessionPID Session Public ID
+ * @param callback Callback function accepting boolean session removal
+ */
+let deleteSession = function(sessionPID, callback) {
+    let sql = "DELETE FROM sessions WHERE pid='" + sessionPID + "';";
+    mysql.delet(sql, function(success) {
+        callback(success);
+    })
+};
+
+
 
 module.exports = {
     getSessions: getSessions,
     getSession: getSession,
     checkSessionUser: checkSessionUser,
     checkSessionValid: checkSessionValid,
-    createSession: createSession
+    createSession: createSession,
+    deleteSession: deleteSession
 };

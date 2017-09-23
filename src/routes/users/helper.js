@@ -222,6 +222,10 @@ let removeUser = function(req, res, next) {
  */
 let getUsers = function(req, res, next) {
 
+    // TODO: Filter by email and/or username
+    let filterEmail = req.query.email;
+    let filterUsername = req.query.username;
+
     // Check for API Access
     if ( auth.checkAuthAccess("debug", req, res, next) ) {
 
@@ -336,6 +340,5 @@ module.exports = {
     registerUser: registerUser,
     removeUser: removeUser,
     getUsers: getUsers,
-    getUser: getUser,
-    buildUser: buildUser
+    getUser: getUser
 };

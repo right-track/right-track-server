@@ -110,10 +110,28 @@ let addUser = function(email, username, password, callback) {
  * @param callback Callback function accepting removal success
  */
 let removeUser = function(pid, callback) {
-    let sql = "DELETE FROM users, sessions WHERE users.pid='" + pid + "' AND users.id=sessions.user_id;";
-    mysql.delet(sql, function(success) {
-        callback(success);
+
+    // Get user internal id
+    getUser(pid, function(user) {
+        let id = user.id;
+
+        // Delete user sessions
+        let sql = "DELETE FROM sessions WHERE user_id=" + id + ";";
+        mysql.delet(sql, function() {
+
+            // Delete user
+            let sql = "DELETE FROM users WHERE id=" + id + ";";
+            mysql.delet(sql, function(success) {
+
+                // Return delete success
+                callback(success);
+
+            });
+
+        });
+
     });
+
 };
 
 

@@ -37,7 +37,7 @@ let buildSession = function(session) {
 // ==== HELPER FUNCTIONS ==== //
 
 /**
- *
+ * Log the User in by creating a new User Session
  * @param req API Request
  * @param res API Response
  * @param next API Handler Chain
@@ -65,8 +65,6 @@ let login = function(req, res, next) {
                         // Create a new Session, get the Session information
                         sessions.createSession(userPID, key, function(sessionPID) {
                             sessions.getSession(sessionPID, function(session) {
-
-                                console.log(session);
 
                                 // Build the Response
                                 let sessionModel = buildSession(session);
@@ -125,18 +123,46 @@ let login = function(req, res, next) {
 
 
 /**
- *
+ * Log the User out of the current session by removing
+ * it from the Server database
  * @param req API Request
  * @param res API Response
  * @param next API Handler Chain
  */
 let logout = function(req, res, next) {
+    let userPID = req.params.userPIDl
+    let sessionPID = req.header("X-session-token");
 
     // Check for API Access
     if ( auth.checkAuthAccess("auth", req, res, next) ) {
 
-        res.send(200, "Hi!");
-        next();
+        // Remove session ID
+        sessions.deleteSession(sessionPID, function(success) {
+
+            // Session Removed...
+            if ( success ) {
+                let response = Response.buildResponse(
+                    {
+                        user: userPID,
+                        session: {}
+                    }
+                );
+                res.send(response.code, response.response);
+                next();
+            }
+
+            // Session Not Removed
+            else {
+                let error = Response.buildError(
+                    5002,
+                    "API Server Error",
+                    "Could not remove User session from Server database.  Please try again."
+                );
+                res.send(error.code, error.response);
+                next();
+            }
+
+        });
 
     }
 
