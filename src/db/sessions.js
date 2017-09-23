@@ -79,6 +79,40 @@ let checkSessionUser = function(userPID, sessionPID, callback) {
 
 
 /**
+ * Check to see if the specified Session matches the specified Client
+ * @param {string} clientKey API Client Key
+ * @param {string} sessionPID User Session Public ID
+ * @param callback Callback function accepting boolean validity
+ */
+let checkSessionClient = function(clientKey, sessionPID, callback) {
+    let match = false;
+
+    // Select client key for given session
+    let select = "SELECT clients.client_key FROM clients " +
+        "INNER JOIN sessions ON sessions.client_id=clients.id " +
+        "WHERE sessions.pid='" + sessionPID + "';";
+    mysql.get(select, function(client) {
+
+        console.log(client);
+        console.log(client.client_key);
+        console.log(clientKey);
+
+        // Check if client keys match
+        if ( client !== undefined ) {
+            if ( client.client_key.toLowerCase() === clientKey.toLowerCase() ) {
+                match = true;
+            }
+        }
+
+        // Return the match
+        callback(match);
+
+    });
+
+};
+
+
+/**
  * Check the validity (not inactive or expired) of the specified session
  * @param {string} sessionPID Session PID
  * @param callback Callback function accepting boolean validity
@@ -161,10 +195,12 @@ let deleteSession = function(sessionPID, callback) {
 
 
 
+// Export the functions
 module.exports = {
     getSessions: getSessions,
     getSession: getSession,
     checkSessionUser: checkSessionUser,
+    checkSessionClient: checkSessionClient,
     checkSessionValid: checkSessionValid,
     createSession: createSession,
     deleteSession: deleteSession

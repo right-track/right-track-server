@@ -29,27 +29,51 @@ let authenticateUser = function(req, res, next) {
                 // User and Session match...
                 if ( match ) {
 
-                    // TODO: Make sure session and client match
+                    // Make sure the client and session match
+                    sessions.checkSessionClient(key, session, function(match) {
 
-                    // Check to make sure session is still valid
-                    sessions.checkSessionValid(session, function(valid) {
+                        // Client and Session match...
+                        if ( match ) {
 
-                        // Session is still valid...
-                        if ( valid ) {
+                            // Check to make sure session is still valid
+                            sessions.checkSessionValid(session, function(valid) {
 
-                            // Continue the Request...
-                            next();
+                                // Session is still valid...
+                                if ( valid ) {
+
+                                    // Continue the Request...
+                                    next();
+
+                                }
+
+                                // Session is inactive or expired...
+                                else {
+
+                                    // Send Error Response
+                                    let error = Response.buildError(
+                                        4012,
+                                        "Session Expired",
+                                        "The User Session has expired or become inactive.  Please login again."
+                                    );
+                                    res.send(error.code, error.response);
+                                    next(false);
+
+                                }
+
+                            });
 
                         }
 
-                        // Session is inactive or expired...
+
+                        // Client and Session don't match...
                         else {
+                            console.log("Session and Client don't match!");
 
                             // Send Error Response
                             let error = Response.buildError(
-                                4012,
-                                "Session Expired",
-                                "The User Session has expired or become inactive.  Please login again."
+                                401,
+                                "Unauthorized",
+                                "Access to the requested resource is denied due to invalid credentials"
                             );
                             res.send(error.code, error.response);
                             next(false);
