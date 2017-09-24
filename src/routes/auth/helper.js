@@ -32,6 +32,23 @@ let buildSession = function(session) {
     }
 };
 
+/**
+ * Build the User Model
+ * @param {Object} user User query result
+ * @returns {Object} User Model
+ */
+let buildUser = function(user) {
+    // Return User Model
+    return {
+        id: user.pid,
+        username: user.username,
+        email: user.email,
+        verified: user.verified === 1,
+        lastModifiedUser: user.user_modified,
+        lastModifiedPassword: user.password_modified,
+    }
+};
+
 
 
 // ==== HELPER FUNCTIONS ==== //
@@ -62,20 +79,26 @@ let login = function(req, res, next) {
                     // Password correct...
                     if (correct) {
 
-                        // Create a new Session, get the Session information
+                        // Create a new Session, get the Session and User information
                         sessions.createSession(userPID, key, function(sessionPID) {
                             sessions.getSession(sessionPID, function(session) {
+                                users.getUser(userPID, function(user) {
 
-                                // Build the Response
-                                let sessionModel = buildSession(session);
-                                let response = Response.buildResponse(
-                                    {
-                                        user: userPID,
-                                        session: sessionModel
-                                    }
-                                );
-                                res.send(response.code, response.response);
-                                next();
+                                    // Build the Response Models
+                                    let sessionModel = buildSession(session);
+                                    let userModel = buildUser(user);
+
+                                    // Build the Response
+                                    let response = Response.buildResponse(
+                                        {
+                                            user: userModel,
+                                            session: sessionModel
+                                        }
+                                    );
+                                    res.send(response.code, response.response);
+                                    next();
+
+                                });
 
                             });
 
