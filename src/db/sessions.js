@@ -93,10 +93,6 @@ let checkSessionClient = function(clientKey, sessionPID, callback) {
         "WHERE sessions.pid='" + sessionPID + "';";
     mysql.get(select, function(client) {
 
-        console.log(client);
-        console.log(client.client_key);
-        console.log(clientKey);
-
         // Check if client keys match
         if ( client !== undefined ) {
             if ( client.client_key.toLowerCase() === clientKey.toLowerCase() ) {
