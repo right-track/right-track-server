@@ -27,6 +27,30 @@ let handleNotFoundError = function(req, res, err, next) {
 };
 
 /**
+ * Error Handler: Method Not Allowed
+ */
+let handleMethodNotAllowedError = function(req, res, err, next) {
+    require("./headers.js")(req, res);
+
+    let message = "The attempted HTTP Method (" + req.method + ") is not allowed.";
+
+    err.toJSON = function customToJSON() {
+        return Response.buildError(
+            405,
+            "Method Not Allowed",
+            message
+        ).response;
+    };
+
+    err.toString = function customToString() {
+        return message;
+    };
+
+    return next();
+};
+
+
+/**
  * Error Handler: Server Error
  */
 let handleServerError = function(req, res, err, next) {
@@ -55,5 +79,6 @@ let handleServerError = function(req, res, err, next) {
 
 module.exports = {
     handleNotFoundError: handleNotFoundError,
+    handleMethodNotAllowedError: handleMethodNotAllowedError,
     handleServerError: handleServerError
 };

@@ -69,6 +69,7 @@ server.get(/\/doc\/?.*/, restify.plugins.serveStatic({
 
 // ERROR HANDLERS
 server.on('NotFound', errors.handleNotFoundError);
+server.on('MethodNotAllowed', errors.handleMethodNotAllowedError);
 server.on('Error', errors.handleServerError);
 
 
