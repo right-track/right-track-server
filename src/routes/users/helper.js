@@ -102,7 +102,7 @@ let registerUser = function(req, res, next) {
     let password = req.body.password;
 
     // Check the API access
-    if ( auth.checkAuthAccess("auth-admin", req, res, next) ) {
+    if ( auth.checkAuthAccess("registration", req, res, next) ) {
 
         // Validate the email address
         validators.validateEmail(req, res, next, email, function() {
@@ -176,7 +176,7 @@ let removeUser = function(req, res, next) {
     let userPID = req.params.userPID;
 
     // Check for API Access
-    if ( auth.checkAuthAccess("register", req, res, next) ) {
+    if ( auth.checkAuthAccess("registration", req, res, next) ) {
 
         // Remove the User from the DB
         users.removeUser(userPID, function(success) {

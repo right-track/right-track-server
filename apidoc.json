@@ -6,11 +6,15 @@
         "withCompare": false
     },
     "order": [
-        "getAbout",
-        "getAgencies",
-        "getAgency",
+        "getServerInformation",
+        "getAllAgencyInformation",
+        "getAgencyInformation",
         "getAgencyIcon",
         "getAgencyLinks",
+        "getServerConfig",
+        "reloadServer",
+        "userLogin",
+        "userLogout",
         "getRoutes",
         "getRoute",
         "getStops",
@@ -20,8 +24,6 @@
         "addUser",
         "getUser",
         "removeUser",
-        "getUsers",
-        "getAdminConfig",
-        "getAdminReload"
+        "getUsers"
     ]
 }

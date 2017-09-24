@@ -26,7 +26,9 @@ let connect = function() {
 
     // Test connection to the database
     pool.getConnection(function(err, connection) {
-        connection.release();
+        if ( connection !== undefined ) {
+            connection.release();
+        }
         if ( err ) {
             console.error("COULD NOT CONNECT TO THE MYSQL DATABASE");
             console.error(config.database);
