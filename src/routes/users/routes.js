@@ -14,6 +14,18 @@ let routes = function(server) {
      *
      * @apiParam (Header) {string} Authorization Token {API Key}
      *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     * @apiError (400 Error Codes) 4001 Email Not Valid
+     * @apiError (400 Error Codes) 4002 Email Already Registered
+     * @apiError (400 Error Codes) 4003 Username Not Valid
+     * @apiError (400 Error Codes) 4004 Username Already Registered
+     * @apiError (400 Error Codes) 4005 Password Not Valid
+     *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -56,6 +68,13 @@ let routes = function(server) {
      * @apiParam (Body) {string} username The User's username
      * @apiParam (Body) {string} password The User's password
      *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -86,6 +105,17 @@ let routes = function(server) {
      * @apiParam (Header) {string} Authorization Token {API Key}
      * @apiParam (Header) {string} X-Session-Token {User Session Token}
      * @apiParam (Path) {string} userID Public ID
+     *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     * @apiError (401 Error Codes) 401 Not Authorized
+     * @apiError (401 Error Codes) 4011 X-Session-Token Header Not Sent
+     * @apiError (401 Error Codes) 4012 Session Expired
+     * @apiError (404 Error Codes) 4043 User Not Found
      *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
@@ -130,6 +160,17 @@ let routes = function(server) {
      * @apiParam (Header) {string} X-Session-Token {User Session Token}
      * @apiParam (Path) {string} userID Public ID
      *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     * @apiError (401 Error Codes) 401 Not Authorized
+     * @apiError (401 Error Codes) 4011 X-Session-Token Header Not Sent
+     * @apiError (401 Error Codes) 4012 Session Expired
+     * @apiError (404 Error Codes) 4043 User Not Found
+     *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -151,6 +192,13 @@ let routes = function(server) {
      * @apiParam (Header) {string} Authorization Token {API Key}
      * @apiParam (Query) {string} [email] Filter by email address
      * @apiParam (Query) {string} [username] Filter by username
+     *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
      *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK

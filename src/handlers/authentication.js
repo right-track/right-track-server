@@ -72,7 +72,7 @@ let authenticateUser = function(req, res, next) {
                             // Send Error Response
                             let error = Response.buildError(
                                 401,
-                                "Unauthorized",
+                                "Not Authorized",
                                 "Access to the requested resource is denied due to invalid credentials"
                             );
                             res.send(error.code, error.response);
@@ -91,7 +91,7 @@ let authenticateUser = function(req, res, next) {
                     // Send Error Response
                     let error = Response.buildError(
                         401,
-                        "Unauthorized",
+                        "Not Authorized",
                         "Access to the requested resource is denied due to invalid credentials"
                     );
                     res.send(error.code, error.response);
@@ -110,7 +110,7 @@ let authenticateUser = function(req, res, next) {
             // Send Error Response
             let error = Response.buildError(
                 4011,
-                "Authentication Header Not Sent",
+                "X-Session-Token Header Not Sent",
                 "The user's session token needs to be sent in the X-Session-Token Header."
             );
             res.send(error.code, error.response);

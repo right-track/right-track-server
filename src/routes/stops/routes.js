@@ -15,7 +15,14 @@ let routes = function(server) {
      *
      * @apiParam (Header) {string} Authorization Token {API Key}
      * @apiParam (Path) {string} agency RT Agency Code
-     * @apiParam (Query) {boolean=true} [hasFeed] Request Stops with a valid Status ID
+     *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     * @apiError (404 Error Codes) 4041 Unsupported Agency
      *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
@@ -54,6 +61,15 @@ let routes = function(server) {
      * @apiParam (Header) {string} Authorization Token {API Key}
      * @apiParam (Path) {string} agency RT Agency Code
      * @apiParam (Path) {string} stopID GTFS Stop ID
+     *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     * @apiError (404 Error Codes) 4041 Unsupported Agency
+     * @apiError (404 Error Codes) 4042 Stop Not Found
      *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK

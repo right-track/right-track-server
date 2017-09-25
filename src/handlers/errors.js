@@ -63,7 +63,7 @@ let handleServerError = function(req, res, err, next) {
     err.toJSON = function customToJSON() {
         return Response.buildError(
             500,
-            "Unexpected Server Error",
+            "Internal Server Error",
             message
         ).response;
     };

@@ -4,6 +4,8 @@ const helper = require("./helper.js");
 
 
 let routes = function(server) {
+
+
     /**
      * @api {POST} /auth/login User Login
      * @apiName userLogin
@@ -15,6 +17,15 @@ let routes = function(server) {
      * @apiParam (Header) {string="application/json","application/x-www-form-urlencoded"} Content-Type Media type of the Request body.
      * @apiParam (Body) {string} login The User's email or username
      * @apiParam (Body) {string} password The User's password
+     *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     * @apiError (401 Error Codes) 401 Not Authorized
+     * @apiError (401 Error Codes) 4019 User Not Registered
      *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
@@ -54,6 +65,17 @@ let routes = function(server) {
      * @apiParam (Header) {string} X-Session-Token {User Session Token}
      * @apiParam (Header) {string="application/json","application/x-www-form-urlencoded"} Content-Type Media type of the Request body.
      * @apiParam (Path) {string} userID Public ID
+     *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     * @apiError (401 Error Codes) 401 Not Authorized
+     * @apiError (401 Error Codes) 4011 X-Session-Token Header Not Sent
+     * @apiError (401 Error Codes) 4012 Session Expired
+     * @apiError (404 Error Codes) 4043 User Not Found
      *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK

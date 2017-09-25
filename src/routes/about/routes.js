@@ -12,6 +12,10 @@ let routes = function(server) {
      * @apiDescription Get information about the Right Track API Server and its supported agencies and transit agencies.
      * @apiPermission public
      *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -51,6 +55,10 @@ let routes = function(server) {
      * @apiDescription Get information about all of the agencies supported by the Right Track API Server.
      * @apiPermission public
      *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -81,6 +89,11 @@ let routes = function(server) {
      *
      * @apiParam (Path) {string} agency RT Agency Code
      *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (404 Error Codes) 4041 Unsupported Agency
+     *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -105,6 +118,13 @@ let routes = function(server) {
      * @apiPermission public
      *
      * @apiParam (Path) {string} agency RT Agency Code
+     *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (404 Error Codes) 4041 Unsupported Agency
+     * @apiError (404 Error Codes) 4049 Agency Icon Not Found
+     *
      */
     server.get("/about/agencies/:agency/icon", helper.getAboutAgencyIcon);
 
@@ -118,20 +138,25 @@ let routes = function(server) {
      *
      * @apiParam (Path) {string} agency RT Agency Code
      *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (404 Error Codes) 4041 Unsupported Agency
+     *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
      *     {
      *       "status": "success",
      *       "response": {
-     *         "agency": "lirr",
+     *         "agency": "mnr",
      *         "links": [
      *           {
      *             "category": "App Resources",
      *             "links": [
      *               {
      *                 "title": "Google Play",
-     *                 "description": "View Right Track: LIRR's listing in the Google Play store.  Install updates, rate the app and leave comments.",
-     *                 "url": "https://play.google.com/store/apps/details?id=com.waring.RT.LIRR"
+     *                 "description": "View Right Track: Metro North's listing in the Google Play store.  Install updates, rate the app and leave comments.",
+     *                 "url": "https://play.google.com/store/apps/details?id=com.waring.MNRTrainTime"
      *               },
      *               {
      *                 "...": "..."

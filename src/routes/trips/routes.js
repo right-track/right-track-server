@@ -17,6 +17,15 @@ let routes = function(server) {
      * @apiParam (Path) {string} agency RT Agency Code
      * @apiParam (Path) {string} tripID GTFS Trip ID
      *
+     * @apiError (5xx Error Codes) 500 Internal Server Error
+     * @apiError (5xx Error Codes) 5001 API Server Timeout
+     * @apiError (5xx Error Codes) 5002 API Server Error
+     * @apiError (403 Error Codes) 403 API Access Denied
+     * @apiError (403 Error Codes) 4031 Debug Access Denied
+     * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     * @apiError (404 Error Codes) 4041 Unsupported Agency
+     * @apiError (404 Error Codes) 4042 Trip Not Found
+     *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -27,7 +36,7 @@ let routes = function(server) {
      *           "id": "7972842",
      *           "route": {
      *             "id": "3",
-     *             "shortName": {},
+     *             "shortName": "New Haven",
      *             "longName": "New Haven",
      *             "type": 2,
      *             "color": "EE0034",
