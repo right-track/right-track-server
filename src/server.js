@@ -8,6 +8,7 @@ const restify = require("restify");
 const mysql = require("./db/mysql.js");
 
 // Import Handlers
+const logger = require("./handlers/logger.js");
 const errors = require("./handlers/errors.js");
 const headers = require("./handlers/headers.js");
 const agency = require("./handlers/agency.js");
@@ -74,6 +75,7 @@ server.on('Error', errors.handleServerError);
 
 
 // SET HANDLER CHAIN
+server.use(logger);
 server.use(headers);
 server.use(agency);
 server.use(auth.getAuthAccess);
