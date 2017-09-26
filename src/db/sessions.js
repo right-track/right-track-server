@@ -178,6 +178,37 @@ let createSession = function(userPID, clientKey, callback) {
 
 
 /**
+ * Update Session Accessed date/time
+ * @param {string} clientKey Client API Key
+ * @param {string} sessionPID Session Public ID
+ * @param callback Callback functiona accepting session update success
+ */
+let updateSessionAccessed = function(clientKey, sessionPID, callback) {
+
+    // Get client information
+    clients.getClientByKey(clientKey, function(client) {
+
+        // Get inactive time for client
+        let inactive = client.session_length_inactive;
+
+        // Get current and inactive date/time strings
+        let dNow = DateTime.now();
+        let dInactive = DateTime.create(dNow.getTimeGTFS(), dNow.getDateIntAdd(inactive));
+        let sNow = dNow.toMySQLString();
+        let sInactive = dInactive.toMySQLString();
+
+        // Update the session
+        let sql = "UPDATE sessions SET accessed='" + sNow + "', inactive='" + sInactive + "' WHERE pid='" + sessionPID + "';";
+        mysql.update(sql, function(success) {
+            callback(success);
+        });
+
+    });
+
+};
+
+
+/**
  * Remove the specified Session from the Server database
  * @param {string} sessionPID Session Public ID
  * @param callback Callback function accepting boolean session removal
@@ -199,5 +230,6 @@ module.exports = {
     checkSessionClient: checkSessionClient,
     checkSessionValid: checkSessionValid,
     createSession: createSession,
+    updateSessionAccessed: updateSessionAccessed,
     deleteSession: deleteSession
 };

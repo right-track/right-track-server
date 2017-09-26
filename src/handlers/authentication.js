@@ -41,8 +41,13 @@ let authenticateUser = function(req, res, next) {
                                 // Session is still valid...
                                 if ( valid ) {
 
-                                    // Continue the Request...
-                                    next();
+                                    // Update the accessed date/time for the session
+                                    sessions.updateSessionAccessed(key, session, function() {
+
+                                        // Continue the Request...
+                                        next();
+
+                                    });
 
                                 }
 
