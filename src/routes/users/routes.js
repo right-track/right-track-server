@@ -20,11 +20,6 @@ let routes = function(server) {
      * @apiError (403 Error Codes) 403 API Access Denied
      * @apiError (403 Error Codes) 4031 Debug Access Denied
      * @apiError (403 Error Codes) 4039 Authorization Header Format Error
-     * @apiError (400 Error Codes) 4001 Email Not Valid
-     * @apiError (400 Error Codes) 4002 Email Already Registered
-     * @apiError (400 Error Codes) 4003 Username Not Valid
-     * @apiError (400 Error Codes) 4004 Username Already Registered
-     * @apiError (400 Error Codes) 4005 Password Not Valid
      *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
@@ -74,6 +69,11 @@ let routes = function(server) {
      * @apiError (403 Error Codes) 403 API Access Denied
      * @apiError (403 Error Codes) 4031 Debug Access Denied
      * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+     * @apiError (400 Error Codes) 4001 Email Not Valid
+     * @apiError (400 Error Codes) 4002 Email Already Registered
+     * @apiError (400 Error Codes) 4003 Username Not Valid
+     * @apiError (400 Error Codes) 4004 Username Already Registered
+     * @apiError (400 Error Codes) 4005 Password Not Valid
      *
      * @apiSuccessExample {json} Example Response:
      *     HTTP/1.1 200 OK
