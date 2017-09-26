@@ -24,6 +24,9 @@
         "addUser",
         "getUser",
         "removeUser",
-        "getUsers"
+        "getUsers",
+        "getFavoritesModificationDate",
+        "getFavorites",
+        "addFavorites"
     ]
 }
