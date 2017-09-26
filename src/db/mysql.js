@@ -139,6 +139,28 @@ let insert = function(statement, callback) {
 
 
 /**
+ * Perform an UPDATE statement on the API Server database
+ * @param statement UPDATE statement
+ * @param callback Callback function
+ */
+let update = function(statement, callback) {
+    getConnection(function(connection) {
+        connection.query(statement, function(error, results) {
+            connection.release();
+            if ( error ) {
+                console.warn("MySQL UPDATE ERROR:");
+                console.warn(error);
+                callback(false);
+            }
+            else {
+                callback(true);
+            }
+        });
+    });
+};
+
+
+/**
  * Perform a DELETE statement on the API Server database
  * @param statement DELETE statement
  * @param callback Callback function
@@ -205,6 +227,7 @@ module.exports = {
     get: get,
     select: select,
     insert: insert,
+    update: update,
     delet: delet,
     close: close
 };

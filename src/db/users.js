@@ -94,7 +94,21 @@ let addUser = function(email, username, password, callback) {
     // Insert into the DB
     mysql.insert(insert, function(success) {
         if ( success ) {
-            callback(pid);
+
+            // Add user to favorites_modified table
+            let favs = "INSERT INTO favorites_modified (user_id) " +
+                "VALUES ((SELECT id FROM users WHERE pid='" + pid + "'));";
+            mysql.insert(favs, function(success) {
+
+                if ( success ) {
+                    callback(pid);
+                }
+                else {
+                    callback(undefined);
+                }
+
+            });
+
         }
         else {
             callback(undefined);
@@ -121,10 +135,22 @@ let removeUser = function(pid, callback) {
 
             // Delete user
             let sql = "DELETE FROM users WHERE id=" + id + ";";
-            mysql.delet(sql, function(success) {
+            mysql.delet(sql, function() {
 
-                // Return delete success
-                callback(success);
+                // Delete favorites_modified
+                let sql = "DELETE FROM favorites_modified WHERE user_id=" + id + ";";
+                mysql.delet(sql, function() {
+
+                    // Delete favorites
+                    let sql = "DELETE FROM favorites WHERE user_id=" + id + ";";
+                    mysql.delet(sql, function(success) {
+
+                        // Return delete success
+                        callback(success);
+
+                    });
+
+                });
 
             });
 

@@ -89,6 +89,7 @@ server.use(restify.plugins.bodyParser());
 // LOAD ROUTES
 require("./routes/about/routes.js")(server);
 require("./routes/admin/routes.js")(server);
+require("./routes/favorites/routes.js")(server);
 require("./routes/routes/routes.js")(server);
 require("./routes/stops/routes.js")(server);
 require("./routes/trips/routes.js")(server);
