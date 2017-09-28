@@ -1,6 +1,6 @@
 'use strict';
 
-const mysql = require("./mysql.js");
+const mysql = require('./mysql.js');
 
 
 /**
@@ -8,22 +8,28 @@ const mysql = require("./mysql.js");
  * @param client_key Client API Key
  * @param callback Callback function accepting array of access codes
  */
-let getClientAccess = function(client_key, callback) {
-    let select = "SELECT access FROM clients WHERE client_key='" + client_key + "';";
-    mysql.select(select, function(results) {
-        let rtn = [];
+function getClientAccess(client_key, callback) {
+  let select = "SELECT access FROM clients WHERE client_key='" + client_key + "';";
+  mysql.select(select, function(err, results) {
 
-        // Split access codes by ,
-        if ( results.length > 0 ) {
-            rtn = results[0].access.split(",");
-        }
+    // Database Query Error
+    if ( err ) {
+      return callback(err);
+    }
 
-        // Return access codes with callback
-        if ( callback !== undefined ) {
-            callback(rtn);
-        }
-    });
-};
+    // list of client access codes
+    let rtn = [];
+
+    // Split access codes by ,
+    if ( results.length > 0 ) {
+      rtn = results[0].access.split(",");
+    }
+
+    // Return access codes with callback
+    return callback(null, rtn);
+
+  });
+}
 
 
 /**
@@ -31,17 +37,17 @@ let getClientAccess = function(client_key, callback) {
  * @param {string} key Client API Key
  * @param callback Callback function accepting client information
  */
-let getClientByKey = function(key, callback) {
-    let select = "SELECT id, user, email, client_name, client_id, client_key, access, " +
-        "session_length_max, session_length_inactive FROM clients WHERE client_key='" + key + "';";
-    mysql.get(select, function(result) {
-        callback(result);
-    })
-};
+function getClientByKey(key, callback) {
+  let select = "SELECT id, user, email, client_name, client_id, client_key, access, " +
+    "session_length_max, session_length_inactive FROM clients WHERE client_key='" + key + "';";
+  mysql.get(select, function(err, result) {
+    return callback(err, result);
+  });
+}
 
 
 
 module.exports = {
-    getClientAccess: getClientAccess,
-    getClientByKey: getClientByKey
+  getClientAccess: getClientAccess,
+  getClientByKey: getClientByKey
 };

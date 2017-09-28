@@ -1,6 +1,7 @@
 'use strict';
 
-const Response = require("../response");
+const Response = require('../response');
+const c = require('../config.js');
 
 
 /**
@@ -11,38 +12,37 @@ const Response = require("../response");
  * @param res API Response
  * @param next API Handler Chain
  */
-let checkAgencySupported = function(req, res, next) {
+function checkAgencySupported(req, res, next) {
 
-    // Get the agency param
-    let agency = req.params.agency;
+  // Get the agency param
+  let agency = req.params.agency;
 
-    // Check if it's a supported agency
-    if ( agency !== undefined ) {
-        let c = require("../config.js");
-
-        // Agency is not supported...
-        if ( !c.isAgencySupported(agency) ) {
-            let error = Response.buildError(
-                4041,
-                "Unsupported Agency",
-                "The agency code {" + agency + "} does not correspond to a supported agency."
-            );
-            res.send(error.code, error.response);
-            next(false);
-        }
-
-        // Agency is supported
-        else {
-            next();
-        }
+  // Check if it's a supported agency
+  if ( agency !== undefined ) {
+    
+    // Agency is not supported...
+    if ( !c.isAgencySupported(agency) ) {
+      let error = Response.buildError(
+        4041,
+        'Unsupported Agency',
+        'The agency code ' + agency + ' does not correspond to a supported agency.'
+      );
+      res.send(error.code, error.response);
+      next(false);
     }
 
-    // No agency provided
+    // Agency is supported
     else {
-        next();
+      next();
     }
+  }
 
-};
+  // No agency provided
+  else {
+    next();
+  }
+
+}
 
 
 module.exports = checkAgencySupported;

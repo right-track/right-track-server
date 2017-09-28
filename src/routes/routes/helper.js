@@ -1,9 +1,9 @@
 'use strict';
 
-const core = require("right-track-core");
-const auth = require("../../handlers/authorization.js");
-const c = require("../../config.js");
-const Response = require("../../response");
+const core = require('right-track-core');
+const auth = require('../../handlers/authorization.js');
+const c = require('../../config.js');
+const Response = require('../../response');
 
 
 // ==== BUILD MODELS ==== //
@@ -21,22 +21,22 @@ const Response = require("../../response");
  * @param {Route} route GTFS Route Class
  * @return {object} Route Model
  */
-let buildRoute = function(route) {
-    return {
-        id: route.id,
-        shortName: route.shortName,
-        longName: route.longName,
-        type: route.type,
-        color: route.color,
-        textColor: route.textColor,
-        agency: {
-            id: route.agency.id,
-            name: route.agency.name,
-            url: route.agency.url,
-            timezone: route.agency.timezone
-        }
+function buildRoute(route) {
+  return {
+    id: route.id,
+    shortName: route.shortName,
+    longName: route.longName,
+    type: route.type,
+    color: route.color,
+    textColor: route.textColor,
+    agency: {
+      id: route.agency.id,
+      name: route.agency.name,
+      url: route.agency.url,
+      timezone: route.agency.timezone
     }
-};
+  }
+}
 
 
 /**
@@ -44,17 +44,17 @@ let buildRoute = function(route) {
  * @param {Route[]} routes List of GTFS Routes
  * @return {object[]} List of Route Models
  */
-let buildRoutes = function(routes) {
-    let routeModels = [];
+function buildRoutes(routes) {
+  let routeModels = [];
 
-    for ( let i = 0; i < routes.length; i++ ) {
-        let route = routes[i];
-        let routeModel = buildRoute(route);
-        routeModels.push(routeModel);
-    }
+  for ( let i = 0; i < routes.length; i++ ) {
+    let route = routes[i];
+    let routeModel = buildRoute(route);
+    routeModels.push(routeModel);
+  }
 
-    return routeModels;
-};
+  return routeModels;
+}
 
 
 
@@ -69,54 +69,48 @@ let buildRoutes = function(routes) {
  * @param res API Response
  * @param next API Handler Stack
  */
-let getRoutes = function(req, res, next) {
-    let agency = req.params.agency;
-    let db = c.getAgencyDB(agency);
+function getRoutes(req, res, next) {
+  let agency = req.params.agency;
+  let db = c.getAgencyDB(agency);
 
-    // Check for API Access
-    if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+  // Check for API Access
+  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
 
-        // Query the DB for the list of routes for this agency
-        core.query.routes.getRoutes(db, function (routes) {
+    // Query the DB for the list of routes for this agency
+    core.query.routes.getRoutes(db, function(err, routes) {
 
-            // Check if any routes were found...
-            if (routes.length > 0) {
+      // Server Error
+      if ( err ) {
+        let error = Response.buildError(
+          5002,
+          "API Server Error",
+          "An unexpected Server Error occurred.  Please try again later."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                // Build the Route Models
-                let routeModels = buildRoutes(routes);
 
-                // Set the Response Model
-                let response = Response.buildResponse(
-                    {
-                        agency: agency,
-                        routes: routeModels
-                    }
-                );
+      // Build the Route Models
+      let routeModels = buildRoutes(routes);
 
-                // Send the Response
-                res.send(response.code, response.response);
-                next();
+      // Set the Response Model
+      let response = Response.buildResponse(
+        {
+          agency: agency,
+          routes: routeModels
+        }
+      );
 
-            }
+      // Send the Response
+      res.send(response.code, response.response);
+      return next();
 
-            // No routes were found...
-            else {
+    });
 
-                let error = Response.buildError(
-                    4042,
-                    "Routes Not Found",
-                    "The requested Routes for Agency (" + agency + ") could not be found."
-                );
-                res.send(error.code, error.response);
-                next();
+  }
 
-            }
-
-        });
-
-    }
-
-};
+}
 
 
 /**
@@ -125,62 +119,64 @@ let getRoutes = function(req, res, next) {
  * @param res API Response
  * @param next API Handler Stack
  */
-let getRoute = function(req, res, next) {
-    let agency = req.params.agency;
-    let id = req.params.id;
-    let db = c.getAgencyDB(agency);
+function getRoute(req, res, next) {
+  let agency = req.params.agency;
+  let id = req.params.id;
+  let db = c.getAgencyDB(agency);
 
-    // Check for API Access
-    if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+  // Check for API Access
+  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
 
-        // Query the DB for the specified route
-        core.query.routes.getRoute(db, id, function (route) {
+    // Query the DB for the specified route
+    core.query.routes.getRoute(db, id, function(err, route) {
 
-            // If a route was found...
-            if (route !== undefined) {
+      // Server Error
+      if ( err ) {
+        let error = Response.buildError(
+          5002,
+          "API Server Error",
+          "An unexpected Server Error occurred.  Please try again later."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                // Build the Route Model
-                let routeModel = buildRoute(route);
+      // Route Not Found
+      if ( route === undefined ) {
+        let error = Response.buildError(
+          4042,
+          "Route Not Found",
+          "The requested Route (" + id + ") could not be found."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                // Set the Response Model
-                let response = Response.buildResponse(
-                    {
-                        agency: agency,
-                        route: routeModel
-                    }
-                );
+      // Build the Route Model
+      let routeModel = buildRoute(route);
 
-                // Send the Response
-                res.send(response.code, response.response);
-                next();
+      // Set the Response Model
+      let response = Response.buildResponse(
+        {
+          agency: agency,
+          route: routeModel
+        }
+      );
+      res.send(response.code, response.response);
+      return next();
 
-            }
+    });
 
-            // No route was found...
-            else {
+  }
 
-                let error = Response.buildError(
-                    4042,
-                    "Route Not Found",
-                    "The requested Route (" + id + ") could not be found."
-                );
-                res.send(error.code, error.response);
-                next();
-
-            }
-
-        });
-
-    }
-
-};
+}
 
 
 
 
 // Export the functions
 module.exports = {
-    getRoutes: getRoutes,
-    getRoute: getRoute,
-    buildRoute: buildRoute
+  getRoutes: getRoutes,
+  getRoute: getRoute,
+  buildRoute: buildRoute
 };

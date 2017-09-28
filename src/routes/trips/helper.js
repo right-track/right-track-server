@@ -1,12 +1,12 @@
 'use strict';
 
-const core = require("right-track-core");
+const core = require('right-track-core');
 const DateTime = core.utils.DateTime;
-const auth = require("../../handlers/authorization.js");
-const c = require("../../config.js");
-const Response = require("../../response");
-const routeHelper = require("../routes/helper.js");
-const stopHelper = require("../stops/helper.js");
+const auth = require('../../handlers/authorization.js');
+const c = require('../../config.js');
+const Response = require('../../response');
+const routeHelper = require('../routes/helper.js');
+const stopHelper = require('../stops/helper.js');
 
 
 // ==== BUILD MODELS ==== //
@@ -25,28 +25,28 @@ const stopHelper = require("../stops/helper.js");
  * @returns {object} StopTime Model
  */
 let buildStopTime = function(stopTime) {
-    let stop = stopHelper.buildStop(stopTime.stop);
-    let arrivalTime = DateTime.createFromTime(stopTime.arrivalTimeSeconds).getTimeReadable();
-    let departureTime = DateTime.createFromTime(stopTime.departureTimeSeconds).getTimeReadable();
-    if (stopTime.date === 19700101) stopTime.date = undefined;
+  let stop = stopHelper.buildStop(stopTime.stop);
+  let arrivalTime = DateTime.createFromTime(stopTime.arrivalTimeSeconds).getTimeReadable();
+  let departureTime = DateTime.createFromTime(stopTime.departureTimeSeconds).getTimeReadable();
+  if (stopTime.date === 19700101) stopTime.date = undefined;
 
-    return {
-        stop: stop,
-        arrival: {
-            readable: arrivalTime,
-            time: stopTime.arrivalTime,
-            seconds: stopTime.arrivalTimeSeconds
-        },
-        departure: {
-            readable: departureTime,
-            time: stopTime.departureTime,
-            seconds: stopTime.departureTimeSeconds
-        },
-        stopSequence: stopTime.stopSequence,
-        pickupType: stopTime.pickupType,
-        dropOffType: stopTime.dropOffType,
-        date: stopTime.date
-    }
+  return {
+    stop: stop,
+    arrival: {
+      readable: arrivalTime,
+      time: stopTime.arrivalTime,
+      seconds: stopTime.arrivalTimeSeconds
+    },
+    departure: {
+      readable: departureTime,
+      time: stopTime.departureTime,
+      seconds: stopTime.departureTimeSeconds
+    },
+    stopSequence: stopTime.stopSequence,
+    pickupType: stopTime.pickupType,
+    dropOffType: stopTime.dropOffType,
+    date: stopTime.date
+  }
 };
 
 
@@ -56,15 +56,15 @@ let buildStopTime = function(stopTime) {
  * @returns {Array} List of StopTime Models
  */
 let buildStopTimes = function(stopTimes) {
-    let stopTimeModels = [];
+  let stopTimeModels = [];
 
-    for ( let i = 0; i < stopTimes.length; i++ ) {
-        let stopTime = stopTimes[i];
-        let stopTimeModel = buildStopTime(stopTime);
-        stopTimeModels.push(stopTimeModel);
-    }
+  for ( let i = 0; i < stopTimes.length; i++ ) {
+    let stopTime = stopTimes[i];
+    let stopTimeModel = buildStopTime(stopTime);
+    stopTimeModels.push(stopTimeModel);
+  }
 
-    return stopTimeModels;
+  return stopTimeModels;
 };
 
 
@@ -74,20 +74,20 @@ let buildStopTimes = function(stopTimes) {
  * @return {object} Trip Model
  */
 let buildTrip = function(trip) {
-    let route = routeHelper.buildRoute(trip.route);
-    let stops = buildStopTimes(trip.stopTimes);
+  let route = routeHelper.buildRoute(trip.route);
+  let stops = buildStopTimes(trip.stopTimes);
 
-    return {
-        id: trip.id,
-        route: route,
-        shortName: trip.shortName,
-        wheelchairAccessible: trip.wheelchairAccessible,
-        direction: {
-            id: trip.directionId,
-            description: trip.directionDescription
-        },
-        stops: stops
-    }
+  return {
+    id: trip.id,
+    route: route,
+    shortName: trip.shortName,
+    wheelchairAccessible: trip.wheelchairAccessible,
+    direction: {
+      id: trip.directionId,
+      description: trip.directionDescription
+    },
+    stops: stops
+  }
 };
 
 
@@ -105,52 +105,58 @@ let buildTrip = function(trip) {
  * @param next API Handler Stack
  */
 let getTrip = function(req, res, next) {
-    let agency = req.params.agency;
-    let id = req.params.id;
-    let db = c.getAgencyDB(agency);
+  let agency = req.params.agency;
+  let id = req.params.id;
+  let db = c.getAgencyDB(agency);
 
-    // Check for API Access
-    if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+  // Check for API Access
+  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
 
-        // Query the DB for the specified trip
-        core.query.trips.getTrip(db, id, 19700101, function (trip) {
+    // Query the DB for the specified trip
+    core.query.trips.getTrip(db, id, 19700101, function(err, trip) {
 
-            // If a trip was found...
-            if (trip !== undefined) {
+      // Server Error
+      if ( err ) {
+        let error = Response.buildError(
+          5002,
+          "API Server Error",
+          "An unexpected Server Error occurred.  Please try again later."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                // Build the Trip Model
-                let tripModel = buildTrip(trip);
+      //  Trip Not Found
+      if ( trip === undefined ) {
+        let error = Response.buildError(
+          4042,
+          "Trip Not Found",
+          "The requested Trip (" + id + ") could not be found."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                // Set the Response Model
-                let response = Response.buildResponse(
-                    {
-                        agency: agency,
-                        trip: tripModel
-                    }
-                );
 
-                // Send the Response
-                res.send(response.code, response.response);
-                next();
+      // Build the Trip Model
+      let tripModel = buildTrip(trip);
 
-            }
+      // Set the Response Model
+      let response = Response.buildResponse(
+        {
+          agency: agency,
+          trip: tripModel
+        }
+      );
 
-            // No trip was found...
-            else {
+      // Send the Response
+      res.send(response.code, response.response);
+      return next();
 
-                let error = Response.buildError(
-                    4042,
-                    "Trip Not Found",
-                    "The requested Trip (" + id + ") could not be found."
-                );
-                res.send(error.code, error.response);
-                next();
 
-            }
+    });
 
-        });
-
-    }
+  }
 
 };
 
@@ -159,5 +165,5 @@ let getTrip = function(req, res, next) {
 
 // Export the functions
 module.exports = {
-    getTrip: getTrip
+  getTrip: getTrip
 };

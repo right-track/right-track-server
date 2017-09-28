@@ -1,8 +1,8 @@
 'use strict';
 
-const DateTime = require("right-track-core").utils.DateTime;
-const Favorite = require("right-track-core").rt.Favorite;
-const mysql = require("./mysql.js");
+const DateTime = require('right-track-core').utils.DateTime;
+const Favorite = require('right-track-core').rt.Favorite;
+const mysql = require('./mysql.js');
 
 
 
@@ -12,19 +12,27 @@ const mysql = require("./mysql.js");
  * @param {string} agency RT Agency Code
  * @param callback Callback function accepting the Last Mod date
  */
-let getLastMod = function(userPID, agency, callback) {
-    let select = "SELECT " + agency + " AS agency FROM favorites_modified " +
-        "INNER JOIN users ON users.id=favorites_modified.user_id " +
-        "WHERE users.pid='" + userPID + "';";
-    mysql.get(select, function(result) {
-        if ( result !== undefined && result.agency !== null ) {
-            callback(result.agency);
-        }
-        else {
-            callback(undefined);
-        }
-    })
-};
+function getLastMod(userPID, agency, callback) {
+  let select = "SELECT " + agency + " AS agency FROM favorites_modified " +
+    "INNER JOIN users ON users.id=favorites_modified.user_id " +
+    "WHERE users.pid='" + userPID + "';";
+  mysql.get(select, function(err, result) {
+
+    // Database Query Error
+    if ( err ) {
+      return callback(err);
+    }
+
+    // No last mod date set
+    if ( result.agency === null ) {
+      return callback(null, undefined);
+    }
+
+    // Return last mod date for agency
+    return callback(null, result.agency);
+
+  });
+}
 
 
 /**
@@ -34,14 +42,14 @@ let getLastMod = function(userPID, agency, callback) {
  * @param {string} agency RT Agency COde
  * @param callback Callback function accepting update success
  */
-let updateLastMod = function(userPID, agency, callback) {
-    let date = DateTime.now().toMySQLString();
-    let sql = "UPDATE favorites_modified SET " + agency + " = '" + date + "' " +
-        "WHERE user_id = (SELECT id FROM users WHERE pid='" + userPID + "');";
-    mysql.update(sql, function(success) {
-        callback(success);
-    })
-};
+function updateLastMod(userPID, agency, callback) {
+  let date = DateTime.now().toMySQLString();
+  let sql = "UPDATE favorites_modified SET " + agency + " = '" + date + "' " +
+    "WHERE user_id = (SELECT id FROM users WHERE pid='" + userPID + "');";
+  mysql.update(sql, function(err) {
+    return callback(err);
+  });
+}
 
 
 /**
@@ -50,13 +58,13 @@ let updateLastMod = function(userPID, agency, callback) {
  * @param {string} agency RT Agency code
  * @param callback Callback function accepting removal success
  */
-let clearFavorites = function(userPID, agency, callback) {
-    let sql = "DELETE FROM favorites WHERE agency='" + agency + "' AND " +
-        "user_id = (SELECT id FROM users WHERE pid='" + userPID + "');";
-    mysql.delet(sql, function(success) {
-        callback(success);
-    })
-};
+function clearFavorites(userPID, agency, callback) {
+  let sql = "DELETE FROM favorites WHERE agency='" + agency + "' AND " +
+    "user_id = (SELECT id FROM users WHERE pid='" + userPID + "');";
+  mysql.delet(sql, function(err) {
+    return callback(err);
+  });
+}
 
 
 /**
@@ -66,35 +74,40 @@ let clearFavorites = function(userPID, agency, callback) {
  * @param {Favorite[]} favorites List of favorites to add
  * @param callback Callback function accepting addition success
  */
-let addFavorites = function(userPID, agency, favorites, callback) {
+function addFavorites(userPID, agency, favorites, callback) {
 
-    // Return if there are no new favorites to return
-    if ( favorites.length === 0 ) {
-        callback(true);
-    }
+  // Return if there are no new favorites to return
+  if ( favorites.length === 0 ) {
+    return callback(null);
+  }
 
-    // Add each favorite
-    let count = 0;
-    let rtn = true;
-    for ( let i = 0; i < favorites.length; i++ ) {
-        let favorite = favorites[i];
+  // Add each favorite
+  let count = 0;
+  for ( let i = 0; i < favorites.length; i++ ) {
+    let favorite = favorites[i];
 
-        // Insert the Favorite
-        let sql = "INSERT INTO favorites (user_id, agency, type, sequence, parameters, options) VALUES " +
-            "((SELECT id FROM users WHERE pid='" + userPID + "'), '" + agency + "', " + favorite.type + ", " +
-            favorite.sequence + ", '" + JSON.stringify(favorite.parameters) + "', " +
-            "'" + JSON.stringify(favorite.options) + "');";
-        mysql.insert(sql, function(success) {
-            count++;
-            if (!success) rtn = false;
+    // Insert the Favorite
+    let sql = "INSERT INTO favorites (user_id, agency, type, sequence, parameters, options) VALUES " +
+      "((SELECT id FROM users WHERE pid='" + userPID + "'), '" + agency + "', " + favorite.type + ", " +
+      favorite.sequence + ", '" + JSON.stringify(favorite.parameters) + "', " +
+      "'" + JSON.stringify(favorite.options) + "');";
+    mysql.insert(sql, function(err) {
 
-            // Return the overall success
-            if ( count === favorites.length ) {
-                callback(rtn);
-            }
-        });
-    }
-};
+      // Database error
+      if ( err ) {
+        return callback(err);
+      }
+
+      // Return if all favorites have been added
+      count ++;
+      if ( count === favorites.length ) {
+        return callback(null);
+      }
+
+    });
+  }
+
+}
 
 
 /**
@@ -103,63 +116,61 @@ let addFavorites = function(userPID, agency, favorites, callback) {
  * @param {string} agency RT Agency Code
  * @param callback Callback function accepting the list of favorites
  */
-let getFavorites = function(userPID, agency, callback) {
-    let select = "SELECT " +
-        "favorites.type, sequence, parameters, options, " +
-        "favorites_modified." + agency + " " +
-        "FROM favorites " +
-        "INNER JOIN favorites_modified ON favorites_modified.user_id=favorites.user_id " +
-        "WHERE favorites.agency = '" + agency + "' AND " +
-        "favorites.user_id = (SELECT id FROM users WHERE pid='" + userPID + "');";
-    mysql.select(select, function(favorites) {
+function getFavorites(userPID, agency, callback) {
+  let select = "SELECT " +
+    "favorites.type, sequence, parameters, options, " +
+    "favorites_modified." + agency + " " +
+    "FROM favorites " +
+    "INNER JOIN favorites_modified ON favorites_modified.user_id=favorites.user_id " +
+    "WHERE favorites.agency = '" + agency + "' AND " +
+    "favorites.user_id = (SELECT id FROM users WHERE pid='" + userPID + "');";
+  mysql.select(select, function(err, favorites) {
 
-        // If favorites found...
-        if ( favorites !== undefined && favorites.length > 0 ) {
-
-            // Get the last mod date
-            let lastmod = favorites[0][agency];
-
-            // List of Favorites to return
-            let rtn = [];
-
-            // Parse the favorites
-            for ( let i = 0; i < favorites.length; i++ ) {
-                let favorite = favorites[i];
-
-                // Create Favorite
-                let fav = new Favorite(
-                    favorite.type,
-                    favorite.sequence,
-                    JSON.parse(favorite.parameters),
-                    JSON.parse(favorite.options)
-                );
-                rtn.push(fav);
-            }
-
-            // Sort the favorites
-            rtn.sort(Favorite.sortBySequence);
-
-            // Return the favorites and last mod date
-            callback(rtn, lastmod);
-
-        }
-
-        // No favorites found...
-        else {
-            callback(undefined, undefined);
-        }
-
-    })
+    // Database error
+    if ( err ) {
+      return callback(err);
+    }
 
 
-};
+    // Get the last mod date
+    let lastmod = undefined;
+    if ( favorites.length > 0 ) {
+      lastmod = favorites[0][agency];
+    }
+
+    // List of Favorites to return
+    let rtn = [];
+
+    // Parse the favorites
+    for ( let i = 0; i < favorites.length; i++ ) {
+      let favorite = favorites[i];
+
+      // Create Favorite
+      let fav = new Favorite(
+        favorite.type,
+        favorite.sequence,
+        JSON.parse(favorite.parameters),
+        JSON.parse(favorite.options)
+      );
+      rtn.push(fav);
+    }
+
+    // Sort the favorites
+    rtn.sort(Favorite.sortBySequence);
+
+    // Return the favorites and last mod date
+    return callback(null, rtn, lastmod);
+
+  });
+
+}
 
 
 // Export the functions
 module.exports = {
-    getLastMod: getLastMod,
-    updateLastMode: updateLastMod,
-    clearFavorites: clearFavorites,
-    addFavorites: addFavorites,
-    getFavorites: getFavorites
+  getLastMod: getLastMod,
+  updateLastMod: updateLastMod,
+  clearFavorites: clearFavorites,
+  addFavorites: addFavorites,
+  getFavorites: getFavorites
 };

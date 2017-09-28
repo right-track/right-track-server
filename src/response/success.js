@@ -5,14 +5,14 @@
  * @param {object} response API Response Body
  * @returns {{status: string, response: *}} API Response
  */
-let build = function(response) {
+function build(response) {
 
-    return {
-        status: "success",
-        response: response
-    }
+  return {
+    status: "success",
+    response: response
+  }
 
-};
+}
 
 
 module.exports = build;

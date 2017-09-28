@@ -1,12 +1,12 @@
 'use strict';
 
-const c = require("../../config.js");
-const auth = require("../../handlers/authorization.js");
-const Response = require("../../response");
-const validators = require("./validators.js");
-const users = require("../../db/users.js");
-const sessions = require("../../db/sessions.js");
-const authHelper = require("../auth/helper.js");
+const c = require('../../config.js');
+const auth = require('../../handlers/authorization.js');
+const Response = require('../../response');
+const validators = require('./validators.js');
+const users = require('../../db/users.js');
+const sessions = require('../../db/sessions.js');
+const authHelper = require('../auth/helper.js');
 
 
 
@@ -27,28 +27,28 @@ const authHelper = require("../auth/helper.js");
  * @param {Object[]} sessions User sessions query results
  * @return {object} User Model
  */
-let buildUser = function(user, sessions) {
+function buildUser(user, sessions) {
 
-    // Build Session Models
-    let sessionModels = [];
-    for ( let i = 0; i < sessions.length; i++ ) {
-        let session = sessions[i];
-        let sessionModel = authHelper.buildSession(session);
-        sessionModels.push(sessionModel);
-    }
+  // Build Session Models
+  let sessionModels = [];
+  for ( let i = 0; i < sessions.length; i++ ) {
+    let session = sessions[i];
+    let sessionModel = authHelper.buildSession(session);
+    sessionModels.push(sessionModel);
+  }
 
-    // Return User Model
-    return {
-        id: user.pid,
-        username: user.username,
-        email: user.email,
-        verified: user.verified === 1,
-        lastModifiedUser: user.user_modified,
-        lastModifiedPassword: user.password_modified,
-        sessions: sessionModels
-    }
+  // Return User Model
+  return {
+    id: user.pid,
+    username: user.username,
+    email: user.email,
+    verified: user.verified === 1,
+    lastModifiedUser: user.user_modified,
+    lastModifiedPassword: user.password_modified,
+    sessions: sessionModels
+  }
 
-};
+}
 
 
 
@@ -67,26 +67,26 @@ let buildUser = function(user, sessions) {
  * @param res API Response
  * @param next API Handler Chain
  */
-let getRegistrationRequirements = function(req, res, next) {
+function getRegistrationRequirements(req, res, next) {
 
-    // Check the API access
-    if ( auth.checkAuthAccess("registration", req, res, next) ) {
+  // Check the API access
+  if ( auth.checkAuthAccess("registration", req, res, next) ) {
 
-        let config = c.get().registration;
-        let reqs = {
-            requirements: {
-                username: config.username,
-                password: config.password
-            }
-        };
+    let config = c.get().registration;
+    let reqs = {
+      requirements: {
+        username: config.username,
+        password: config.password
+      }
+    };
 
-        let response = Response.buildResponse(reqs);
-        res.send(response.code, response.response);
-        next();
+    let response = Response.buildResponse(reqs);
+    res.send(response.code, response.response);
+    return next();
 
-    }
+  }
 
-};
+}
 
 
 
@@ -96,74 +96,77 @@ let getRegistrationRequirements = function(req, res, next) {
  * @param res API Response
  * @param next API Handler Chain
  */
-let registerUser = function(req, res, next) {
-    let email = req.body.email;
-    let username = req.body.username;
-    let password = req.body.password;
+function registerUser(req, res, next) {
+  let email = req.body.email;
+  let username = req.body.username;
+  let password = req.body.password;
 
-    // Check the API access
-    if ( auth.checkAuthAccess("registration", req, res, next) ) {
+  // Check the API access
+  if ( auth.checkAuthAccess("registration", req, res, next) ) {
 
-        // Validate the email address
-        validators.validateEmail(req, res, next, email, function() {
+    // Validate the email address
+    validators.validateEmail(req, res, next, email, function() {
 
-            // Validate the username
-            validators.validateUsername(req, res, next, username, function() {
+      // Validate the username
+      validators.validateUsername(req, res, next, username, function() {
 
-                // Validate the password
-                validators.validatePassword(req, res, next, username, password, function() {
+        // Validate the password
+        validators.validatePassword(req, res, next, username, password, function() {
 
-                    // Add user to database
-                    users.addUser(email, username, password, function(pid) {
+          // Add user to database
+          users.addUser(email, username, password, function(err, pid) {
 
-                        // User was added, build user model
-                        if ( pid !== undefined ) {
+            // Server Error
+            if ( err || pid === undefined ) {
+              let error = Response.buildError(
+                5002,
+                "API Server Error",
+                "An unexpected Server Error occurred.  Please try again later."
+              );
+              res.send(error.code, error.response);
+              return next();
+            }
 
-                            // Get the user and user's sessions
-                            users.getUser(pid, function(user) {
-                                sessions.getSessions(pid, function(sessions) {
+            // Get the user and user's sessions
+            users.getUser(pid, function(userErr, user) {
+              sessions.getSessions(pid, function(sessionErr, sessions) {
 
-                                    // Build the User Model
-                                    let userModel = buildUser(user, sessions);
+                // Server Error
+                if ( userErr || sessionErr ) {
+                  let error = Response.buildError(
+                    5002,
+                    "API Server Error",
+                    "An unexpected Server Error occurred.  Please try again later."
+                  );
+                  res.send(error.code, error.response);
+                  return next();
+                }
 
-                                    // Return the Response
-                                    let response = Response.buildResponse(
-                                        {
-                                            user: userModel
-                                        }
-                                    );
-                                    res.send(response.code, response.response);
-                                    next();
+                // Build the User Model
+                let userModel = buildUser(user, sessions);
 
-                                });
-                            });
+                // Return the Response
+                let response = Response.buildResponse(
+                  {
+                    user: userModel
+                  }
+                );
+                res.send(response.code, response.response);
+                return next();
 
-                        }
-
-                        // User was not added
-                        else {
-
-                            // Send Error Response
-                            let error = Response.buildError(
-                                5002,
-                                "API Server Error",
-                                "The User could not be added to the Server database."
-                            );
-                            res.send(error.code, error.response);
-                            next();
-
-                        }
-
-                    });
-
-                });
-
+              });
             });
+
+          });
 
         });
 
-    }
-};
+      });
+
+    });
+
+  }
+}
 
 
 /**
@@ -172,46 +175,40 @@ let registerUser = function(req, res, next) {
  * @param res API Response
  * @param next API Handler Stack
  */
-let removeUser = function(req, res, next) {
-    let userPID = req.params.userPID;
+function removeUser(req, res, next) {
+  let userPID = req.params.userPID;
 
-    // Check for API Access
-    if ( auth.checkAuthAccess("registration", req, res, next) ) {
+  // Check for API Access
+  if ( auth.checkAuthAccess("registration", req, res, next) ) {
 
-        // Remove the User from the DB
-        users.removeUser(userPID, function(success) {
+    // Remove the User from the DB
+    users.removeUser(userPID, function(err) {
 
-            // User was removed
-            if ( success ) {
+      // Server Error
+      if ( err ) {
+        let error = Response.buildError(
+          5002,
+          "API Server Error",
+          "An unexpected Server Error occurred.  Please try again later."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                let response = Response.buildResponse(
-                    {
-                        user: {}
-                    }
-                );
-                res.send(response.code, response.response);
-                next();
+      // Build Response
+      let response = Response.buildResponse(
+        {
+          user: {}
+        }
+      );
+      res.send(response.code, response.response);
+      return next();
 
-            }
+    });
 
-            // User not removed
-            else {
+  }
 
-                let response = Response.buildError(
-                    5002,
-                    "API Server Error",
-                    "The User could not be removed"
-                );
-                res.send(response.code, response.response);
-                next();
-
-            }
-
-        });
-
-    }
-
-};
+}
 
 
 /**
@@ -220,57 +217,78 @@ let removeUser = function(req, res, next) {
  * @param res API Response
  * @param next API Handler Stack
  */
-let getUsers = function(req, res, next) {
+function getUsers(req, res, next) {
 
-    // TODO: Filter by email and/or username
-    let filterEmail = req.query.email;
-    let filterUsername = req.query.username;
 
-    // Check for API Access
-    if ( auth.checkAuthAccess("debug", req, res, next) ) {
+  // TODO: Filter by email and/or username
+  let filterEmail = req.query.email;
+  let filterUsername = req.query.username;
 
-        // Array of User Models
-        let userModels = [];
 
-        // Get the Users from the DB
-        users.getUsers(function(userResults) {
+  // Check for API Access
+  if ( auth.checkAuthAccess("debug", req, res, next) ) {
 
-            // Parse Each User
-            let count = 0;
-            for ( let i = 0; i < userResults.length; i++ ) {
-                let user = userResults[i];
+    // Array of User Models
+    let userModels = [];
 
-                // Get Sessions for user
-                sessions.getSessions(user.pid, function(sessions) {
+    // Get the Users from the DB
+    users.getUsers(function(err, userResults) {
 
-                    // Build User Model
-                    let userModel = buildUser(user, sessions);
-                    userModels.push(userModel);
+      // Server Error
+      if ( err || userResults.length === 0 ) {
+        let error = Response.buildError(
+          5002,
+          "API Server Error",
+          "An unexpected Server Error occurred.  Please try again later."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                    // Return User Models
-                    count++;
-                    if ( count === userResults.length ) {
+      // Parse Each User
+      let count = 0;
+      for ( let i = 0; i < userResults.length; i++ ) {
+        let user = userResults[i];
 
-                        // Send the Response
-                        let response = Response.buildResponse(
-                            {
-                                users: userModels
-                            }
-                        );
-                        res.send(response.code, response.response);
-                        next();
+        // Get Sessions for user
+        sessions.getSessions(user.pid, function(err, sessions) {
 
-                    }
+          // Server Error
+          if ( err ) {
+            let error = Response.buildError(
+              5002,
+              "API Server Error",
+              "An unexpected Server Error occurred.  Please try again later."
+            );
+            res.send(error.code, error.response);
+            return next();
+          }
 
-                });
+          // Build User Model
+          let userModel = buildUser(user, sessions);
+          userModels.push(userModel);
 
-            }
+          // Return User Models
+          count++;
+          if ( count === userResults.length ) {
+            let response = Response.buildResponse(
+              {
+                users: userModels
+              }
+            );
+            res.send(response.code, response.response);
+            return next();
+          }
 
         });
 
-    }
+      }
 
-};
+    });
+
+  }
+
+}
 
 
 /**
@@ -279,66 +297,79 @@ let getUsers = function(req, res, next) {
  * @param res API Response
  * @param next API Handler Stack
  */
-let getUser = function(req, res, next) {
-    let userPID = req.params.userPID;
+function getUser(req, res, next) {
+  let userPID = req.params.userPID;
 
-    // Check for API Access
-    if ( auth.checkAuthAccess("auth", req, res, next) ) {
+  // Check for API Access
+  if ( auth.checkAuthAccess("auth", req, res, next) ) {
 
-        // Get the User info from the DB
-        users.getUser(userPID, function(user) {
+    // Get the User info from the DB
+    users.getUser(userPID, function(err, user) {
 
-            // User info found...
-            if ( user !== undefined ) {
+      // Server Error
+      if ( err ) {
+        let error = Response.buildError(
+          5002,
+          "API Server Error",
+          "An unexpected Server Error occurred.  Please try again later."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                // Get sessions for the user
-                sessions.getSessions(user.pid, function(sessions) {
+      // User not found
+      if ( user === undefined ) {
+        let error = Response.buildError(
+          4043,
+          "User Not Found",
+          "The User ID provided (" + userPID + ") does not correspond to a registered User."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                    // Build the User model
-                    let userModel = buildUser(user, sessions);
+      // Get sessions for the user
+      sessions.getSessions(user.pid, function(err, sessions) {
 
-                    // Send the Response
-                    let response = Response.buildResponse(
-                        {
-                            user: userModel
-                        }
-                    );
-                    res.send(response.code, response.response);
-                    next();
+        // Server Error
+        if ( err ) {
+          let error = Response.buildError(
+            5002,
+            "API Server Error",
+            "An unexpected Server Error occurred.  Please try again later."
+          );
+          res.send(error.code, error.response);
+          return next();
+        }
 
-                });
+        // Build the User model
+        let userModel = buildUser(user, sessions);
 
-            }
+        // Send the Response
+        let response = Response.buildResponse(
+          {
+            user: userModel
+          }
+        );
+        res.send(response.code, response.response);
+        return next();
 
-            // User not found...
-            else {
+      });
 
-                // Send error response
-                let error = Response.buildError(
-                    4043,
-                    "User Not Found",
-                    "The User ID provided (" + userPID + ") does not correspond to a registered User."
-                );
-                res.send(error.code, error.response);
+    });
 
-                next();
+  }
 
-            }
-        });
-
-    }
-
-
-};
+}
 
 
 
 
 // Export the functions
 module.exports = {
-    getRegistrationRequirements: getRegistrationRequirements,
-    registerUser: registerUser,
-    removeUser: removeUser,
-    getUsers: getUsers,
-    getUser: getUser
+  getRegistrationRequirements: getRegistrationRequirements,
+  registerUser: registerUser,
+  removeUser: removeUser,
+  getUsers: getUsers,
+  getUser: getUser
 };

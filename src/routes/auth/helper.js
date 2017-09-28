@@ -1,53 +1,45 @@
 'use strict';
 
-const auth = require("../../handlers/authorization.js");
-const users = require("../../db/users.js");
-const sessions = require("../../db/sessions.js");
-const Response = require("../../response");
+const auth = require('../../handlers/authorization.js');
+const users = require('../../db/users.js');
+const sessions = require('../../db/sessions.js');
+const Response = require('../../response');
 
 
 // ==== BUILD MODELS ==== //
-
-/**
- * This callback is performed after the Response Models have
- * been built and the server can return the Response.
- * @callback buildCallback
- * @param {object} the Response Model
- */
-
 
 /**
  * Build the User Session Model
  * @param {Object} session User sessions query result
  * @return {Object} User Session Model
  */
-let buildSession = function(session) {
-    return {
-        id: session.pid,
-        client_name: session.client_name,
-        created: session.created,
-        accessed: session.accessed,
-        inactive: session.inactive,
-        expires: session.expires
-    }
-};
+function buildSession(session) {
+  return {
+    id: session.pid,
+    client_name: session.client_name,
+    created: session.created,
+    accessed: session.accessed,
+    inactive: session.inactive,
+    expires: session.expires
+  }
+}
 
 /**
  * Build the User Model
  * @param {Object} user User query result
  * @returns {Object} User Model
  */
-let buildUser = function(user) {
-    // Return User Model
-    return {
-        id: user.pid,
-        username: user.username,
-        email: user.email,
-        verified: user.verified === 1,
-        lastModifiedUser: user.user_modified,
-        lastModifiedPassword: user.password_modified,
-    }
-};
+function buildUser(user) {
+  // Return User Model
+  return {
+    id: user.pid,
+    username: user.username,
+    email: user.email,
+    verified: user.verified === 1,
+    lastModifiedUser: user.user_modified,
+    lastModifiedPassword: user.password_modified,
+  }
+}
 
 
 
@@ -59,90 +51,98 @@ let buildUser = function(user) {
  * @param res API Response
  * @param next API Handler Chain
  */
-let login = function(req, res, next) {
-    let login = req.body.login;
-    let password = req.body.password;
-    let key = req.APIClientKey;
+function login(req, res, next) {
+  let login = req.body.login;
+  let password = req.body.password;
+  let key = req.APIClientKey;
 
-    // Check for API Access
-    if ( auth.checkAuthAccess("auth", req, res, next) ) {
+  // Check for API Access
+  if ( auth.checkAuthAccess("auth", req, res, next) ) {
 
-        // Get User PID
-        users.getUserPIDByLogin(login, function (userPID) {
 
-            // User found...
-            if (userPID !== undefined) {
+    // Get User PID
+    users.getUserPIDByLogin(login, function(err, userPID) {
 
-                // Check user password
-                users.checkUserPassword(userPID, password, function (correct) {
+      // User not found...
+      if ( err ) {
+        let error = Response.buildError(
+          4019,
+          "User Not Registered",
+          "The login is not associated with a registered account.  Register an account first before logging in"
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-                    // Password correct...
-                    if (correct) {
 
-                        // Create a new Session, get the Session and User information
-                        sessions.createSession(userPID, key, function(sessionPID) {
-                            sessions.getSession(sessionPID, function(session) {
-                                users.getUser(userPID, function(user) {
+      // Check user password
+      users.checkUserPassword(userPID, password, function(err, correct) {
 
-                                    // Build the Response Models
-                                    let sessionModel = buildSession(session);
-                                    let userModel = buildUser(user);
+        // Server Error
+        if ( err ) {
+          let error = Response.buildError(
+            5002,
+            "API Server Error",
+            "An unexpected Server Error occurred.  Please try again later."
+          );
+          res.send(error.code, error.response);
+          return next();
+        }
 
-                                    // Build the Response
-                                    let response = Response.buildResponse(
-                                        {
-                                            user: userModel,
-                                            session: sessionModel
-                                        }
-                                    );
-                                    res.send(response.code, response.response);
-                                    next();
+        // Incorrect Login Credentials
+        if ( !correct ) {
+          let error = Response.buildError(
+            401,
+            "Not Authorized",
+            "Login credentials provided are incorrect.  Please try again."
+          );
+          res.send(error.code, error.response);
+          return next();
+        }
 
-                                });
 
-                            });
+        // Create a new Session, get the Session and User information
+        sessions.createSession(userPID, key, function(createErr, sessionPID) {
+          sessions.getSession(sessionPID, function(sessionErr, session) {
+            users.getUser(userPID, function(userErr, user) {
 
-                        });
-
-                    }
-
-                    // Incorrect Password...
-                    else {
-
-                        // Send Error
-                        let error = Response.buildError(
-                            401,
-                            "Not Authorized",
-                            "Login credentials provided are incorrect.  Please try again."
-                        );
-                        res.send(error.code, error.response);
-                        next(false);
-
-                    }
-
-                });
-
-            }
-
-            // User not found...
-            else {
-
-                // Send Error
+              // Server Error
+              if ( createErr || sessionErr || userErr ) {
                 let error = Response.buildError(
-                    4019,
-                    "User Not Registered",
-                    "The login is not associated with a registered account.  Register an account first before logging in"
+                  5002,
+                  "API Server Error",
+                  "An unexpected Server Error occurred.  Please try again later."
                 );
                 res.send(error.code, error.response);
-                next(false);
+                return next();
+              }
 
-            }
+              // Build the Response Models
+              let sessionModel = buildSession(session);
+              let userModel = buildUser(user);
 
+              // Build the Response
+              let response = Response.buildResponse(
+                {
+                  user: userModel,
+                  session: sessionModel
+                }
+              );
+              res.send(response.code, response.response);
+              return next();
+
+            });
+          });
         });
 
-    }
 
-};
+      });
+
+    });
+
+  }
+
+}
 
 
 /**
@@ -152,50 +152,48 @@ let login = function(req, res, next) {
  * @param res API Response
  * @param next API Handler Chain
  */
-let logout = function(req, res, next) {
-    let userPID = req.params.userPIDl
-    let sessionPID = req.header("X-session-token");
+function logout(req, res, next) {
+  let userPID = req.params.userPIDl
+  let sessionPID = req.header("X-session-token");
 
-    // Check for API Access
-    if ( auth.checkAuthAccess("auth", req, res, next) ) {
+  // Check for API Access
+  if ( auth.checkAuthAccess("auth", req, res, next) ) {
 
-        // Remove session ID
-        sessions.deleteSession(sessionPID, function(success) {
+    // Remove session ID
+    sessions.deleteSession(sessionPID, function(err) {
 
-            // Session Removed...
-            if ( success ) {
-                let response = Response.buildResponse(
-                    {
-                        user: userPID,
-                        session: {}
-                    }
-                );
-                res.send(response.code, response.response);
-                next();
-            }
+      // Server Error
+      if ( err ) {
+        let error = Response.buildError(
+          5002,
+          "API Server Error",
+          "An unexpected Server Error occurred.  Please try again later."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
 
-            // Session Not Removed
-            else {
-                let error = Response.buildError(
-                    5002,
-                    "API Server Error",
-                    "Could not remove User session from Server database.  Please try again."
-                );
-                res.send(error.code, error.response);
-                next();
-            }
+      // Session Removed...
+      let response = Response.buildResponse(
+        {
+          user: userPID,
+          session: {}
+        }
+      );
+      res.send(response.code, response.response);
+      return next();
 
-        });
+    });
 
-    }
+  }
 
-};
+}
 
 
 
 // Export the functions
 module.exports = {
-    login: login,
-    logout: logout,
-    buildSession: buildSession
+  login: login,
+  logout: logout,
+  buildSession: buildSession
 };

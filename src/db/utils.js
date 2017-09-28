@@ -1,7 +1,7 @@
 'use strict';
 
-const crypto = require("crypto");
-const uuid = require("uuid/v4");
+const crypto = require('crypto');
+const uuid = require('uuid/v4');
 
 
 // ==== HELPER FUNCTIONS ==== //
@@ -11,11 +11,11 @@ const uuid = require("uuid/v4");
  * @returns {string} base64 encoded UUID
  */
 let genPid = function() {
-    let pid = uuid();
-    while ( pid.indexOf('-') > -1 ) {
-        pid = pid.replace('-', '');
-    }
-    return pid;
+  let pid = uuid();
+  while ( pid.indexOf('-') > -1 ) {
+    pid = pid.replace('-', '');
+  }
+  return pid;
 };
 
 /**
@@ -23,7 +23,7 @@ let genPid = function() {
  * @returns base64 encoded salt
  */
 let genSalt = function() {
-    return crypto.randomBytes(32).toString('base64');
+  return crypto.randomBytes(32).toString('base64');
 };
 
 /**
@@ -32,17 +32,17 @@ let genSalt = function() {
  * @param password Password string
  */
 let genHash = function(salt, password) {
-    let hmac = crypto.createHmac('sha512', salt);
-    hmac.update(password);
-    return hmac.digest('base64').toString('base64');
+  let hmac = crypto.createHmac('sha512', salt);
+  hmac.update(password);
+  return hmac.digest('base64').toString('base64');
 };
 
 
 
 // Export Functions
 module.exports = {
-    genPid: genPid,
-    genSalt: genSalt,
-    genHash: genHash
+  genPid: genPid,
+  genSalt: genSalt,
+  genHash: genHash
 };
 

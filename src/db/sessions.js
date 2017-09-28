@@ -1,10 +1,10 @@
 'use strict';
 
-const mysql = require("./mysql.js");
-const utils = require("./utils.js");
-const clients = require("./clients.js");
-const users = require("./users.js");
-const DateTime = require("right-track-core").utils.DateTime;
+const mysql = require('./mysql.js');
+const utils = require('./utils.js');
+const clients = require('./clients.js');
+const users = require('./users.js');
+const DateTime = require('right-track-core').utils.DateTime;
 
 
 // ==== SESSION FUNCTIONS ==== //
@@ -14,16 +14,16 @@ const DateTime = require("right-track-core").utils.DateTime;
  * @param {string} userPID User Public ID
  * @param callback Callback function accepting Sessions
  */
-let getSessions = function(userPID, callback) {
-    let sessionSelect = "SELECT sessions.pid, client_name, created, accessed, inactive, expires " +
-        "FROM sessions " +
-        "INNER JOIN clients ON sessions.client_id=clients.id " +
-        "INNER JOIN users ON users.id=sessions.user_id " +
-        "WHERE users.pid='" + userPID + "';";
-    mysql.select(sessionSelect, function(sessions) {
-        callback(sessions);
-    });
-};
+function getSessions(userPID, callback) {
+  let sessionSelect = "SELECT sessions.pid, client_name, created, accessed, " +
+    "inactive, expires FROM sessions " +
+    "INNER JOIN clients ON sessions.client_id=clients.id " +
+    "INNER JOIN users ON users.id=sessions.user_id " +
+    "WHERE users.pid='" + userPID + "';";
+  mysql.select(sessionSelect, function(err, sessions) {
+    return callback(err, sessions);
+  });
+}
 
 
 /**
@@ -31,15 +31,15 @@ let getSessions = function(userPID, callback) {
  * @param {string} sessionPID User Session Public ID
  * @param callback Callback function accepting Session
  */
-let getSession = function(sessionPID, callback) {
-    let select = "SELECT pid, client_name, created, accessed, inactive, expires " +
-        "FROM sessions " +
-        "INNER JOIN clients ON sessions.client_id=clients.id " +
-        "WHERE pid='" + sessionPID + "';";
-    mysql.get(select, function(session) {
-        callback(session);
-    });
-};
+function getSession(sessionPID, callback) {
+  let select = "SELECT pid, client_name, created, accessed, inactive, expires " +
+    "FROM sessions " +
+    "INNER JOIN clients ON sessions.client_id=clients.id " +
+    "WHERE pid='" + sessionPID + "';";
+  mysql.get(select, function(err, session) {
+    return callback(err, session);
+  });
+}
 
 
 /**
@@ -48,34 +48,24 @@ let getSession = function(sessionPID, callback) {
  * @param {string} sessionPID Session PID
  * @param callback Callback function accepting boolean match
  */
-let checkSessionUser = function(userPID, sessionPID, callback) {
+function checkSessionUser(userPID, sessionPID, callback) {
 
-    // Check if Session and User PIDs match
-    let select = "SELECT users.pid FROM sessions " +
-        "INNER JOIN users ON users.id=sessions.user_id " +
-        "WHERE sessions.pid='" + sessionPID + "';";
+  // Check if Session and User PIDs match
+  let select = "SELECT users.pid FROM sessions " +
+    "INNER JOIN users ON users.id=sessions.user_id " +
+    "WHERE sessions.pid='" + sessionPID + "';";
 
-    // Query the DB
-    mysql.get(select, function(user) {
+  // Query the DB
+  mysql.get(select, function(err, user) {
+    if ( err || user === undefined ) {
+      return callback(err, false);
+    }
 
-        let match = false;
+    // Check returned user pid
+    return callback(err, user.pid.toLowerCase() === userPID.toLowerCase());
+  });
 
-        // A user was found...
-        if ( user !== undefined ) {
-
-            // User PID matches session PID
-            if ( user.pid.toLowerCase() === userPID.toLowerCase() ) {
-                match = true;
-            }
-
-        }
-
-        // Return match status
-        callback(match);
-
-    })
-
-};
+}
 
 
 /**
@@ -84,28 +74,22 @@ let checkSessionUser = function(userPID, sessionPID, callback) {
  * @param {string} sessionPID User Session Public ID
  * @param callback Callback function accepting boolean validity
  */
-let checkSessionClient = function(clientKey, sessionPID, callback) {
-    let match = false;
+function checkSessionClient(clientKey, sessionPID, callback) {
 
-    // Select client key for given session
-    let select = "SELECT clients.client_key FROM clients " +
-        "INNER JOIN sessions ON sessions.client_id=clients.id " +
-        "WHERE sessions.pid='" + sessionPID + "';";
-    mysql.get(select, function(client) {
+  // Select client key for given session
+  let select = "SELECT clients.client_key FROM clients " +
+    "INNER JOIN sessions ON sessions.client_id=clients.id " +
+    "WHERE sessions.pid='" + sessionPID + "';";
+  mysql.get(select, function(err, client) {
+    if ( err || client === undefined ) {
+      return callback(err, false);
+    }
 
-        // Check if client keys match
-        if ( client !== undefined ) {
-            if ( client.client_key.toLowerCase() === clientKey.toLowerCase() ) {
-                match = true;
-            }
-        }
+    // Check if client keys match
+    return callback(err, client.client_key.toLowerCase() === clientKey.toLowerCase())
+  });
 
-        // Return the match
-        callback(match);
-
-    });
-
-};
+}
 
 
 /**
@@ -113,14 +97,17 @@ let checkSessionClient = function(clientKey, sessionPID, callback) {
  * @param {string} sessionPID Session PID
  * @param callback Callback function accepting boolean validity
  */
-let checkSessionValid = function(sessionPID, callback) {
-    let now = DateTime.now().toMySQLString();
-    let select = "SELECT pid FROM sessions WHERE pid='" + sessionPID + "' " +
-        "AND inactive > '" + now + "' AND expires > '" + now + "';";
-    mysql.get(select, function(session) {
-        callback(session !== undefined);
-    });
-};
+function checkSessionValid(sessionPID, callback) {
+  let now = DateTime.now().toMySQLString();
+  let select = "SELECT pid FROM sessions WHERE pid='" + sessionPID + "' " +
+    "AND inactive > '" + now + "' AND expires > '" + now + "';";
+  mysql.get(select, function(err, session) {
+    if ( err || session === undefined ) {
+      return callback(err, false);
+    }
+    return callback(null, session.pid.toLowerCase() === sessionPID.toLowerCase());
+  });
+}
 
 
 /**
@@ -129,52 +116,60 @@ let checkSessionValid = function(sessionPID, callback) {
  * @param {string} clientKey Client API Key
  * @param callback Callback function accepting session pid
  */
-let createSession = function(userPID, clientKey, callback) {
+function createSession(userPID, clientKey, callback) {
 
-    // Get user information
-    users.getUser(userPID, function(user) {
+  // Get user information
+  users.getUser(userPID, function(userErr, user) {
 
-        // Get Client information
-        clients.getClientByKey(clientKey, function(client) {
+    // Get Client information
+    clients.getClientByKey(clientKey, function(clientErr, client) {
 
-            // Session variables
-            let sessionPID = utils.genPid();    // new pid for session
-            let userId = user.id;               // user internal id
-            let clientId = client.id;           // client internal id
-            let inactive = client.session_length_inactive;
-            let expires = client.session_length_max;
+      // User info error
+      if ( userErr ) {
+        return callback(userErr);
+      }
 
-            // Set expiration and inactive dates
-            let now = DateTime.now();
-            let dInactive = DateTime.create(now.getTimeGTFS(), now.getDateIntAdd(inactive));
-            let dExpires = DateTime.create(now.getTimeGTFS(), now.getDateIntAdd(expires));
-            let sNow = now.toMySQLString();
-            let sInactive = dInactive.toMySQLString();
-            let sExpires = dExpires.toMySQLString();
+      // Client info error
+      if ( clientErr ) {
+        return callback(clientErr);
+      }
 
-            // Build Insert Statement
-            let insert = "INSERT INTO sessions (pid, user_id, client_id, created, accessed, " +
-                "inactive, expires) VALUES ('" + sessionPID + "', " + userId + ", " + clientId +
-                ", '" + sNow + "', '" + sNow + "', '" + sInactive + "', '" + sExpires + "');";
 
-            // Insert new session to DB
-            mysql.insert(insert, function(success) {
+      // Session variables
+      let sessionPID = utils.genPid();  // new pid for session
+      let userId = user.id;         // user internal id
+      let clientId = client.id;       // client internal id
+      let inactiveDays = client.session_length_inactive;
+      let expiresDays = client.session_length_max;
 
-                // Return session PID
-                if ( success ) {
-                    callback(sessionPID);
-                }
-                else {
-                    callback(undefined);
-                }
+      // Set expiration and inactive dates
+      let now = DateTime.now().toMySQLString();
+      let inactive = DateTime.now().deltaDays(inactiveDays).toMySQLString();
+      let expires = DateTime.now().deltaDays(expiresDays).toMySQLString();
 
-            });
+      // Build Insert Statement
+      let insert = "INSERT INTO sessions (pid, user_id, client_id, created, accessed, " +
+        "inactive, expires) VALUES ('" + sessionPID + "', " + userId + ", " + clientId +
+        ", '" + now + "', '" + now + "', '" + inactive + "', '" + expires + "');";
 
-        });
+      // Insert new session to DB
+      mysql.insert(insert, function(err) {
+
+        // Could not insert session information
+        if ( err ) {
+          return callback(err);
+        }
+
+        // Return session PID
+        return callback(null, sessionPID);
+
+      });
 
     });
 
-};
+  });
+
+}
 
 
 /**
@@ -183,29 +178,33 @@ let createSession = function(userPID, clientKey, callback) {
  * @param {string} sessionPID Session Public ID
  * @param callback Callback functiona accepting session update success
  */
-let updateSessionAccessed = function(clientKey, sessionPID, callback) {
+function updateSessionAccessed(clientKey, sessionPID, callback) {
 
-    // Get client information
-    clients.getClientByKey(clientKey, function(client) {
+  // Get client information
+  clients.getClientByKey(clientKey, function(err, client) {
 
-        // Get inactive time for client
-        let inactive = client.session_length_inactive;
+    // Database Error
+    if ( err ) {
+      return callback(err);
+    }
 
-        // Get current and inactive date/time strings
-        let dNow = DateTime.now();
-        let dInactive = DateTime.create(dNow.getTimeGTFS(), dNow.getDateIntAdd(inactive));
-        let sNow = dNow.toMySQLString();
-        let sInactive = dInactive.toMySQLString();
+    // Get inactive time for client
+    let inactiveDays = client.session_length_inactive;
 
-        // Update the session
-        let sql = "UPDATE sessions SET accessed='" + sNow + "', inactive='" + sInactive + "' WHERE pid='" + sessionPID + "';";
-        mysql.update(sql, function(success) {
-            callback(success);
-        });
+    // Get current and inactive date/time strings
+    let now = DateTime.now().toMySQLString();
+    let inactive = DateTime.now().deltaDays(inactiveDays).toMySQLString();
 
+    // Update the session
+    let sql = "UPDATE sessions SET accessed='" + now + "', inactive='" +
+      inactive + "' WHERE pid='" + sessionPID + "';";
+    mysql.update(sql, function(err) {
+      return callback(err);
     });
 
-};
+  });
+
+}
 
 
 /**
@@ -213,23 +212,23 @@ let updateSessionAccessed = function(clientKey, sessionPID, callback) {
  * @param {string} sessionPID Session Public ID
  * @param callback Callback function accepting boolean session removal
  */
-let deleteSession = function(sessionPID, callback) {
-    let sql = "DELETE FROM sessions WHERE pid='" + sessionPID + "';";
-    mysql.delet(sql, function(success) {
-        callback(success);
-    })
-};
+function deleteSession(sessionPID, callback) {
+  let sql = "DELETE FROM sessions WHERE pid='" + sessionPID + "';";
+  mysql.delet(sql, function(err) {
+    return callback(err);
+  });
+}
 
 
 
 // Export the functions
 module.exports = {
-    getSessions: getSessions,
-    getSession: getSession,
-    checkSessionUser: checkSessionUser,
-    checkSessionClient: checkSessionClient,
-    checkSessionValid: checkSessionValid,
-    createSession: createSession,
-    updateSessionAccessed: updateSessionAccessed,
-    deleteSession: deleteSession
+  getSessions: getSessions,
+  getSession: getSession,
+  checkSessionUser: checkSessionUser,
+  checkSessionClient: checkSessionClient,
+  checkSessionValid: checkSessionValid,
+  createSession: createSession,
+  updateSessionAccessed: updateSessionAccessed,
+  deleteSession: deleteSession
 };

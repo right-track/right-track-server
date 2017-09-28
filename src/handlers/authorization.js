@@ -1,8 +1,8 @@
 'use strict';
 
-const Response = require("../response");
-const clients = require("../db/clients.js");
-const config = require("../config.js");
+const Response = require('../response');
+const clients = require('../db/clients.js');
+const config = require('../config.js');
 
 
 /**
@@ -14,51 +14,63 @@ const config = require("../config.js");
  * @param res API Response
  * @param next API Handler Chain
  */
-let getAuthAccess = function(req, res, next) {
+function getAuthAccess(req, res, next) {
 
-    // Set list of approved access codes
-    req.access = ["public"];
+  // Set list of approved access codes
+  req.access = ['public'];
 
-    // Get Authorization header
-    let header = req.header("Authorization");
+  // Get Authorization header
+  let header = req.header('Authorization');
 
-    // Lookup API access for token
-    if ( header !== undefined ) {
+  // Lookup API access for token
+  if ( header !== undefined ) {
 
-        // Check if 'Token' is included in header
-        if ( header.toLowerCase().indexOf("token ") !== -1 ) {
+    // Check if 'Token' is included in header
+    if ( header.toLowerCase().indexOf('token ') !== -1 ) {
 
-            // Parse the API Key out of the header
-            let key = header.toLowerCase().replace("token", "").replace(":", "").replace(/ /g,'');
-            req.APIClientKey = key;
+      // Parse the API Key out of the header
+      let key = header.toLowerCase().replace('token', '').replace(':', '').replace(/ /g,'');
+      req.APIClientKey = key;
 
-            // Get client access codes from the database
-            clients.getClientAccess(key, function(access) {
-                req.access = req.access.concat(access);
-                next();
-            });
-
+      // Get client access codes from the database
+      clients.getClientAccess(key, function(err, access) {
+        if ( err ) {
+          let error = Response.buildError(
+            5002,
+            "API Server Error",
+            "Could not get client access codes.  Please try again later."
+          );
+          res.send(error.code, error.response);
+          return next(false);
         }
 
-        // Incorrect header format
-        else {
-            let error = Response.buildError(
-                4039,
-                "Authorization Header Format Error",
-                "The 'Authorization' Header must be in the form of 'Token {API TOKEN}"
-            );
-            res.send(error.code, error.response);
-            return next(false);
-        }
-
-    }
-
-    // No API Key given, just allow public access...
-    else {
+        // Append access codes to request
+        req.access = req.access.concat(access);
         next();
+
+      });
+
     }
 
-};
+    // Incorrect header format
+    else {
+      let error = Response.buildError(
+        4039,
+        "Authorization Header Format Error",
+        "The 'Authorization' Header must be in the form of 'Token {API TOKEN}"
+      );
+      res.send(error.code, error.response);
+      return next(false);
+    }
+
+  }
+
+  // No API Key given, just allow public access...
+  else {
+    next();
+  }
+
+}
 
 
 /**
@@ -71,46 +83,46 @@ let getAuthAccess = function(req, res, next) {
  * @param next API Handler Chain
  * @returns {boolean} true if the Request has access
  */
-let checkAuthAccess = function(access, req, res, next) {
-    let allowDebug = config.get().allowDebugAccess;
+function checkAuthAccess(access, req, res, next) {
+  let allowDebug = config.get().allowDebugAccess;
 
-    // When debug access is not allowed....
-    if (
-        (!allowDebug && access === "debug") ||               // Deny requests to endpoints that require debug access
-        (!allowDebug && req.access.indexOf("debug") !== -1)  // Deny requests using a client key with debug access
-    ) {
-        let error = Response.buildError(
-            4031,
-            "Debug Access Denied",
-            "Debug client keys and functions have been prohibited on this server."
-        );
-        res.send(error.code, error.response);
-        next(false);
-        return false;
-    }
+  // When debug access is not allowed....
+  if (
+    (!allowDebug && access === 'debug') ||               // Deny requests to endpoints that require debug access
+    (!allowDebug && req.access.indexOf('debug') !== -1)  // Deny requests using a client key with debug access
+  ) {
+    let error = Response.buildError(
+      4031,
+      "Debug Access Denied",
+      "Debug client keys and functions have been prohibited on this server."
+    );
+    res.send(error.code, error.response);
+    next(false);
+    return false;
+  }
 
-    // Access is allowed
-    else if ( req.access.indexOf(access) !== -1 || req.access.indexOf("debug") !== -1 ) {
-        return true;
-    }
+  // Access is allowed
+  else if ( req.access.indexOf(access) !== -1 || req.access.indexOf('debug') !== -1 ) {
+    return true;
+  }
 
-    // Access is denied
-    else {
-        let error = Response.buildError(
-            403,
-            "API Access Denied",
-            "The API client key does not have the requested access scope (" + access + ")."
-        );
-        res.send(error.code, error.response);
-        next(false);
-        return false;
-    }
+  // Access is denied
+  else {
+    let error = Response.buildError(
+      403,
+      "API Access Denied",
+      "The API client key does not have the requested access scope (" + access + ")."
+    );
+    res.send(error.code, error.response);
+    next(false);
+    return false;
+  }
 
-};
+}
 
 
 
 module.exports = {
-    getAuthAccess: getAuthAccess,
-    checkAuthAccess: checkAuthAccess
+  getAuthAccess: getAuthAccess,
+  checkAuthAccess: checkAuthAccess
 };

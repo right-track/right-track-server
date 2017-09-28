@@ -1,8 +1,8 @@
 'use strict';
 
-const mysql = require("./mysql.js");
-const utils = require("./utils.js");
-const DateTime = require("right-track-core").utils.DateTime;
+const mysql = require('./mysql.js');
+const utils = require('./utils.js');
+const DateTime = require('right-track-core').utils.DateTime;
 
 
 
@@ -14,27 +14,25 @@ const DateTime = require("right-track-core").utils.DateTime;
  * @param {string} email Registered email to check
  * @param callback Callback function accepting boolean
  */
-let isEmailRegistered = function(email, callback) {
+function isEmailRegistered(email, callback) {
 
-    // Build select statement
-    let select = "SELECT COUNT(1) AS COUNT FROM users WHERE email='" + email + "';";
+  // Build select statement
+  let select = "SELECT COUNT(1) AS COUNT FROM users WHERE email='" + email + "';";
 
-    // Query the users table for email
-    mysql.get(select, function(results) {
+  // Query the users table for email
+  mysql.get(select, function(err, result) {
 
-        // No email found
-        if ( results.COUNT === 0 ) {
-            callback(false);
-        }
+    // Database query error
+    if ( err || result === undefined ) {
+      return callback(err, false);
+    }
 
-        // Email is registered
-        else {
-            callback(true);
-        }
+    // Return if email is registered
+    return callback(null, result.COUNT > 0);
 
-    })
+  });
 
-};
+}
 
 
 /**
@@ -42,27 +40,25 @@ let isEmailRegistered = function(email, callback) {
  * @param {string} username Registered username to check
  * @param callback Callback function accepting boolean
  */
-let isUsernameRegistered = function(username, callback) {
+function isUsernameRegistered(username, callback) {
 
-    // Build select statement
-    let select = "SELECT COUNT(1) AS COUNT FROM users WHERE username='" + username + "';";
+  // Build select statement
+  let select = "SELECT COUNT(1) AS COUNT FROM users WHERE username='" + username + "';";
 
-    // Query the users table for username
-    mysql.get(select, function(results) {
+  // Query the users table for username
+  mysql.get(select, function(err, result) {
 
-        // No username found
-        if ( results.COUNT === 0 ) {
-            callback(false);
-        }
+    // Database query error
+    if ( err || result === undefined ) {
+      return callback(err, false);
+    }
 
-        // Username is registered
-        else {
-            callback(true);
-        }
+    // Return if username is found
+    return callback(null, result.COUNT > 0);
 
-    })
+  });
 
-};
+}
 
 
 /**
@@ -70,95 +66,101 @@ let isUsernameRegistered = function(username, callback) {
  * @param email User email
  * @param username User username
  * @param password User password
- * @param callback Callback function user PID (or undefined if not added)
+ * @param callback Callback function user PID
  */
-let addUser = function(email, username, password, callback) {
+function addUser(email, username, password, callback) {
 
-    // Generate PID, remove all '-'
-    let pid = utils.genPid();
+  // Generate PID, remove all '-'
+  let pid = utils.genPid();
 
-    // Generate Salt
-    let salt = utils.genSalt();
+  // Generate Salt
+  let salt = utils.genSalt();
 
-    // Generate Password Hash
-    let password_hash = utils.genHash(salt, password);
+  // Generate Password Hash
+  let password_hash = utils.genHash(salt, password);
 
-    // Get DateTime
-    let datetime = DateTime.now().toMySQLString();
+  // Get DateTime
+  let datetime = DateTime.now().toMySQLString();
 
-    // Create INSERT statements
-    let insert = "INSERT INTO users (pid, username, email, password, salt, user_modified, " +
-        "password_modified) VALUES ('" + pid + "', '" + username + "', '" + email + "', '" +
-        password_hash + "', '" + salt + "', '" + datetime + "', '" + datetime + "');";
+  // Create INSERT statements
+  let insert = "INSERT INTO users (pid, username, email, password, salt, user_modified, " +
+    "password_modified) VALUES ('" + pid + "', '" + username + "', '" + email + "', '" +
+    password_hash + "', '" + salt + "', '" + datetime + "', '" + datetime + "');";
 
-    // Insert into the DB
-    mysql.insert(insert, function(success) {
-        if ( success ) {
+  // Insert into the DB
+  mysql.insert(insert, function(err) {
 
-            // Add user to favorites_modified table
-            let favs = "INSERT INTO favorites_modified (user_id) " +
-                "VALUES ((SELECT id FROM users WHERE pid='" + pid + "'));";
-            mysql.insert(favs, function(success) {
+    // Database error
+    if ( err ) {
+      return callback(err);
+    }
 
-                if ( success ) {
-                    callback(pid);
-                }
-                else {
-                    callback(undefined);
-                }
-
-            });
-
-        }
-        else {
-            callback(undefined);
-        }
+    // Add user to favorites_modified table
+    let favs = "INSERT INTO favorites_modified (user_id) " +
+      "VALUES ((SELECT id FROM users WHERE pid='" + pid + "'));";
+    mysql.insert(favs, function(err) {
+      return callback(err, pid);
     });
 
-};
+  });
+
+}
 
 
 /**
  * Remove the specified User from the Server Database
  * @param {string} pid User Public ID
- * @param callback Callback function accepting removal success
+ * @param callback Callback function
  */
-let removeUser = function(pid, callback) {
+function removeUser(pid, callback) {
 
-    // Get user internal id
-    getUser(pid, function(user) {
-        let id = user.id;
+  // Get user internal id
+  getUser(pid, function(err, user) {
 
-        // Delete user sessions
-        let sql = "DELETE FROM sessions WHERE user_id=" + id + ";";
-        mysql.delet(sql, function() {
+    // Could not get user information
+    if ( err ) {
+      return callback(err);
+    }
 
-            // Delete user
-            let sql = "DELETE FROM users WHERE id=" + id + ";";
-            mysql.delet(sql, function() {
+    let id = user.id;
 
-                // Delete favorites_modified
-                let sql = "DELETE FROM favorites_modified WHERE user_id=" + id + ";";
-                mysql.delet(sql, function() {
+    // Delete user sessions
+    let sql = "DELETE FROM sessions WHERE user_id=" + id + ";";
+    mysql.delet(sql, function(err1) {
 
-                    // Delete favorites
-                    let sql = "DELETE FROM favorites WHERE user_id=" + id + ";";
-                    mysql.delet(sql, function(success) {
+      // Delete user
+      let sql = "DELETE FROM users WHERE id=" + id + ";";
+      mysql.delet(sql, function(err2) {
 
-                        // Return delete success
-                        callback(success);
+        // Delete favorites_modified
+        let sql = "DELETE FROM favorites_modified WHERE user_id=" + id + ";";
+        mysql.delet(sql, function(err3) {
 
-                    });
+          // Delete favorites
+          let sql = "DELETE FROM favorites WHERE user_id=" + id + ";";
+          mysql.delet(sql, function(err4) {
 
-                });
+            // One of the deletes didn't work
+            if ( err1 || err2 || err3 || err4 ) {
+              return callback(
+                new Error('Could not completely remove user information')
+              );
+            }
 
-            });
+            // Return to callback
+            return callback(null);
+
+          });
 
         });
 
+      });
+
     });
 
-};
+  });
+
+}
 
 
 
@@ -170,17 +172,17 @@ let removeUser = function(pid, callback) {
  * Get the Registered Users
  * @param callback Callback function accepting Users
  */
-let getUsers = function(callback) {
+function getUsers(callback) {
 
-    // Build users SELECT Statement
-    let userSelect = "SELECT id, pid, username, email, verified, user_modified, password_modified FROM users;";
+  // Build users SELECT Statement
+  let userSelect = "SELECT id, pid, username, email, verified, user_modified, password_modified FROM users;";
 
-    // Select the user info from the DB
-    mysql.select(userSelect, function(users) {
-        callback(users);
-    });
+  // Select the user info from the DB
+  mysql.select(userSelect, function(err, users) {
+    return callback(err, users);
+  });
 
-};
+}
 
 
 /**
@@ -188,18 +190,18 @@ let getUsers = function(callback) {
  * @param {string} pid User Public ID
  * @param callback Callback function accepting User
  */
-let getUser = function(pid, callback) {
+function getUser(pid, callback) {
 
-    // Build user SELECT Statement
-    let select = "SELECT id, pid, username, email, verified, user_modified, password_modified " +
-        "FROM users WHERE pid='" + pid + "';";
+  // Build user SELECT Statement
+  let select = "SELECT id, pid, username, email, verified, user_modified, password_modified " +
+    "FROM users WHERE pid='" + pid + "';";
 
-    // Select the user info from the DB
-    mysql.get(select, function(user) {
-        callback(user);
-    });
+  // Select the user info from the DB
+  mysql.get(select, function(err, user) {
+    return callback(err, user);
+  });
 
-};
+}
 
 
 /**
@@ -207,17 +209,15 @@ let getUser = function(pid, callback) {
  * @param {string} login User email or username
  * @param callback Callback function accepting User PID
  */
-let getUserPIDByLogin = function(login, callback) {
-    let select = "SELECT pid FROM users WHERE email='" + login + "' OR username='" + login + "'";
-    mysql.select(select, function(results) {
-        if ( results.length === 1 ) {
-            callback(results[0].pid);
-        }
-        else {
-            callback(undefined);
-        }
-    })
-};
+function getUserPIDByLogin(login, callback) {
+  let select = "SELECT pid FROM users WHERE email='" + login + "' OR username='" + login + "'";
+  mysql.get(select, function(err, result) {
+    if ( err || result === undefined ) {
+      return callback(err, undefined);
+    }
+    return callback(err, result.pid);
+  });
+}
 
 
 /**
@@ -226,33 +226,39 @@ let getUserPIDByLogin = function(login, callback) {
  * @param {string} password User password to check
  * @param callback Callback function accepting boolean of correct password
  */
-let checkUserPassword = function(pid, password, callback) {
+function checkUserPassword(pid, password, callback) {
 
-    // Get saved password hash
-    let select = "SELECT salt, password FROM users WHERE pid='" + pid + "';";
-    mysql.get(select, function(result) {
-        let correctPassHash = result.password;
-        let salt = result.salt;
+  // Get saved password hash
+  let select = "SELECT salt, password FROM users WHERE pid='" + pid + "';";
+  mysql.get(select, function(err, result) {
 
-        // Calculate hash of provided password
-        let checkHash = utils.genHash(salt, password);
+    // Database query error
+    if ( err || result === undefined ) {
+      return callback(err, false);
+    }
 
-        // Return if match
-        callback(correctPassHash === checkHash);
-    });
+    let correctPassHash = result.password;
+    let salt = result.salt;
 
-};
+    // Calculate hash of provided password
+    let checkHash = utils.genHash(salt, password);
+
+    // Return if match
+    return callback(null, correctPassHash === checkHash);
+  });
+
+}
 
 
 
 
 module.exports = {
-    isEmailRegistered: isEmailRegistered,
-    isUsernameRegistered: isUsernameRegistered,
-    addUser: addUser,
-    removeUser: removeUser,
-    getUserPIDByLogin: getUserPIDByLogin,
-    getUsers: getUsers,
-    getUser: getUser,
-    checkUserPassword: checkUserPassword
+  isEmailRegistered: isEmailRegistered,
+  isUsernameRegistered: isUsernameRegistered,
+  addUser: addUser,
+  removeUser: removeUser,
+  getUserPIDByLogin: getUserPIDByLogin,
+  getUsers: getUsers,
+  getUser: getUser,
+  checkUserPassword: checkUserPassword
 };
