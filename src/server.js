@@ -4,6 +4,9 @@
 const path = require('path');
 const restify = require('restify');
 
+// Config
+const config = require('./config.js');
+
 // Helper functions
 const mysql = require('./db/mysql.js');
 
@@ -21,7 +24,6 @@ const timeout = require('./handlers/timeout.js');
 
 // Load additional configuration variables
 // Pass path to .json file as node CLI argument
-let config = require('./config.js');
 if ( process.argv.length === 3 ) {
   config.read(process.argv[2]);
 }
@@ -41,16 +43,6 @@ let server = restify.createServer({
 });
 
 
-// Set server error handler
-server.on('error', function (err) {
-  mysql.close();
-  console.error('===================== SERVER ERROR =====================');
-  console.error(err);
-  console.error('========================================================');
-  process.exit(1);
-});
-
-
 // Start the Server
 server.listen({port: props.port, host: props.host}, function() {
   console.log('===========================================================');
@@ -58,20 +50,22 @@ server.listen({port: props.port, host: props.host}, function() {
 });
 
 
-// SERVE API DOCUMENTATION
-server.get('/doc', function(req, res, next) {
-  res.redirect('/doc/index.html', next);
-});
-server.get(/\/doc\/?.*/, restify.plugins.serveStatic({
-  directory: path.join(__dirname, '/../')
-}));
-
-
 
 // ERROR HANDLERS
 server.on('NotFound', errors.handleNotFoundError);
 server.on('MethodNotAllowed', errors.handleMethodNotAllowedError);
+server.on('InternalServer', errors.handleServerError);
 server.on('Error', errors.handleServerError);
+
+
+// Process Monitors
+process.on('uncaughtException', function(err) {
+  console.log("UNCAUGHT EXCEPTION");
+  console.log(err);
+});
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+
 
 
 // SET HANDLER CHAIN
@@ -86,6 +80,14 @@ server.use(restify.plugins.bodyParser());
 
 
 
+// SERVE API DOCUMENTATION
+server.get('/doc', function(req, res, next) {
+  res.redirect('/doc/index.html', next);
+});
+server.get(/\/doc\/?.*/, restify.plugins.serveStatic({
+  directory: path.join(__dirname, '/../')
+}));
+
 // LOAD ROUTES
 require('./routes/about/routes.js')(server);
 require('./routes/admin/routes.js')(server);
@@ -99,12 +101,17 @@ require('./routes/users/routes.js')(server);
 
 
 // HANDLE SHUTDOWN
-let shutdown = function() {
+function shutdown() {
   console.log('===========================================================');
   console.log('SHUTTING DOWN API SERVER...');
-  server.close();
-  mysql.close();
+
+  try {
+    server.close();
+    mysql.close();
+  }
+  catch(err) {
+    console.log(err);
+  }
+
   process.exit(0);
-};
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+}
