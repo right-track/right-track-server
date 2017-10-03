@@ -80,13 +80,7 @@ function login(req, res, next) {
 
         // Server Error
         if ( err ) {
-          let error = Response.buildError(
-            5002,
-            "API Server Error",
-            "An unexpected Server Error occurred.  Please try again later."
-          );
-          res.send(error.code, error.response);
-          return next();
+          return next(Response.getInternalServerError());
         }
 
         // Incorrect Login Credentials
@@ -108,13 +102,7 @@ function login(req, res, next) {
 
               // Server Error
               if ( createErr || sessionErr || userErr ) {
-                let error = Response.buildError(
-                  5002,
-                  "API Server Error",
-                  "An unexpected Server Error occurred.  Please try again later."
-                );
-                res.send(error.code, error.response);
-                return next();
+                return next(Response.getInternalServerError());
               }
 
               // Build the Response Models
@@ -164,13 +152,7 @@ function logout(req, res, next) {
 
       // Server Error
       if ( err ) {
-        let error = Response.buildError(
-          5002,
-          "API Server Error",
-          "An unexpected Server Error occurred.  Please try again later."
-        );
-        res.send(error.code, error.response);
-        return next();
+        return next(Response.getInternalServerError());
       }
 
       // Session Removed...

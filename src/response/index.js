@@ -2,6 +2,7 @@
 
 const error = require('./error.js');
 const success = require('./success.js');
+const restErrs = require('restify-errors');
 
 /**
  * API Response
@@ -24,6 +25,14 @@ class Response {
 }
 
 
+/**
+ * Return a new Restify Internal Server Error
+ * This error is handled in handlers/errors.js
+ * @returns {restErrs.InternalServerError}
+ */
+Response.getInternalServerError = function() {
+  return new restErrs.InternalServerError();
+};
 
 /**
  * Create an Error API Response

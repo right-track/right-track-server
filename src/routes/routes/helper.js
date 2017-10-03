@@ -81,13 +81,7 @@ function getRoutes(req, res, next) {
 
       // Server Error
       if ( err ) {
-        let error = Response.buildError(
-          5002,
-          "API Server Error",
-          "An unexpected Server Error occurred.  Please try again later."
-        );
-        res.send(error.code, error.response);
-        return next();
+        return next(Response.getInternalServerError());
       }
 
 
@@ -132,13 +126,7 @@ function getRoute(req, res, next) {
 
       // Server Error
       if ( err ) {
-        let error = Response.buildError(
-          5002,
-          "API Server Error",
-          "An unexpected Server Error occurred.  Please try again later."
-        );
-        res.send(error.code, error.response);
-        return next();
+        return next(Response.getInternalServerError());
       }
 
       // Route Not Found

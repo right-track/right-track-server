@@ -35,13 +35,7 @@ function getAuthAccess(req, res, next) {
       // Get client access codes from the database
       clients.getClientAccess(key, function(err, access) {
         if ( err ) {
-          let error = Response.buildError(
-            5002,
-            "API Server Error",
-            "Could not get client access codes.  Please try again later."
-          );
-          res.send(error.code, error.response);
-          return next(false);
+          return next(Response.getInternalServerError());
         }
 
         // Append access codes to request

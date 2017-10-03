@@ -41,13 +41,7 @@ function validateEmail(req, res, next, email, proceed) {
 
     // Server Error
     if ( err ) {
-      let error = Response.buildError(
-        5002,
-        "API Server Error",
-        "An unexpected Server Error occurred.  Please try again later."
-      );
-      res.send(error.code, error.response);
-      return next();
+      return next(Response.getInternalServerError());
     }
 
     // Already Registered
@@ -90,13 +84,7 @@ function validateUsername(req, res, next, username, proceed) {
 
     // Server Error
     if ( err ) {
-      let error = Response.buildError(
-        5002,
-        "API Server Error",
-        "An unexpected Server Error occurred.  Please try again later."
-      );
-      res.send(error.code, error.response);
-      return next();
+      return next(Response.getInternalServerError());
     }
 
     // Username Already Registered

@@ -1,6 +1,7 @@
 'use strict';
 
-const Response = require("../response");
+const Response = require('../response');
+const c = require('../config.js');
 
 
 /**
@@ -54,7 +55,7 @@ function handleMethodNotAllowedError(req, res, err, next) {
  * Error Handler: Server Error
  */
 function handleServerError(req, res, err, next) {
-  let config = require('../config.js').get();
+  let config = c.get();
   require("./headers.js")(req, res);
 
   let message = "An unexpected Server Error occurred.  Please try again later. " +
@@ -62,8 +63,8 @@ function handleServerError(req, res, err, next) {
 
   err.toJSON = function customToJSON() {
     return Response.buildError(
-      500,
-      "Internal Server Error",
+      5002,
+      "API Server Error",
       message
     ).response;
   };

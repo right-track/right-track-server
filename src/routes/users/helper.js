@@ -118,13 +118,7 @@ function registerUser(req, res, next) {
 
             // Server Error
             if ( err || pid === undefined ) {
-              let error = Response.buildError(
-                5002,
-                "API Server Error",
-                "An unexpected Server Error occurred.  Please try again later."
-              );
-              res.send(error.code, error.response);
-              return next();
+              return next(Response.getInternalServerError());
             }
 
             // Get the user and user's sessions
@@ -133,13 +127,7 @@ function registerUser(req, res, next) {
 
                 // Server Error
                 if ( userErr || sessionErr ) {
-                  let error = Response.buildError(
-                    5002,
-                    "API Server Error",
-                    "An unexpected Server Error occurred.  Please try again later."
-                  );
-                  res.send(error.code, error.response);
-                  return next();
+                  return next(Response.getInternalServerError());
                 }
 
                 // Build the User Model
@@ -186,13 +174,7 @@ function removeUser(req, res, next) {
 
       // Server Error
       if ( err ) {
-        let error = Response.buildError(
-          5002,
-          "API Server Error",
-          "An unexpected Server Error occurred.  Please try again later."
-        );
-        res.send(error.code, error.response);
-        return next();
+        return next(Response.getInternalServerError());
       }
 
       // Build Response
@@ -236,13 +218,7 @@ function getUsers(req, res, next) {
 
       // Server Error
       if ( err || userResults.length === 0 ) {
-        let error = Response.buildError(
-          5002,
-          "API Server Error",
-          "An unexpected Server Error occurred.  Please try again later."
-        );
-        res.send(error.code, error.response);
-        return next();
+        return next(Response.getInternalServerError());
       }
 
       // Parse Each User
@@ -255,13 +231,7 @@ function getUsers(req, res, next) {
 
           // Server Error
           if ( err ) {
-            let error = Response.buildError(
-              5002,
-              "API Server Error",
-              "An unexpected Server Error occurred.  Please try again later."
-            );
-            res.send(error.code, error.response);
-            return next();
+            return next(Response.getInternalServerError());
           }
 
           // Build User Model
@@ -308,13 +278,7 @@ function getUser(req, res, next) {
 
       // Server Error
       if ( err ) {
-        let error = Response.buildError(
-          5002,
-          "API Server Error",
-          "An unexpected Server Error occurred.  Please try again later."
-        );
-        res.send(error.code, error.response);
-        return next();
+        return next(Response.getInternalServerError());
       }
 
       // User not found
@@ -333,13 +297,7 @@ function getUser(req, res, next) {
 
         // Server Error
         if ( err ) {
-          let error = Response.buildError(
-            5002,
-            "API Server Error",
-            "An unexpected Server Error occurred.  Please try again later."
-          );
-          res.send(error.code, error.response);
-          return next();
+          return next(Response.getInternalServerError());
         }
 
         // Build the User model

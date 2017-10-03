@@ -52,15 +52,7 @@ function authenticateUser(req, res, next) {
 
                     // Database Error
                     else {
-
-                      let error = Response.buildError(
-                        5002,
-                        "Server Error",
-                        "Could not update User Session.  Please try again later."
-                      );
-                      res.send(error.code, error.response);
-                      next(false);
-
+                      return next(Response.getInternalServerError());
                     }
 
 

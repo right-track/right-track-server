@@ -84,12 +84,14 @@ function buildAgencies(callback) {
 
   // Loop through each agency code
   let rtn = 0;
+  let errorFound = false;
   for ( let i = 0; i < agencyCodes.length; i++ ) {
     let agencyCode = agencyCodes[i];
 
     // Build the Agency Model
     buildAgency(agencyCode, function(err, agencyModel) {
-      if ( err ) {
+      if ( err && !errorFound ) {
+        errorFound = true;
         return callback(err);
       }
 
@@ -256,18 +258,12 @@ function buildLinks(agency, callback) {
 function getAbout(req, res, next) {
   buildAbout(req, function(err, model) {
     if ( err ) {
-      let error = Response.buildError(
-        5002,
-        "API Server Error",
-        "An unexpected Server Error occurred.  Please try again later."
-      );
-      res.send(error.code, error.response);
-      return next();
+      return next(Response.getInternalServerError());
     }
 
     let response = Response.buildResponse(model);
     res.send(response.code, response.response);
-    next();
+    return next();
   });
 }
 
@@ -281,18 +277,12 @@ function getAbout(req, res, next) {
 function getAboutAgencies(req, res, next) {
   buildAgencies(function(err, model) {
     if ( err ) {
-      let error = Response.buildError(
-        5002,
-        "API Server Error",
-        "An unexpected Server Error occurred.  Please try again later."
-      );
-      res.send(error.code, error.response);
-      return next();
+      return next(Response.getInternalServerError());
     }
 
     let response = Response.buildResponse({agencies: model});
     res.send(response.code, response.response);
-    next();
+    return next();
   });
 }
 
@@ -304,15 +294,10 @@ function getAboutAgencies(req, res, next) {
  * @param next API Handler Stack
  */
 function getAboutAgency(req, res, next) {
-  buildAgency(req.params.agency, function(err, model) {
+  let agency = req.params.agency;
+  buildAgency(agency, function(err, model) {
     if ( err ) {
-      let error = Response.buildError(
-        5002,
-        "API Server Error",
-        "An unexpected Server Error occurred.  Please try again later."
-      );
-      res.send(error.code, error.response);
-      return next();
+      return next(Response.getInternalServerError());
     }
 
     let response = Response.buildResponse({agency: model});
@@ -332,13 +317,7 @@ function getAboutAgencyLinks(req, res, next) {
   let agency = req.params.agency;
   buildLinks(agency, function(err, model) {
     if ( err ) {
-      let error = Response.buildError(
-        5002,
-        "API Server Error",
-        "An unexpected Server Error occurred.  Please try again later."
-      );
-      res.send(error.code, error.response);
-      return next();
+      return next(Response.getInternalServerError());
     }
 
     let response = Response.buildResponse(model);

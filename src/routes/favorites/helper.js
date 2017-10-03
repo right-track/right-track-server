@@ -82,13 +82,7 @@ function getLastMod(req, res, next) {
 
       // Server Error
       if ( err ) {
-        let error = Response.buildError(
-          5002,
-          "API Server Error",
-          "An unexpected Server Error occurred.  Please try again later."
-        );
-        res.send(error.code, error.response);
-        return next();
+        return next(Response.getInternalServerError());
       }
 
       // Last Mod is undefined, send a 204 Response
@@ -127,13 +121,7 @@ function getFavs(req, res, next) {
 
       // Server Error
       if ( err ) {
-        let error = Response.buildError(
-          5002,
-          "API Server Error",
-          "An unexpected Server Error occurred.  Please try again later."
-        );
-        res.send(error.code, error.response);
-        return next();
+        return next(Response.getInternalServerError());
       }
 
       // No favorites found, Send NO CONTENT
@@ -275,13 +263,7 @@ function addFavs(req, res, next) {
 
               // Server Error
               if ( lastModErr || clearErr || addErr ) {
-                let error = Response.buildError(
-                  5002,
-                  "API Server Error",
-                  "An unexpected Server Error occurred.  Please try again later."
-                );
-                res.send(error.code, error.response);
-                return next();
+                return next(Response.getInternalServerError());
               }
 
 
