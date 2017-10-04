@@ -28,10 +28,10 @@ let routes = function(server) {
    * @apiError (401 Error Codes) 4019 User Not Registered
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "user": {
    *       "id": "f094eebab41c4f4fa209f8af48b51d4b",
    *       "username": "user1",
@@ -48,8 +48,8 @@ let routes = function(server) {
    *       "inactive": "2017-10-01T20:35:00.000Z",
    *       "expires": "2017-10-24T20:35:00.000Z"
    *     }
-   *     }
    *   }
+   * }
    */
   server.post("/auth/login", helper.login);
 
@@ -78,13 +78,13 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4043 User Not Found
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "session": {}
-   *     }
    *   }
+   * }
    */
   server.del("/auth/logout/:userPID", helper.logout);
 

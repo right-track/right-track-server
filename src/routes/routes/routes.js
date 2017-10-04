@@ -25,32 +25,32 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4041 Unsupported Agency
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "agency": "mnr",
    *     "routes": [
    *       {
-   *       "id": "5",
-   *       "shortName": "Danbury",
-   *       "longName": "Danbury",
-   *       "type": 2,
-   *       "color": "EE0034",
-   *       "textColor": "FFFFFF",
-   *       "agency": {
-   *         "id": "1",
-   *         "name": "Metro-North Railroad",
-   *         "url": "http://www.mta.info/mnr",
-   *         "timezone": "America/New_York"
-   *       }
+   *         "id": "5",
+   *         "shortName": "Danbury",
+   *         "longName": "Danbury",
+   *         "type": 2,
+   *         "color": "EE0034",
+   *         "textColor": "FFFFFF",
+   *         "agency": {
+   *           "id": "1",
+   *           "name": "Metro-North Railroad",
+   *           "url": "http://www.mta.info/mnr",
+   *           "timezone": "America/New_York"
+   *         }
    *       },
    *       {
-   *       "...": "..."
+   *         "...": "..."
    *       }
    *     ]
-   *     }
    *   }
+   * }
    */
   server.get("/routes/:agency", helper.getRoutes);
 
@@ -76,10 +76,10 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4042 Route Not Found
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "agency": "mnr",
    *     "route": {
    *       "id": "1",
@@ -89,14 +89,14 @@ let routes = function(server) {
    *       "color": "009B3A",
    *       "textColor": "FFFFFF",
    *       "agency": {
-   *       "id": "1",
-   *       "name": "Metro-North Railroad",
-   *       "url": "http://www.mta.info/mnr",
-   *       "timezone": "America/New_York"
+   *         "id": "1",
+   *         "name": "Metro-North Railroad",
+   *         "url": "http://www.mta.info/mnr",
+   *         "timezone": "America/New_York"
    *       }
    *     }
-   *     }
    *   }
+   * }
    */
   server.get("/routes/:agency/:id", helper.getRoute);
 

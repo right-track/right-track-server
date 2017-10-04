@@ -25,28 +25,26 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4041 Unsupported Agency
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "agency": "mnr",
    *     "stops": [
    *       {
-   *       "id": "168",
-   *       "name": "Ansonia",
-   *       "lat": 41.344156,
-   *       "lon": -73.079892,
-   *       "url": "http://as0.mta.info/mnr/stations/station_detail.cfm?key=292",
-   *       "wheelchairBoarding": 0,
-   *       "statusId": "-1",
-   *       "transferWeight": 192
+   *         "id": "168",
+   *         "name": "Ansonia",
+   *         "lat": 41.344156,
+   *         "lon": -73.079892,
+   *         "url": "http://as0.mta.info/mnr/stations/station_detail.cfm?key=292",
+   *         "wheelchairBoarding": 0
    *       },
    *       {
-   *       "...": "..."
+   *         "...": "..."
    *       }
    *     ]
-   *     }
    *   }
+   * }
    */
   server.get("/stops/:agency", helper.getStops);
 

@@ -74,46 +74,46 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4043 User Not Found
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "agency": "mnr",
    *     "lastModified": "Mon Sep 25 2017 18:55:41 GMT-0400 (EDT)",
    *     "favorites": [
    *       {
-   *       "type": 1,
-   *       "sequence": 1,
-   *       "stop": {
-   *         "id": "1",
-   *         "statusId": "1",
-   *         "name": "Grand Central Terminal"
-   *       },
-   *       "options": {}
-   *       },
-   *       {
-   *       "type": 2,
-   *       "sequence": 2,
-   *       "origin": {
-   *         "id": "1",
-   *         "statusId": "1",
-   *         "name": "Grand Central Terminal"
-   *       },
-   *       "destination": {
-   *         "id": "110",
-   *         "statusId": "110",
-   *         "name": "Larchmont"
-   *       },
-   *         "options": {
-   *         "allowTransfers": true
-   *       }
+   *         "type": 1,
+   *         "sequence": 1,
+   *         "stop": {
+   *           "id": "1",
+   *           "statusId": "1",
+   *           "name": "Grand Central Terminal"
+   *         },
+   *         "options": {}
    *       },
    *       {
-   *       "...": "..."
+   *         "type": 2,
+   *         "sequence": 2,
+   *         "origin": {
+   *           "id": "1",
+   *           "statusId": "1",
+   *           "name": "Grand Central Terminal"
+   *         },
+   *         "destination": {
+   *           "id": "110",
+   *           "statusId": "110",
+   *           "name": "Larchmont"
+   *         },
+   *           "options": {
+   *           "allowTransfers": true
+   *         }
+   *       },
+   *       {
+   *         "...": "..."
    *       }
    *     ]
-   *     }
    *   }
+   * }
    */
   server.get("/favorites/:agency/:userPID", helper.getFavs);
 
@@ -141,9 +141,9 @@ let routes = function(server) {
    *   "type": 1,
    *   "sequence": 1,
    *   "stop": {
-   *   "id": "1",
-   *   "statusId": "56",
-   *   "name": "Fordham"
+   *     "id": "1",
+   *     "statusId": "56",
+   *     "name": "Fordham"
    *   },
    *   "options": {}
    * }
@@ -153,17 +153,17 @@ let routes = function(server) {
    *   "type": 2,
    *   "sequence": 2,
    *   "origin": {
-   *   "id": "1",
-   *   "statusId": "1",
-   *   "name": "Grand Central Terminal"
+   *     "id": "1",
+   *     "statusId": "1",
+   *     "name": "Grand Central Terminal"
    *   },
    *   "destination": {
-   *   "id": "110",
-   *   "statusId": "110",
-   *   "name": "Larchmont"
+   *     "id": "110",
+   *     "statusId": "110",
+   *     "name": "Larchmont"
    *   },
    *   "options": {
-   *   "allowTransfers": true
+   *     "allowTransfers": true
    *   }
    * }
    *
@@ -190,46 +190,46 @@ let routes = function(server) {
    * @apiError (400 Error Codes) 4006 Favorites Not Valid
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "agency": "mnr",
    *     "lastModified": "Mon Sep 25 2017 18:55:41 GMT-0400 (EDT)",
    *     "favorites": [
    *       {
-   *       "type": 1,
-   *       "sequence": 1,
-   *       "stop": {
-   *         "id": "56",
-   *         "statusId": "56",
-   *         "name": "Fordham"
-   *       },
-   *       "options": {}
+   *         "type": 1,
+   *         "sequence": 1,
+   *         "stop": {
+   *           "id": "56",
+   *           "statusId": "56",
+   *           "name": "Fordham"
+   *         },
+   *         "options": {}
    *       },
    *       {
-   *       "type": 2,
-   *       "sequence": 2,
-   *       "origin": {
-   *         "id": "1",
-   *         "statusId": "1",
-   *         "name": "Grand Central Terminal"
-   *       },
-   *       "destination": {
-   *         "id": "110",
-   *         "statusId": "110",
-   *         "name": "Larchmont"
-   *       },
+   *         "type": 2,
+   *         "sequence": 2,
+   *         "origin": {
+   *           "id": "1",
+   *           "statusId": "1",
+   *           "name": "Grand Central Terminal"
+   *         },
+   *         "destination": {
+   *           "id": "110",
+   *           "statusId": "110",
+   *           "name": "Larchmont"
+   *         },
    *         "options": {
-   *         "allowTransfers": true
-   *       }
+   *           "allowTransfers": true
+   *         }
    *       },
    *       {
-   *       "...": "..."
+   *         "...": "..."
    *       }
    *     ]
-   *     }
    *   }
+   * }
    */
   server.post("/favorites/:agency/:userPID", helper.addFavs);
 

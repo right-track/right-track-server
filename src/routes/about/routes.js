@@ -17,10 +17,10 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5002 API Server Error
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "server": {
    *       "name": "Right Track API Server [ALPHA]",
    *       "version": "0.0.1",
@@ -34,16 +34,16 @@ let routes = function(server) {
    *     },
    *     "agencies": [
    *       {
-   *       "id": "lirr",
-   *       "name": "Long Island Rail Road",
-   *       "version": 2017090912
+   *         "id": "lirr",
+   *         "name": "Long Island Rail Road",
+   *         "version": 2017090912
    *       },
    *       {
-   *       "...": "..."
+   *         "...": "..."
    *       }
    *     ]
-   *     }
    *   }
+   * }
    */
   server.get("/about", helper.getAbout);
 
@@ -60,22 +60,22 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5002 API Server Error
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "agencies": [
    *       {
-   *       "id": "lirr",
-   *       "name": "Long Island Rail Road",
-   *       "version": 2017090912
+   *         "id": "lirr",
+   *         "name": "Long Island Rail Road",
+   *         "version": 2017090912
    *       },
    *       {
-   *       "...": "..."
+   *         "...": "..."
    *       }
    *     ]
-   *     }
    *   }
+   * }
    */
   server.get("/about/agencies", helper.getAboutAgencies);
 
@@ -95,17 +95,17 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4041 Unsupported Agency
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "agency": {
    *       "id": "mnr",
    *       "name": "Metro North Railroad & SLE",
    *       "version": 2017083014
    *     }
-   *     }
    *   }
+   * }
    */
   server.get("/about/agencies/:agency", helper.getAboutAgency);
 
@@ -144,31 +144,31 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4041 Unsupported Agency
    *
    * @apiSuccessExample {json} Example Response:
-   *   HTTP/1.1 200 OK
-   *   {
-   *     "status": "success",
-   *     "response": {
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
    *     "agency": "mnr",
    *     "links": [
    *       {
-   *       "category": "App Resources",
-   *       "links": [
-   *         {
-   *         "title": "Google Play",
-   *         "description": "View Right Track: Metro North's listing in the Google Play store.  Install updates, rate the app and leave comments.",
-   *         "url": "https://play.google.com/store/apps/details?id=com.waring.MNRTrainTime"
-   *         },
-   *         {
-   *         "...": "..."
-   *         }
-   *       ]
+   *         "category": "App Resources",
+   *         "links": [
+   *           {
+   *             "title": "Google Play",
+   *             "description": "View Right Track: Metro North's listing in the Google Play store.  Install updates, rate the app and leave comments.",
+   *             "url": "https://play.google.com/store/apps/details?id=com.waring.MNRTrainTime"
+   *           },
+   *           {
+   *             "...": "..."
+   *           }
+   *         ]
    *       },
    *       {
-   *       "...": "..."
+   *         "...": "..."
    *       }
    *     ]
-   *     }
    *   }
+   * }
    */
   server.get("/about/agencies/:agency/links", helper.getAboutAgencyLinks);
 
