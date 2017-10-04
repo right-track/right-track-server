@@ -5,6 +5,10 @@
     "template": {
         "withCompare": false
     },
+    "footer": {
+        "title": "Error Codes",
+        "filename": "./static/errors.md"
+    },
     "order": [
         "getServerInformation",
         "getAllAgencyInformation",
