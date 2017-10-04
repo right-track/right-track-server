@@ -37,7 +37,7 @@
             "requireDigits": true,
             "requireSymbols": false,
             "blockUsername": true,
-            "blacklist": "./password-blacklist.txt"
+            "blacklist": "./static/password-blacklist.txt"
         }
     },
     "allowDebugAccess": false
