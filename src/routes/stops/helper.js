@@ -32,9 +32,7 @@ function buildStop(stop) {
     lat: stop.lat,
     lon: stop.lon,
     url: stop.url,
-    wheelchairBoarding: stop.wheelchairBoarding,
-    statusId: stop.statusId,
-    transferWeight: stop.transferWeight
+    wheelchairBoarding: stop.wheelchairBoarding
   }
 }
 

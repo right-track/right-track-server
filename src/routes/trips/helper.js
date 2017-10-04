@@ -33,13 +33,11 @@ let buildStopTime = function(stopTime) {
   return {
     stop: stop,
     arrival: {
-      readable: arrivalTime,
-      time: stopTime.arrivalTime,
+      time: arrivalTime,
       seconds: stopTime.arrivalTimeSeconds
     },
     departure: {
-      readable: departureTime,
-      time: stopTime.departureTime,
+      time: departureTime,
       seconds: stopTime.departureTimeSeconds
     },
     stopSequence: stopTime.stopSequence,
