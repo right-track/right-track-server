@@ -13,10 +13,19 @@ let CONFIG = {};
 let AGENCIES = [];
 
 
+
+
+
+// Load and parse default server config
+read(defaultConfigLocation);
+
+
+
+
 /**
  * Clear the stored config and agency information
  */
-let clear = function() {
+function clear() {
   // Reset the agency
   let agencies = CONFIG.agencies;
   for ( let i = 0; i < agencies.length; i++ ) {
@@ -28,13 +37,13 @@ let clear = function() {
   // Reset the server config and agency cache
   CONFIG = {};
   AGENCIES = [];
-};
+}
 
 
 /**
  * Parse the supported agency configurations
  */
-let parseAgencyConfig = function() {
+function parseAgencyConfig() {
 
   // Remove 'example' agency from list
   let agencies = CONFIG.agencies;
@@ -71,12 +80,13 @@ let parseAgencyConfig = function() {
     // Add supported agency and it's config to list
     AGENCIES[id] = {
       config: agencyConfig,
-      db: db
+      db: db,
+      feed: agency.feed
     };
 
   }
 
-};
+}
 
 /**
  * Read an additional config file from the specified location
@@ -84,7 +94,7 @@ let parseAgencyConfig = function() {
  * any arrays (such as the lists of supported app agencies).
  * @param location Path to config file (relative paths are relative to path of node process)
  */
-let read = function(location) {
+function read(location) {
   // Relative path is relative to shell path of node process
   if ( location.charAt(0) === '.' ) {
     location = path.join(process.cwd(), "/", location);
@@ -107,6 +117,7 @@ let read = function(location) {
     }
   }
 
+  // TODO: make this more generalized for all properties with a path
   // Parse relative agency require and config paths
   for ( let i = 0; i < add.agencies.length; i++ ) {
     let agency = add.agencies[i];
@@ -145,7 +156,7 @@ let read = function(location) {
     console.warn("********************************************************");
   }
 
-};
+}
 
 
 /**
@@ -154,16 +165,16 @@ let read = function(location) {
  * read() function.
  * @returns {*} configuration variables
  */
-let get = function() {
+function get() {
   return CONFIG;
-};
+}
 
 
 /**
  * Get an array of supported agency codes
  * @returns {string[]} list of agency codes
  */
-let getAgencies = function() {
+function getAgencies() {
   let rtn = [];
   for ( let property in AGENCIES ) {
     if ( AGENCIES.hasOwnProperty(property) ) {
@@ -171,7 +182,7 @@ let getAgencies = function() {
     }
   }
   return rtn;
-};
+}
 
 
 /**
@@ -179,9 +190,9 @@ let getAgencies = function() {
  * @param agency agency code
  * @returns {boolean} true if agency is supported
  */
-let isAgencySupported = function(agency) {
+function isAgencySupported(agency) {
   return AGENCIES.hasOwnProperty(agency);
-};
+}
 
 
 /**
@@ -189,9 +200,9 @@ let isAgencySupported = function(agency) {
  * @param agency agency code
  * @returns {*} agency configuration variables
  */
-let getAgencyConfig = function(agency) {
+function getAgencyConfig(agency) {
   return AGENCIES[agency].config;
-};
+}
 
 
 /**
@@ -199,16 +210,18 @@ let getAgencyConfig = function(agency) {
  * @param agency agency code
  * @returns {RightTrackDB} The Right Track DB
  */
-let getAgencyDB = function(agency) {
+function getAgencyDB(agency) {
   return AGENCIES[agency].db;
-};
+}
 
-
-
-
-
-// Load and parse default server config
-read(defaultConfigLocation);
+/**
+ * Get the Station Feed Loader for the specified agency
+ * @param agency agency code
+ * @returns {StationFeed} Agency's Station Feed loader
+ */
+function getAgencyStationFeed(agency) {
+  return AGENCIES[agency].feed;
+}
 
 
 
@@ -221,5 +234,6 @@ module.exports = {
   getAgencies: getAgencies,
   isAgencySupported: isAgencySupported,
   getAgencyConfig: getAgencyConfig,
-  getAgencyDB: getAgencyDB
+  getAgencyDB: getAgencyDB,
+  getAgencyStationFeed: getAgencyStationFeed
 };

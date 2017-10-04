@@ -161,5 +161,6 @@ let getTrip = function(req, res, next) {
 
 // Export the functions
 module.exports = {
-  getTrip: getTrip
+  getTrip: getTrip,
+  buildTrip: buildTrip
 };

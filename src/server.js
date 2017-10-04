@@ -97,6 +97,7 @@ require('./routes/stops/routes.js')(server);
 require('./routes/trips/routes.js')(server);
 require('./routes/auth/routes.js')(server);
 require('./routes/users/routes.js')(server);
+require('./routes/realtime/routes.js')(server);
 
 
 
