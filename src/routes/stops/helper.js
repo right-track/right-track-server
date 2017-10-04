@@ -22,6 +22,10 @@ const Response = require('../../response');
  * @return {object} Stop Model
  */
 function buildStop(stop) {
+  if ( stop === undefined ) {
+    return undefined;
+  }
+
   return {
     id: stop.id,
     name: stop.name,

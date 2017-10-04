@@ -17,7 +17,7 @@ function build(code, type, message) {
       message: message
     }
   }
-};
+}
 
 
 module.exports = build;

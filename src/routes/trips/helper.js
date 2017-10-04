@@ -74,6 +74,10 @@ let buildStopTimes = function(stopTimes) {
  * @return {object} Trip Model
  */
 let buildTrip = function(trip) {
+  if ( trip === undefined ) {
+    return undefined;
+  }
+
   let route = routeHelper.buildRoute(trip.route);
   let stops = buildStopTimes(trip.stopTimes);
 
