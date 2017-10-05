@@ -6,7 +6,7 @@
     "timeout": 5,
     "maintainer": {
         "name": "David Waring",
-        "email": "webmaster@righttrack.io",
+        "email": "dev@davidwaring.net",
         "source": "https://github.com/dwaring87/right-track-api-server"
     },
     "database": {

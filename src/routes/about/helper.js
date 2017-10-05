@@ -30,7 +30,8 @@ function buildServer(req) {
     version: config.version,
     url: config.url,
     host: req.headers.host,
-    hostname: req.log.fields.hostname
+    hostname: req.log.fields.hostname,
+    uptime: _getUptime()
   }
 }
 
@@ -66,7 +67,8 @@ function buildAgency(agencyCode, callback) {
     let agencyModel = {
       id: agencyConfig.id,
       name: agencyConfig.name,
-      version: about.version
+      version: about.version,
+      supportsStationFeed: c.getAgencyStationFeed(agencyConfig.id) !== undefined
     };
 
     // Return model
@@ -360,6 +362,40 @@ function getAboutAgencyIcon(req, res, next) {
   });
 }
 
+
+/**
+ * Get human readable string of process uptime
+ * @returns {string} human readable string
+ */
+function _getUptime() {
+  function numberEnding (number) {
+    return (number > 1) ? 's' : '';
+  }
+
+  let temp = process.uptime();
+  let years = Math.floor(temp / 31536000);
+  if (years) {
+    return years + ' year' + numberEnding(years);
+  }
+
+  let days = Math.floor((temp %= 31536000) / 86400);
+  if (days) {
+    return days + ' day' + numberEnding(days);
+  }
+  let hours = Math.floor((temp %= 86400) / 3600);
+  if (hours) {
+    return hours + ' hour' + numberEnding(hours);
+  }
+  let minutes = Math.floor((temp %= 3600) / 60);
+  if (minutes) {
+    return minutes + ' minute' + numberEnding(minutes);
+  }
+  let seconds = temp % 60;
+  if (seconds) {
+    return seconds + ' second' + numberEnding(seconds);
+  }
+  return 'just started...';
+}
 
 
 
