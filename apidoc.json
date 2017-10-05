@@ -1,7 +1,7 @@
 {
-    "name": "Right Track API Server Documentation",
-    "description": "This website fully documents the current Right Track API Server endpoints, their parameters and responses.",
-    "title": "API Documentation",
+    "name": "Right Track API Server",
+    "description": "Documentation for API endpoints and their parameters and responses",
+    "title": "API Server Documentation",
     "template": {
         "withCompare": false
     },
