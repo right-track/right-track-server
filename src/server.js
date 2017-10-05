@@ -18,6 +18,7 @@ const agency = require('./handlers/agency.js');
 const auth = require('./handlers/authorization.js');
 const authentication = require('./handlers/authentication.js');
 const timeout = require('./handlers/timeout.js');
+const index = require('./handlers/index.js');
 
 
 
@@ -47,6 +48,7 @@ let server = restify.createServer({
 server.listen({port: props.port, host: props.host}, function() {
   console.log('===========================================================');
   console.info('==> API Server is up and running @ ' + server.url + '...');
+  index.buildHTML();
 });
 
 
@@ -79,6 +81,9 @@ server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
 
+
+// SERVE INDEX PAGE
+server.get('/', index.serveHTML);
 
 // SERVE API DOCUMENTATION
 server.get('/doc', function(req, res, next) {

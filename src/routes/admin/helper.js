@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const index = require('../../handlers/index.js');
 const auth = require('../../handlers/authorization.js');
 const config = require('../../config.js');
 const Response = require('../../response');
@@ -100,6 +101,9 @@ function reloadConfig(req, res, next) {
         mysql.connect();
       }
     );
+
+    // Rebuild the Index HTML
+    index.buildHTML();
 
 
     // When debug is enabled, display the reloaded config

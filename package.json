@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "deepmerge": "^1.5.1",
+    "dot": "^1.1.2",
     "email-validator": "^1.1.1",
     "mysql": "^2.14.1",
     "password-validator": "^4.0.0",
