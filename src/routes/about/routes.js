@@ -25,7 +25,8 @@ let routes = function(server) {
    *       "name": "Right Track API Server [ALPHA]",
    *       "version": "0.0.1",
    *       "host": "localhost:3000",
-   *       "hostname": "FINS.local"
+   *       "hostname": "FINS.local",
+   *       "uptime": "5 hours"
    *     },
    *     "maintainer": {
    *       "name": "David Waring",
@@ -36,7 +37,8 @@ let routes = function(server) {
    *       {
    *         "id": "lirr",
    *         "name": "Long Island Rail Road",
-   *         "version": 2017090912
+   *         "version": 2017090912,
+   *         "supportsStationFeed": false
    *       },
    *       {
    *         "...": "..."
@@ -68,7 +70,8 @@ let routes = function(server) {
    *       {
    *         "id": "lirr",
    *         "name": "Long Island Rail Road",
-   *         "version": 2017090912
+   *         "version": 2017090912,
+   *         "supportsStationFeed": false
    *       },
    *       {
    *         "...": "..."
@@ -102,7 +105,8 @@ let routes = function(server) {
    *     "agency": {
    *       "id": "mnr",
    *       "name": "Metro North Railroad & SLE",
-   *       "version": 2017083014
+   *       "version": 2017083014,
+   *       "supportsStationFeed": true
    *     }
    *   }
    * }
