@@ -35,9 +35,11 @@ function buildFeed(feed) {
  */
 function buildDepartures(departures) {
   let rtn = [];
-  for ( let i = 0; i < departures.length; i++ ) {
-    let departure = departures[i];
-    rtn.push(buildDeparture(departure));
+  if ( departures !== undefined ) {
+    for ( let i = 0; i < departures.length; i++ ) {
+      let departure = departures[i];
+      rtn.push(buildDeparture(departure));
+    }
   }
   return rtn;
 }
@@ -67,7 +69,9 @@ function buildDeparture(departure) {
         time: departure.status.estDeparture.getTimeReadable(),
         seconds: departure.status.estDeparture.getTimeSeconds(),
         date: departure.status.estDeparture.getDateInt()
-      }
+      },
+      track: departure.status.track,
+      remarks: departure.status.remarks
     }
   }
 }
@@ -147,7 +151,6 @@ function getStationFeed(req, res, next) {
           return next(Response.getInternalServerError());
         }
       }
-
 
       // BUILD AND SEND THE RESPONSE
       let response = Response.buildResponse(
