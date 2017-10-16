@@ -30,8 +30,7 @@ function buildServer(req) {
     version: config.version,
     url: config.url,
     host: req.headers.host,
-    hostname: req.log.fields.hostname,
-    uptime: _getUptime()
+    hostname: req.log.fields.hostname
   }
 }
 
@@ -68,7 +67,7 @@ function buildAgency(agencyCode, callback) {
       id: agencyConfig.id,
       name: agencyConfig.name,
       version: about.version,
-      supportsStationFeed: c.getAgencyStationFeed(agencyConfig.id) !== undefined
+      supportsStationFeed: c.isAgencyStationFeedSupported(agencyConfig.id)
     };
 
     // Return model

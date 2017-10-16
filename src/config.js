@@ -185,7 +185,7 @@ function getAgencies() {
 
 /**
  * Check if the specified agency is supported / loaded
- * @param agency agency code
+ * @param {string} agency agency code
  * @returns {boolean} true if agency is supported
  */
 function isAgencySupported(agency) {
@@ -195,7 +195,7 @@ function isAgencySupported(agency) {
 
 /**
  * Get the configuration variables from the specified agency
- * @param agency agency code
+ * @param {string} agency agency code
  * @returns {*} agency configuration variables
  */
 function getAgencyConfig(agency) {
@@ -205,7 +205,7 @@ function getAgencyConfig(agency) {
 
 /**
  * Get the RightTrackDB for the specified agency
- * @param agency agency code
+ * @param {string} agency agency code
  * @returns {RightTrackDB} The Right Track DB
  */
 function getAgencyDB(agency) {
@@ -214,8 +214,17 @@ function getAgencyDB(agency) {
 
 
 /**
+ * Check if the specified agency supports real-time Station Feeds.
+ * @param {string} agency agency code
+ * @returns {boolean} True if the agency has implemented Station Feeds
+ */
+function isAgencyStationFeedSupported(agency) {
+  return AGENCIES[agency].agency.isFeedSupported();
+}
+
+/**
  * Get the Station Feed Loader for the specified agency
- * @param agency agency code
+ * @param {string} agency agency code
  * @returns {StationFeed} Agency's Station Feed loader
  */
 function getAgencyStationFeed(agency) {
@@ -333,5 +342,6 @@ module.exports = {
   isAgencySupported: isAgencySupported,
   getAgencyConfig: getAgencyConfig,
   getAgencyDB: getAgencyDB,
+  isAgencyStationFeedSupported: isAgencyStationFeedSupported,
   getAgencyStationFeed: getAgencyStationFeed
 };
