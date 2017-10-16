@@ -39,6 +39,12 @@ function get() {
  * Clear the stored config and agency information
  */
 function clear() {
+
+  // Reset the agency configurations
+  for ( let id in AGENCIES ) {
+    AGENCIES[id].agency.resetConfig();
+  }
+
   CONFIG = {};
   AGENCIES = [];
 }
