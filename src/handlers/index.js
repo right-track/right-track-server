@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const dot = require('dot');
 const c = require('../config.js');
+const DateTime = require("right-track-core/modules/utils/DateTime.js");
 
 // INDEX HTML
 let INDEX_HTML = "<h1>" + c.get().name + "</h1>";
@@ -34,7 +35,8 @@ function buildHTML() {
     let it = {
       config: config,
       agencies: agencies,
-      copyrightYear: new Date().getFullYear()
+      copyrightYear: new Date().getFullYear(),
+      build: new DateTime.now().toHTTPString()
     };
 
     // Replace variables in HTML
