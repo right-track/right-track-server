@@ -20,31 +20,20 @@ function buildConfig() {
   let server = config.get();
 
   // Get Agency Codes
-  let codes = config.getAgencies();
+  let agencyCodes = config.getAgencies();
 
-  // Replacement server agencies
+  // Agency configurations
   let agencies = [];
 
   // Parse Each Agency
-  for ( let i = 0; i < codes.length; i++ ) {
-    let agencyConfig = config.getAgencyConfig(codes[i]);
-
-    // Add agency configuration to server's agency block...
-    for ( let j = 0; j < server.agencies.length; j++ ) {
-      let a = server.agencies[j];
-      if ( a.id === agencyConfig.id ) {
-        a.agencyConfig = agencyConfig;
-        agencies.push(a);
-      }
-    }
+  for ( let i = 0; i < agencyCodes.length; i++ ) {
+    agencies.push(config.getAgencyConfig(agencyCodes[i]));
   }
-
-  // Replace server agencies block with amended data
-  server.agencies = agencies;
 
   // Return Config Model
   return {
-    config: server
+    server: server,
+    agencies: agencies
   };
 }
 

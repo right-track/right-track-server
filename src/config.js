@@ -58,6 +58,8 @@ function clear() {
  */
 function read(location=defaultConfigLocation) {
 
+  console.log('===========================================================');
+
   // Relative path is relative to shell path of node process
   if ( _isRelativePath(location) ) {
     location = _makeAbsolutePath(process.cwd(), location);
@@ -87,13 +89,15 @@ function read(location=defaultConfigLocation) {
 
   // Warn when allow debug access is set
   if ( CONFIG.allowDebugAccess ) {
-    console.warn("********************************************************");
-    console.warn("=======> DEBUG ACCESS IS ALLOWED ON THIS SERVER <=======");
-    console.warn("This should only be set in development environments since");
-    console.warn("it may reveal sensitive information.  To disable this,");
-    console.warn("set the 'allowDebugAccess' server setting to false.");
-    console.warn("********************************************************");
+    console.warn("***********************************************************");
+    console.warn("* =======> DEBUG ACCESS IS ALLOWED ON THE SERVER <======= *");
+    console.warn("* This should only be allowed in development environments *");
+    console.warn("* since it may reveal sensitive information.  To disable  *");
+    console.warn("* this set the 'allowDebugAccess' server setting to false.*");
+    console.warn("***********************************************************");
   }
+
+  console.log('===========================================================');
 
 }
 
