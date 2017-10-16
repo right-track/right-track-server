@@ -1,8 +1,8 @@
 {
-  "name": "right-track-api-server",
+  "name": "right-track-server",
   "version": "0.0.1",
   "description": "Right Track API Server",
-  "author": "David Waring <dev@davidwaring.net>",
+  "author": "David Waring <dev@davidwaring.net> (https://davidwaring.net)",
   "license": "MIT",
   "main": "src/server.js",
   "scripts": {
@@ -17,11 +17,20 @@
     "password-validator": "^4.0.0",
     "restify": "^6.0.0",
     "restify-errors": "^5.0.0",
-    "right-track-core": "file:../core",
-    "right-track-db-sqlite3": "file:../db-sqlite3",
+    "right-track-core": "^0.9.0",
+    "right-track-db-sqlite3": "^1.1.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
     "apidoc": "^0.17.6"
+  },
+  "homepage": "https://righttrack.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/right-track/right-track-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/right-track/right-track-server/issues",
+    "email": "dev@davidwaring.net"
   }
 }
