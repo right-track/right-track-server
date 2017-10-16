@@ -62,8 +62,8 @@ server.on('Error', errors.handleServerError);
 
 // Process Monitors
 process.on('uncaughtException', function(err) {
-  console.log("UNCAUGHT EXCEPTION");
-  console.log(err);
+  console.error("UNCAUGHT EXCEPTION");
+  console.error(err);
 });
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);

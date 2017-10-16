@@ -3,10 +3,11 @@
 const path = require("path");
 const fs = require("fs");
 const merge = require("deepmerge");
+const core = require("right-track-core");
 const RightTrackDB = require("right-track-db-sqlite3");
 
 // Config variables
-const defaultConfigLocation = path.join(__dirname, "../server.json");
+const defaultConfigLocation = path.normalize(path.join(__dirname, "/../server.json"));
 let CONFIG = {};
 
 // Supported Agencies
@@ -14,91 +15,49 @@ let AGENCIES = [];
 
 
 
+// Load and parse default server config when the file is required
+read();
 
 
-// Load and parse default server config
-read(defaultConfigLocation);
 
 
+// ==== SERVER CONFIGURATION ==== //
+
+
+/**
+ * Get the current configuration variables. This will be the default
+ * configuration along with any merged config variables added with the
+ * read() function.
+ * @returns {*} configuration variables
+ */
+function get() {
+  return CONFIG;
+}
 
 
 /**
  * Clear the stored config and agency information
  */
 function clear() {
-  // Reset the agency
-  let agencies = CONFIG.agencies;
-  for ( let i = 0; i < agencies.length; i++ ) {
-    let req = agencies[i].require;
-    let agency = require(req);
-    agency.config.reset();
-  }
-
-  // Reset the server config and agency cache
   CONFIG = {};
   AGENCIES = [];
 }
 
 
 /**
- * Parse the supported agency configurations
- */
-function parseAgencyConfig() {
-
-  // Remove 'example' agency from list
-  let agencies = CONFIG.agencies;
-  let remove = -1;
-  for ( let i = 0; i < agencies.length; i++ ) {
-    let agency = agencies[i];
-    if ( agency.id === "example" ) {
-      remove = i;
-    }
-  }
-  if ( remove !== -1 ) {
-    agencies.splice(remove, 1);
-  }
-  CONFIG.agencies = agencies;
-
-  // Load Agency Modules
-  for ( let i = 0; i < CONFIG.agencies.length; i++ ) {
-    let id = CONFIG.agencies[i].id;
-    let req = CONFIG.agencies[i].require;
-    let agencyConfigPath = CONFIG.agencies[i].config;
-
-    console.log("==> Loading Agency Module (" + id + ")...");
-    console.log("... agency require location = " + req);
-    console.log("... agency config file = " + agencyConfigPath);
-
-    // Load agency and read config file
-    let agency = require(req);
-    agency.config.read(agencyConfigPath);
-    let agencyConfig = agency.config.get();
-
-    // Load Agency Database
-    let db = new RightTrackDB(agencyConfig.id, agencyConfig.db.location);
-
-    // Add supported agency and it's config to list
-    AGENCIES[id] = {
-      config: agencyConfig,
-      db: db,
-      feed: agency.feed
-    };
-
-  }
-
-}
-
-/**
  * Read an additional config file from the specified location
  * and merge it with the existing configuration.  This will combine
  * any arrays (such as the lists of supported app agencies).
- * @param location Path to config file (relative paths are relative to path of node process)
+ * @param {string} [location=defaultConfiguration] Path to config file (relative paths are relative to path of node process)
  */
-function read(location) {
+function read(location=defaultConfigLocation) {
+
   // Relative path is relative to shell path of node process
-  if ( location.charAt(0) === '.' ) {
-    location = path.join(process.cwd(), "/", location);
+  if ( _isRelativePath(location) ) {
+    location = _makeAbsolutePath(process.cwd(), location);
   }
+
+  // Server config to process...
   console.log("==> READING SERVER CONFIG FILE: " + location);
 
   // Load the config file to add
@@ -107,34 +66,8 @@ function read(location) {
   // Get directory of config file
   let dirname = path.dirname(location);
 
-  // Parse relative blacklist path
-  if ( add.registration !== undefined && add.registration.password !== undefined ) {
-    let blacklist = add.registration.password.blacklist;
-    if (blacklist !== undefined) {
-      if (blacklist.charAt(0) === ".") {
-        add.registration.password.blacklist = path.join(dirname, "/", blacklist);
-      }
-    }
-  }
-
-  // TODO: make this more generalized for all properties with a path
-  // Parse relative agency require and config paths
-  for ( let i = 0; i < add.agencies.length; i++ ) {
-    let agency = add.agencies[i];
-
-    if ( agency.require !== undefined ) {
-      if ( agency.require.charAt(0) === '.' ) {
-        agency.require = path.join(dirname, "/", agency.require);
-      }
-    }
-    if ( agency.config !== undefined ) {
-      if ( agency.config.charAt(0) === '.' ) {
-        agency.config = path.join(dirname, "/", agency.config);
-      }
-    }
-
-    add.agencies[i] = agency;
-  }
+  // Parse the config file
+  add = _parseConfig(add, dirname);
 
   // Merge the additional config file to the existing config
   CONFIG = merge(CONFIG, add, {
@@ -144,7 +77,7 @@ function read(location) {
   });
 
   // Parse the agency config information
-  parseAgencyConfig();
+  _parseAgencyConfig();
 
   // Warn when allow debug access is set
   if ( CONFIG.allowDebugAccess ) {
@@ -160,14 +93,69 @@ function read(location) {
 
 
 /**
- * Get the current configuration variables. This will be the default
- * configuration along with any merged config variables added with the
- * read() function.
- * @returns {*} configuration variables
+ * Parse the supported agency configurations
  */
-function get() {
-  return CONFIG;
+function _parseAgencyConfig() {
+
+  // Remove 'example' agency from list
+  let agencies = CONFIG.agencies;
+  let remove = -1;
+  for ( let i = 0; i < agencies.length; i++ ) {
+    let agency = agencies[i];
+    if ( agency.require === "right-track-agency-example" ) {
+      remove = i;
+    }
+  }
+  if ( remove !== -1 ) {
+    agencies.splice(remove, 1);
+  }
+  CONFIG.agencies = agencies;
+
+
+  // Load Agency Modules
+  for ( let i = 0; i < CONFIG.agencies.length; i++ ) {
+    let req = CONFIG.agencies[i].require;
+    let agencyConfigPath = CONFIG.agencies[i].config;
+
+    console.log("==> Loading Agency Module...");
+    console.log("... agency require location = " + req);
+    console.log("... agency config file = " + agencyConfigPath);
+
+    // Load agency and read config file
+    let agency = require(req);
+    if ( agencyConfigPath !== undefined ) {
+      agency.readConfig(agencyConfigPath);
+    }
+
+    // Check if agency is already loaded
+    if ( isAgencySupported(agency.id) ) {
+      console.error("AGENCY " + agency.id + " HAS ALREADY BEEN ADDED TO THE SERVER");
+      console.error("Make sure there are no duplicate declarations of agencies in the server config files");
+      process.exit(1);
+    }
+
+    // Load Agency Database
+    let db = new RightTrackDB(agency.id, agency.getConfig().db.location);
+
+    // Add agency to list
+    AGENCIES[agency.id] = {
+      agency: agency,
+      db: db
+    }
+  }
+
+  // Reset Core Query Caches
+  core.query.clearCache();
+
 }
+
+
+
+
+
+
+
+// ==== AGENCY CONFIGURATION ==== //
 
 
 /**
@@ -201,7 +189,7 @@ function isAgencySupported(agency) {
  * @returns {*} agency configuration variables
  */
 function getAgencyConfig(agency) {
-  return AGENCIES[agency].config;
+  return AGENCIES[agency].agency.getConfig();
 }
 
 
@@ -214,17 +202,117 @@ function getAgencyDB(agency) {
   return AGENCIES[agency].db;
 }
 
+
 /**
  * Get the Station Feed Loader for the specified agency
  * @param agency agency code
  * @returns {StationFeed} Agency's Station Feed loader
  */
 function getAgencyStationFeed(agency) {
-  return AGENCIES[agency].feed;
+  return AGENCIES[agency].agency.loadFeed();
 }
 
 
 
+
+// ==== HELPER FUNCTIONS ==== //
+
+
+/**
+ * Check if the directory is a relative path (begins with './' or '../')
+ * @param {string} directory Path to directory
+ * @return {boolean} True if the directory is a relative path
+ * @private
+ */
+function _isRelativePath(directory) {
+  if ( typeof directory === 'string' ) {
+    if ( directory.charAt(0) === '.' ) {
+      if ( directory.charAt(1) === '/' ) {
+        return true;
+      }
+      if ( directory.charAt(1) === '.' ) {
+        if ( directory.charAt(2) === '/' ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  else {
+    return false;
+  }
+}
+
+
+/**
+ * Change a relative path to an absolute path (relative to the specified directory)
+ * @param {string} directory The directory to base the relative path off of
+ * @param {string} relativePath The relative path to make absolute
+ * @returns {string} The absolute path
+ * @private
+ */
+function _makeAbsolutePath(directory, relativePath) {
+  return path.normalize(
+    path.join(directory, '/', relativePath)
+  );
+}
+
+
+/**
+ * Parse the Configuration.  This converts any values that are relative paths
+ * to absolute paths (relative to the specified directory)
+ * @param {Object} object The Agency configuration object
+ * @param {string} directory The directory paths are relative to
+ * @returns {object} a parsed configuration object
+ * @private
+ */
+function _parseConfig(object, directory) {
+  let rtn = {};
+
+  // Parse all of the properties in the object
+  for (let property in object) {
+    if (object.hasOwnProperty(property)) {
+      let value = object[property];
+
+      // If the property's value is an array, parse each child
+      if ( Array.isArray(value) ) {
+        let parsed = [];
+        for ( let i = 0; i < value.length; i++ ) {
+          parsed.push(_parseConfig(value[i], directory));
+        }
+        rtn[property] = parsed;
+      }
+
+      // If the property's value is an object, recurse another level
+      else if ( typeof value === 'object' ) {
+        rtn[property] = _parseConfig(value, directory);
+      }
+
+      // Parse the property's value
+      else {
+        rtn[property] = _parseConfigValue(value, directory);
+      }
+
+    }
+  }
+
+  return rtn;
+}
+
+
+/**
+ * Parse the configuration value (check for relative paths)
+ * @param {*} value configuration value
+ * @param {string} directory The directory paths are relative to
+ * @returns {*} parsed configuration value
+ * @private
+ */
+function _parseConfigValue(value, directory) {
+  if ( _isRelativePath(value) ) {
+    value = _makeAbsolutePath(directory, value);
+  }
+  return value;
+}
 
 
 module.exports = {

@@ -17,7 +17,6 @@
     },
     "agencies": [
         {
-            "id": "example",
             "require": "right-track-agency-example",
             "config": "/path/to/optional/agency/config.json"
         }
