@@ -145,7 +145,7 @@ function _parseAgencyConfig() {
     }
 
     // Load Agency Database
-    let db = new RightTrackDB(agency.id, agency.getConfig().db.location);
+    let db = new RightTrackDB(agency);
 
     // Add agency to list
     AGENCIES[agency.id] = {
