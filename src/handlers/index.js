@@ -24,17 +24,22 @@ function buildHTML() {
     let config = c.get();
 
     // Add Agency information
-    let agencies = c.getAgencies();
-    for ( let i = 0; i < agencies.length; i++ ) {
-      config.agencies[i].agencyConfig = c.getAgencyConfig(agencies[i]);
+    let agencyCodes = c.getAgencies();
+    let agencies = [];
+    for ( let i = 0; i < agencyCodes.length; i++ ) {
+      agencies[agencyCodes[i]] = c.getAgencyConfig(agencyCodes[i]);
     }
 
-    // Add copyright year
-    config.copyrightYear = new Date().getFullYear();
+    // Build Template properties
+    let it = {
+      config: config,
+      agencies: agencies,
+      copyrightYear: new Date().getFullYear()
+    };
 
     // Replace variables in HTML
     let template = dot.template(data);
-    INDEX_HTML = template(config);
+    INDEX_HTML = template(it);
   });
 }
 

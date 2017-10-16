@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>{{=it.name}}</title>
+  <title>{{=it.config.name}}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
   <style>
@@ -11,6 +11,9 @@
       width: 80%;
       margin: 40px auto;
       background-color: #f7f7f7;
+    }
+    .agency-li {
+      margin-top: 15px;
     }
     blockquote {
       border-left: solid 4px #9b9b9b;
@@ -24,8 +27,8 @@
     <div class="row">
       <div class="eight column">
 
-        <h1>{{=it.name}}</h1>
-        <h3>Version: {{=it.version}}</h3>
+        <h1>{{=it.config.name}}</h1>
+        <h3>Version: {{=it.config.version}}</h3>
 
         <hr />
 
@@ -33,7 +36,7 @@
         and real-time status and track information for commuter transit
         agencies.  It is part of the <strong>Right Track</strong> suite
         of open source software.  For more information, visit the
-        <a href='{{=it.maintainer.source}}'>API Server's source page</a>.</p>
+        <a href='{{=it.config.maintainer.source}}'>API Server's source page</a>.</p>
 
         <h2>Documentation</h2>
 
@@ -46,24 +49,24 @@
 
           <!-- Add information about each agency -->
           <ul>
-          {{ for(var agency in it.agencies) { }}
-            <li><strong>{{=it.agencies[agency].agencyConfig.name}}</strong> ({{=it.agencies[agency].id}})</li>
+            {{ for(var agency in it.agencies) { }}
+            <li class="agency-li"><strong>{{=it.agencies[agency].name}}</strong> ({{=it.agencies[agency].id}})</li>
             <ul>
-              <li>Maintained by <a href='mailto:{{=it.agencies[agency].agencyConfig.maintainer.email}}'>
-                {{=it.agencies[agency].agencyConfig.maintainer.name}}
-                &lt;{{=it.agencies[agency].agencyConfig.maintainer.email}}&gt;</a></li>
+              <li>Maintained by <a href='mailto:{{=it.agencies[agency].maintainer.email}}'>
+                {{=it.agencies[agency].maintainer.name}}
+                &lt;{{=it.agencies[agency].maintainer.email}}&gt;</a></li>
               <li>For more information about the agency, see <a href="/about/agencies/{{=it.agencies[agency].id}}">
                 /about/agencies/{{=it.agencies[agency].id}}</a></li>
             </ul>
-          {{ } }}
+            {{ } }}
           </ul>
 
 
         <h2>Maintainer</h2>
 
         <p>This implementation of the API Server is maintained by
-          <a href='mailto:{{=it.maintainer.email}}'>{{=it.maintainer.name}}
-            &lt;{{=it.maintainer.email}}&gt;</a>.</p>
+          <a href='mailto:{{=it.config.maintainer.email}}'>{{=it.config.maintainer.name}}
+            &lt;{{=it.config.maintainer.email}}&gt;</a>.</p>
 
         <p>For more information about the API Server, see <a href="/about">/about</a></p>
 
@@ -72,7 +75,7 @@
         <h2>License</h2>
 
         <blockquote>
-          Copyright &copy; {{=it.copyrightYear}} {{=it.maintainer.name}}
+          Copyright &copy; {{=it.copyrightYear}} {{=it.config.maintainer.name}}
           <br /><br />
           Permission is hereby granted, free of charge, to any person obtaining a copy
           of this software and associated documentation files (the "Software"), to deal
