@@ -7,7 +7,7 @@
     "maintainer": {
         "name": "David Waring",
         "email": "dev@davidwaring.net",
-        "source": "https://github.com/dwaring87/right-track-api-server"
+        "source": "https://github.com/right-track/right-track-server"
     },
     "database": {
         "host": "127.0.0.1",
