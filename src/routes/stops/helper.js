@@ -2,7 +2,7 @@
 
 const core = require('right-track-core');
 const auth = require('../../handlers/authorization.js');
-const c = require('../../config.js');
+const agencies = require('../../config/agencies.js');
 const Response = require('../../response');
 
 
@@ -69,7 +69,7 @@ function buildStops(stops) {
  */
 function getStops(req, res, next) {
   let agency = req.params.agency;
-  let db = c.getAgencyDB(agency);
+  let db = agencies.getAgencyDB(agency);
 
   // Check for API Access
   if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
@@ -172,7 +172,7 @@ function getStopsResponse(req, res, next, agency, stops) {
 function getStop(req, res, next) {
   let agency = req.params.agency;
   let id = req.params.id;
-  let db = c.getAgencyDB(agency);
+  let db = agencies.getAgencyDB(agency);
 
   // Check for API Access
   if ( auth.checkAuthAccess("gtfs", req, res, next) ) {

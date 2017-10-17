@@ -1,7 +1,7 @@
 'use strict';
 
 const core = require('right-track-core');
-const config = require('../../config.js');
+const agencies = require('../../config/agencies.js');
 const Response = require('../../response');
 const buildStop = require('../stops/helper.js').buildStop;
 const buildTrip = require('../trips/helper.js').buildTrip;
@@ -54,6 +54,12 @@ function buildDeparture(departure) {
   let destination = buildStop(departure.destination);
   let trip = buildTrip(departure.trip);
 
+  // TODO remove
+  if ( trip === undefined ) {
+    trip = {};
+    trip.shortName = 'NOT FOUND';
+  }
+
   return {
     departure: {
       time: departure.departure.getTimeReadable(),
@@ -61,7 +67,8 @@ function buildDeparture(departure) {
       date: departure.departure.getDateInt()
     },
     destination: destination,
-    //trip: trip,       // TODO: uncomment
+    //trip: trip,       // TODO uncomment
+    trip: trip.shortName, // TODO remove
     status: {
       status: departure.status.status,
       delay: departure.status.delay,
@@ -91,12 +98,11 @@ function buildDeparture(departure) {
 function getStationFeed(req, res, next) {
   let agency = req.params.agency;
   let originId = req.params.stopId;
-  let db = config.getAgencyDB(agency);
+  let db = agencies.getAgencyDB(agency);
 
 
   // Get the Origin Information
   core.query.stops.getStop(db, originId, function(err, origin) {
-
 
     // DATABASE ERROR
     if ( err ) {
@@ -116,12 +122,8 @@ function getStationFeed(req, res, next) {
     }
 
 
-    // Get the Agency's StationFeed loader
-    let feed = config.getAgencyStationFeed(agency);
-
-
     // STATION FEED NOT SUPPORTED
-    if ( feed === undefined ) {
+    if ( !agencies.isAgencyStationFeedSupported(agency) ) {
       let error = Response.buildError(
         4051,
         "Station Feed Not Supported",
@@ -133,7 +135,7 @@ function getStationFeed(req, res, next) {
 
 
     // Load the Station Feed
-    feed(db, origin, function(err, stationFeed) {
+    agencies.loadAgencyFeed(agency, db, origin, function(err, stationFeed) {
 
       // STATION FEED ERROR
       if ( err ) {

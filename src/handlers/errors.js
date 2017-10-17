@@ -1,7 +1,7 @@
 'use strict';
 
 const Response = require('../response');
-const c = require('../config.js');
+const c = require('../config/server.js');
 
 
 /**

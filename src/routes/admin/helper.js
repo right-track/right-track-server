@@ -3,7 +3,7 @@
 const path = require('path');
 const index = require('../../handlers/index.js');
 const auth = require('../../handlers/authorization.js');
-const config = require('../../config.js');
+const c = require('../../config');
 const Response = require('../../response');
 const mysql = require('../../db/mysql.js');
 
@@ -17,17 +17,17 @@ const mysql = require('../../db/mysql.js');
 function buildConfig() {
 
   // Server config
-  let server = config.get();
+  let server = c.server.get();
 
   // Get Agency Codes
-  let agencyCodes = config.getAgencies();
+  let agencyCodes = c.agencies.getAgencies();
 
   // Agency configurations
   let agencies = [];
 
   // Parse Each Agency
   for ( let i = 0; i < agencyCodes.length; i++ ) {
-    agencies.push(config.getAgencyConfig(agencyCodes[i]));
+    agencies.push(c.agencies.getAgencyConfig(agencyCodes[i]));
   }
 
   // Return Config Model
@@ -77,10 +77,10 @@ function reloadConfig(req, res, next) {
   if ( auth.checkAuthAccess("admin", req, res, next) ) {
 
     // Reload the config files
-    config.clear();
-    config.read(path.join(__dirname + "/../../../server.json"));
+    c.clear();
+    c.server.read();
     if ( process.argv.length === 3 ) {
-      config.read(process.argv[2]);
+      c.server.read(process.argv[2]);
     }
 
     // Reconnect to the MySQL server

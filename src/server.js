@@ -5,7 +5,7 @@ const path = require('path');
 const restify = require('restify');
 
 // Config
-const config = require('./config.js');
+const config = require('./config');
 
 // Helper functions
 const mysql = require('./db/mysql.js');
@@ -26,9 +26,9 @@ const index = require('./handlers/index.js');
 // Load additional configuration variables
 // Pass path to .json file as node CLI argument
 if ( process.argv.length === 3 ) {
-  config.read(process.argv[2]);
+  config.server.read(process.argv[2]);
 }
-let props = config.get();
+let props = config.server.get();
 
 
 

@@ -4,7 +4,7 @@ const fs = require('fs');
 const emailValidator = require('email-validator');
 const passwordValidator = require('password-validator');
 const users = require('../../db/users.js');
-const c = require('../../config.js');
+const c = require('../../config/server.js');
 const Response = require('../../response/index');
 
 
@@ -154,7 +154,7 @@ function validateUsername(req, res, next, username, proceed) {
  * @param next API Handler Chain
  * @param username User's username
  * @param password User's password
- * @param proveed Callback function called if the password passes validation tests.
+ * @param proceed Callback function called if the password passes validation tests.
  */
 function validatePassword(req, res, next, username, password, proceed) {
   let config = c.get();

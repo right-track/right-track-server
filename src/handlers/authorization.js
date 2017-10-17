@@ -2,7 +2,7 @@
 
 const Response = require('../response');
 const clients = require('../db/clients.js');
-const config = require('../config.js');
+const config = require('../config/server.js');
 
 
 /**

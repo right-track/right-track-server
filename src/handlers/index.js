@@ -3,11 +3,11 @@
 const fs = require('fs');
 const path = require('path');
 const dot = require('dot');
-const c = require('../config.js');
+const c = require('../config');
 const DateTime = require("right-track-core/modules/utils/DateTime.js");
 
 // INDEX HTML
-let INDEX_HTML = "<h1>" + c.get().name + "</h1>";
+let INDEX_HTML = "<h1>" + c.server.get().name + "</h1>";
 
 
 /**
@@ -22,13 +22,13 @@ function buildHTML() {
     }
 
     // Load config variables
-    let config = c.get();
+    let config = c.server.get();
 
     // Add Agency information
-    let agencyCodes = c.getAgencies();
+    let agencyCodes = c.agencies.getAgencies();
     let agencies = [];
     for ( let i = 0; i < agencyCodes.length; i++ ) {
-      agencies[agencyCodes[i]] = c.getAgencyConfig(agencyCodes[i]);
+      agencies[agencyCodes[i]] = c.agencies.getAgencyConfig(agencyCodes[i]);
     }
 
     // Build Template properties

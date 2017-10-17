@@ -1,7 +1,7 @@
 'use strict';
 
 const Response = require('../response');
-const c = require('../config.js');
+const agencies = require('../config/agencies.js');
 
 
 /**
@@ -21,7 +21,7 @@ function checkAgencySupported(req, res, next) {
   if ( agency !== undefined ) {
     
     // Agency is not supported...
-    if ( !c.isAgencySupported(agency) ) {
+    if ( !agencies.isAgencySupported(agency) ) {
       let error = Response.buildError(
         4041,
         'Unsupported Agency',

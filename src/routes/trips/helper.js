@@ -3,7 +3,7 @@
 const core = require('right-track-core');
 const DateTime = core.utils.DateTime;
 const auth = require('../../handlers/authorization.js');
-const c = require('../../config.js');
+const agencies = require('../../config/agencies.js');
 const Response = require('../../response');
 const routeHelper = require('../routes/helper.js');
 const stopHelper = require('../stops/helper.js');
@@ -109,7 +109,7 @@ let buildTrip = function(trip) {
 let getTrip = function(req, res, next) {
   let agency = req.params.agency;
   let id = req.params.id;
-  let db = c.getAgencyDB(agency);
+  let db = agencies.getAgencyDB(agency);
 
   // Check for API Access
   if ( auth.checkAuthAccess("gtfs", req, res, next) ) {

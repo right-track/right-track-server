@@ -4,7 +4,7 @@ const mysql = require('./mysql.js');
 const utils = require('./utils.js');
 const clients = require('./clients.js');
 const users = require('./users.js');
-const DateTime = require('right-track-core').utils.DateTime;
+const DateTime = require('right-track-core/modules/utils/DateTime.js');
 
 
 // ==== SESSION FUNCTIONS ==== //

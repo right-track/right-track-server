@@ -1,10 +1,11 @@
 'use strict';
 
 const Response = require('../response');
+const c = require('../config/server.js');
 
 
 function timeoutHandler(req, res, next) {
-  let config = require('../config.js').get();
+  let config = c.get();
   let timeout = config.timeout !== undefined ? config.timeout * 1000 : 10000;
 
   // Continue down the handler chain

@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 const core = require("right-track-core");
-const c = require("../../config.js");
+const c = require("../../config/");
 const Response = require("../../response");
 
 
@@ -14,7 +14,7 @@ const Response = require("../../response");
  * return the Response.
  * @callback buildCallback
  * @param {Error} error Error
- * @param {Object} model Response Model
+ * @param {Object} [model] Response Model
  */
 
 
@@ -24,7 +24,7 @@ const Response = require("../../response");
  * @return {Object} Server Model
  */
 function buildServer(req) {
-  let config = c.get();
+  let config = c.server.get();
   return {
     name: config.name,
     version: config.version,
@@ -39,7 +39,7 @@ function buildServer(req) {
  * @return {Object} Maintainer Model
  */
 function buildMaintainer() {
-  let config = c.get();
+  let config = c.server.get();
   return {
     name: config.maintainer.name,
     email: config.maintainer.email,
@@ -53,8 +53,8 @@ function buildMaintainer() {
  * @param {buildCallback} callback Callback function(err, AgencyModel)
  */
 function buildAgency(agencyCode, callback) {
-  let db = c.getAgencyDB(agencyCode);
-  let agencyConfig = c.getAgencyConfig(agencyCode);
+  let db = c.agencies.getAgencyDB(agencyCode);
+  let agencyConfig = c.agencies.getAgencyConfig(agencyCode);
 
   // Get agency database version
   core.query.about.getAbout(db, function(err, about) {
@@ -67,7 +67,7 @@ function buildAgency(agencyCode, callback) {
       id: agencyConfig.id,
       name: agencyConfig.name,
       version: about.version,
-      supportsStationFeed: c.isAgencyStationFeedSupported(agencyConfig.id)
+      supportsStationFeed: c.agencies.isAgencyStationFeedSupported(agencyConfig.id)
     };
 
     // Return model
@@ -77,10 +77,10 @@ function buildAgency(agencyCode, callback) {
 
 /**
  * Build the Agency List
- * @param {buildCallback} callback Callback function(AgencyList)
+ * @param {buildCallback} callback Callback function(err, AgencyList)
  */
 function buildAgencies(callback) {
-  let agencyCodes = c.getAgencies();
+  let agencyCodes = c.agencies.getAgencies();
   let agencyModels = [];
 
   // Loop through each agency code
@@ -144,7 +144,7 @@ function buildAbout(req, callback) {
 /**
  * Build the Link Model
  * @param {Link} link RT Link Class
- * @return Link Model
+ * @return {Object} Link Model
  */
 function buildLink(link) {
   return {
@@ -163,7 +163,7 @@ function buildLink(link) {
 function buildLinkCategory(agency, category, callback) {
 
   // Query the Database for Links by Category
-  core.query.links.getLinksByCategory(c.getAgencyDB(agency), category, function(err, links) {
+  core.query.links.getLinksByCategory(c.agencies.getAgencyDB(agency), category, function(err, links) {
     if ( err ) {
       return callback(err);
     }
@@ -201,7 +201,7 @@ function buildLinkCategory(agency, category, callback) {
 function buildLinks(agency, callback) {
 
   // Get the link categories for the specified agency
-  core.query.links.getLinkCategories(c.getAgencyDB(agency), function(err, categories) {
+  core.query.links.getLinkCategories(c.agencies.getAgencyDB(agency), function(err, categories) {
     if ( err ) {
       return callback(err);
     }
@@ -336,7 +336,7 @@ function getAboutAgencyLinks(req, res, next) {
  */
 function getAboutAgencyIcon(req, res, next) {
   let agency = req.params.agency;
-  let path = c.getAgencyConfig(agency).static.img.icon;
+  let path = c.agencies.getAgencyConfig(agency).static.img.icon;
 
   // Read the icon file from the specified path
   fs.readFile(path, function(err, data) {
@@ -360,42 +360,6 @@ function getAboutAgencyIcon(req, res, next) {
 
   });
 }
-
-
-/**
- * Get human readable string of process uptime
- * @returns {string} human readable string
- */
-function _getUptime() {
-  function numberEnding (number) {
-    return (number > 1) ? 's' : '';
-  }
-
-  let temp = process.uptime();
-  let years = Math.floor(temp / 31536000);
-  if (years) {
-    return years + ' year' + numberEnding(years);
-  }
-
-  let days = Math.floor((temp %= 31536000) / 86400);
-  if (days) {
-    return days + ' day' + numberEnding(days);
-  }
-  let hours = Math.floor((temp %= 86400) / 3600);
-  if (hours) {
-    return hours + ' hour' + numberEnding(hours);
-  }
-  let minutes = Math.floor((temp %= 3600) / 60);
-  if (minutes) {
-    return minutes + ' minute' + numberEnding(minutes);
-  }
-  let seconds = temp % 60;
-  if (seconds) {
-    return seconds + ' second' + numberEnding(seconds);
-  }
-  return 'just started...';
-}
-
 
 
 // Export the functions

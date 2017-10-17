@@ -1,6 +1,6 @@
 'use strict';
 
-const c = require('../../config.js');
+const c = require('../../config/server.js');
 const auth = require('../../handlers/authorization.js');
 const Response = require('../../response');
 const validators = require('./validators.js');

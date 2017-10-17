@@ -2,7 +2,7 @@
 
 const mysql = require('mysql');
 const DateTime = require('right-track-core').utils.DateTime;
-const c = require('../config.js');
+const c = require('../config/server.js');
 
 
 // Set initial state of variables

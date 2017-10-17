@@ -2,7 +2,7 @@
 
 const mysql = require('./mysql.js');
 const utils = require('./utils.js');
-const DateTime = require('right-track-core').utils.DateTime;
+const DateTime = require('right-track-core/modules/utils/DateTime.js');
 
 
 
