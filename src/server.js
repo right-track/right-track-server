@@ -1,5 +1,8 @@
 'use strict';
 
+// Set process title
+process.title = require('../package.json').name;
+
 // Load dependencies
 const path = require('path');
 const restify = require('restify');
