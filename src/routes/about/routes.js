@@ -25,8 +25,7 @@ let routes = function(server) {
    *       "name": "Right Track API Server [ALPHA]",
    *       "version": "0.0.1",
    *       "host": "localhost:3000",
-   *       "hostname": "FINS.local",
-   *       "uptime": "5 hours"
+   *       "hostname": "FINS.local"
    *     },
    *     "maintainer": {
    *       "name": "David Waring",

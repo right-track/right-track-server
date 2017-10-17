@@ -1,41 +1,41 @@
 {
-    "host": "localhost",
-    "port": 3000,
-    "timeout": 5,
-    "maintainer": {
-        "name": "David Waring",
-        "email": "dev@davidwaring.net",
-        "source": "https://github.com/right-track/right-track-server"
+  "host": "localhost",
+  "port": 3000,
+  "timeout": 5,
+  "maintainer": {
+    "name": "David Waring",
+    "email": "dev@davidwaring.net",
+    "source": "https://github.com/right-track/right-track-server"
+  },
+  "database": {
+    "host": "127.0.0.1",
+    "username": "mysql_username",
+    "password": "mysql_password",
+    "name": "rt_api"
+  },
+  "agencies": [
+    {
+      "require": "right-track-agency-example",
+      "config": "/path/to/optional/agency/config.json"
+    }
+  ],
+  "registration": {
+    "username": {
+      "cannotContain": "@ ",
+      "minLength": 4,
+      "maxLength": 64
     },
-    "database": {
-        "host": "127.0.0.1",
-        "username": "mysql_username",
-        "password": "mysql_password",
-        "name": "rt_api"
-    },
-    "agencies": [
-        {
-            "require": "right-track-agency-example",
-            "config": "/path/to/optional/agency/config.json"
-        }
-    ],
-    "registration": {
-        "username": {
-            "cannotContain": "@ ",
-            "minLength": 4,
-            "maxLength": 64
-        },
-        "password": {
-            "minLength": 8,
-            "maxLength": 999,
-            "requireLetters": true,
-            "requireUppercase": false,
-            "requireLowercase": false,
-            "requireDigits": true,
-            "requireSymbols": false,
-            "blockUsername": true,
-            "blacklist": "./static/password-blacklist.txt"
-        }
-    },
-    "allowDebugAccess": false
+    "password": {
+      "minLength": 8,
+      "maxLength": 999,
+      "requireLetters": true,
+      "requireUppercase": false,
+      "requireLowercase": false,
+      "requireDigits": true,
+      "requireSymbols": false,
+      "blockUsername": true,
+      "blacklist": "./static/password-blacklist.txt"
+    }
+  },
+  "allowDebugAccess": false
 }

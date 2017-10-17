@@ -1,36 +1,40 @@
 {
-    "name": "Right Track API Server",
-    "description": "Documentation for API endpoints and their parameters and responses",
-    "title": "API Server Documentation",
-    "template": {
-        "withCompare": false
-    },
-    "footer": {
-        "title": "Error Codes",
-        "filename": "./static/errors.md"
-    },
-    "order": [
-        "getServerInformation",
-        "getAllAgencyInformation",
-        "getAgencyInformation",
-        "getAgencyIcon",
-        "getAgencyLinks",
-        "getServerConfig",
-        "reloadServer",
-        "userLogin",
-        "userLogout",
-        "getRoutes",
-        "getRoute",
-        "getStops",
-        "getStop",
-        "getTrip",
-        "registrationRequirements",
-        "addUser",
-        "getUser",
-        "removeUser",
-        "getUsers",
-        "getFavoritesModificationDate",
-        "getFavorites",
-        "addFavorites"
-    ]
+  "name": "",
+  "description": "Right Track API Server Endpoint Documentation",
+  "title": "API Server Documentation",
+  "template": {
+    "withCompare": false
+  },
+  "header": {
+    "title": "README",
+    "filename": "./README.md"
+  },
+  "footer": {
+    "title": "Error Codes",
+    "filename": "./static/errors.md"
+  },
+  "order": [
+    "getServerInformation",
+    "getAllAgencyInformation",
+    "getAgencyInformation",
+    "getAgencyIcon",
+    "getAgencyLinks",
+    "getServerConfig",
+    "reloadServer",
+    "userLogin",
+    "userLogout",
+    "getRoutes",
+    "getRoute",
+    "getStops",
+    "getStop",
+    "getTrip",
+    "registrationRequirements",
+    "addUser",
+    "getUser",
+    "removeUser",
+    "getUsers",
+    "getFavoritesModificationDate",
+    "getFavorites",
+    "addFavorites"
+  ]
 }
