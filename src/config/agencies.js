@@ -13,36 +13,39 @@ let AGENCIES = [];
  */
 function parseAgencyConfigs(agencies) {
 
-  // Load Agency Modules
-  for ( let i = 0; i < agencies.length; i++ ) {
-    let req = agencies[i].require;
-    let agencyConfigPath = agencies[i].config;
+  // Parse agency declarations
+  if ( agencies !== undefined ) {
 
-    console.log("==> Loading Agency Module...");
-    console.log("... agency require location = " + req);
-    console.log("... agency config file = " + agencyConfigPath);
+    // Load Agency Modules
+    for ( let i = 0; i < agencies.length; i++ ) {
+      let req = agencies[i].require;
+      let agencyConfigPath = agencies[i].config;
 
-    // Load agency and read config file
-    let agency = require(req);
-    if ( agencyConfigPath !== undefined ) {
-      agency.readConfig(agencyConfigPath);
+      console.log("==> Loading Agency Module (" + req + ")...");
+
+      // Load agency and read config file
+      let agency = require(req);
+      if ( agencyConfigPath !== undefined ) {
+        agency.readConfig(agencyConfigPath);
+      }
+
+      // Check if agency is already loaded
+      if ( isAgencySupported(agency.id) ) {
+        console.error("AGENCY " + agency.id + " HAS ALREADY BEEN ADDED TO THE SERVER");
+        console.error("Make sure there are no duplicate declarations of agencies in the server config files");
+        process.exit(1);
+      }
+
+      // Load Agency Database
+      let db = new RightTrackDB(agency);
+
+      // Add agency to list
+      AGENCIES[agency.id] = {
+        agency: agency,
+        db: db
+      }
     }
 
-    // Check if agency is already loaded
-    if ( isAgencySupported(agency.id) ) {
-      console.error("AGENCY " + agency.id + " HAS ALREADY BEEN ADDED TO THE SERVER");
-      console.error("Make sure there are no duplicate declarations of agencies in the server config files");
-      process.exit(1);
-    }
-
-    // Load Agency Database
-    let db = new RightTrackDB(agency);
-
-    // Add agency to list
-    AGENCIES[agency.id] = {
-      agency: agency,
-      db: db
-    }
   }
 
   // Reset Core Query Caches
