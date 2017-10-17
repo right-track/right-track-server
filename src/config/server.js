@@ -76,7 +76,8 @@ function read(location=defaultConfigLocation) {
     }
   });
 
-  // TODO: check to see if name and version are provided
+  // Check the name and version properties
+  CONFIG = utils.checkNameVersion(CONFIG);
 
   // Parse the agency config information
   agencies.parseAgencyConfigs(CONFIG.agencies);

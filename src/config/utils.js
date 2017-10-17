@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const props = require('../../package.json');
 
 
 
@@ -56,7 +57,8 @@ function makeAbsolutePath(directory, relativePath) {
  */
 function parseServerConfig(config, directory) {
   config = _removeExample(config);
-  return _parseConfig(config, directory);
+  config = _parseConfig(config, directory);
+  return config;
 }
 
 
@@ -147,10 +149,33 @@ function _removeExample(config) {
   return config;
 }
 
+/**
+ * Check to see if the name and version properties are set.  If they
+ * are not, take the values from the module's package.json file
+ * @param {object} config Configuration properties
+ * @returns {object} Configuration properties
+ * @private
+ */
+function checkNameVersion(config) {
+
+  // Get undefined name from package description
+  if ( config.name === undefined || config.name === "" ) {
+    config.name = props.description;
+  }
+
+  // Get undefined version from package version
+  if ( config.version === undefined || config.version === "" ) {
+    config.version = props.version;
+  }
+
+  return config;
+}
+
 
 
 module.exports = {
   isRelativePath: isRelativePath,
   makeAbsolutePath: makeAbsolutePath,
-  parseServerConfig: parseServerConfig
+  parseServerConfig: parseServerConfig,
+  checkNameVersion: checkNameVersion
 };
