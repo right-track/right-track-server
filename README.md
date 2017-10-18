@@ -1,7 +1,8 @@
 Right Track API Server
 ========================
 
-#### node module: [right-track-server](https://www.npmjs.com/package/right-track-server)
+**node module:** [right-track-server](https://www.npmjs.com/package/right-track-server)  
+**GitHub repo:** [right-track/right-track-server](https://github.com/right-track/right-track-server)
 
 --- 
 
@@ -63,26 +64,26 @@ or remotely with the proper network and access settings.
 
 #### Install the API Server
 
-Install the Right Track API Server via `npm`:
+Install the Right Track API Server globally via `npm`:
 
 ```shell
-npm install right-track-server
+npm install -g right-track-server
 ``` 
 
-or download/clone this repository.
+This will install the executable `right-track-server` into your `$PATH`.
 
 #### Install Right Track Agency(s)
 
 Use `npm` to install one or more Right Track Agencies:
 
 ```shell
-npm install right-track-agency-mnr
-npm install right-track-agency-lirr
+npm install -g right-track-agency-mnr
+npm install -g right-track-agency-lirr
 ```
 
-These should be installed within the API Server's node_modules directory, 
-globally, or elsewhere within node's `require.paths` locations.  This way the 
-agencies will be referenced by name from within the server configuration file.
+It is recommended to install these globally or as dependencies in the 
+`node_modules` directory within the right-track-server project.  That way 
+the agency modules can be referenced by name in the server configuration file.
 
 Optionally, you can download the projects' repositories and reference the 
 agencies by directory location in the server configuration file.
@@ -130,9 +131,27 @@ configuration file.
 
 ### Usage
 
-Once the Server has been properly configured, use `npm` to start the server 
-and pass the location to your server configuration file as an argument:
+Once the Server has been properly configured, use the `right-track-server` 
+executable to start the server:
 
 ```shell
-npm run start /path/to/my_server.json
+right-track-server ./my_serer.json
+```
+
+The full usage of the `right-track-server` executable is:
+
+```shell
+Right Track API Server
+Module: right-track-server
+Version: 1.1.0
+--------------------------
+Usage:
+  right-track-server [--option] config...
+options:
+  --config|-c    Display the configuration properties
+                 If a config file is provided, display the merged configuration.
+  --help|-h      Display this usage information
+  --version|-v   Display the API Server version (from package.json)
+config:
+  Path to additional server configuration file(s)
 ```
