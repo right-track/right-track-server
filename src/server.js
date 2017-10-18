@@ -1,14 +1,11 @@
 'use strict';
 
-// Set process title
-process.title = require('../package.json').name;
-
 // Load dependencies
 const path = require('path');
 const restify = require('restify');
 
 // Config
-const config = require('./config');
+const config = require('./config/server.js').get();
 
 // Helper functions
 const mysql = require('./db/mysql.js');
@@ -24,98 +21,141 @@ const timeout = require('./handlers/timeout.js');
 const index = require('./handlers/index.js');
 
 
+// Restify Server Instance
+let SERVER = restify.createServer({
+  name: config.name,
+  version: config.version
+});
 
 
-// Load additional configuration variables
-// Pass path to .json file as node CLI argument
-if ( process.argv.length === 3 ) {
-  config.server.read(process.argv[2]);
+/**
+ * Connect to the MySQL Server and start the API Server
+ */
+function start() {
+
+  // Connect to the MySQL Server
+  mysql.connect();
+
+
+  // Set the error handlers and process listeners
+  _setListeners();
+
+  // Set the middleware
+  _setMiddleware();
+
+  // Serve Static HTML resources
+  _serveStatic();
+
+  // Serve dynamic routes
+  _serveRoutes();
+
+
+  // Start the Server
+  SERVER.listen({port: config.port, host: config.host}, function() {
+    console.log('===========================================================');
+    console.info('==> API Server is up and running @ ' + SERVER.url + '...');
+    index.buildHTML();
+  });
+
 }
-let props = config.server.get();
+
+
+/**
+ * Set server error handlers and process listeners
+ * @private
+ */
+function _setListeners() {
+
+  // ERROR HANDLERS
+  SERVER.on('NotFound', errors.handleNotFoundError);
+  SERVER.on('MethodNotAllowed', errors.handleMethodNotAllowedError);
+  SERVER.on('InternalServer', errors.handleServerError);
+  SERVER.on('Error', errors.handleServerError);
+
+
+  // Process Monitors
+  process.on('uncaughtException', function(err) {
+    console.error("UNCAUGHT EXCEPTION");
+    console.error(err);
+  });
+  process.on('SIGINT', _shutdown);
+  process.on('SIGTERM', _shutdown);
+
+}
+
+
+/**
+ * Set server middleware
+ * @private
+ */
+function _setMiddleware() {
+
+  // SET HANDLER CHAIN
+  SERVER.use(logger);
+  SERVER.use(headers);
+  SERVER.use(agency);
+  SERVER.use(auth.getAuthAccess);
+  SERVER.use(authentication);
+  SERVER.use(timeout);
+  SERVER.use(restify.plugins.queryParser());
+  SERVER.use(restify.plugins.bodyParser());
+
+}
+
+
+/**
+ * Serve static HTML resources (index page and docs)
+ * @private
+ */
+function _serveStatic() {
+
+  // SERVE INDEX PAGE
+  SERVER.get('/', index.serveHTML);
+
+  // SERVE API DOCUMENTATION
+  SERVER.get('/doc', function(req, res, next) {
+    res.redirect('/doc/index.html', next);
+  });
+  SERVER.get(/\/doc\/?.*/, restify.plugins.serveStatic({
+    directory: path.join(__dirname, '/../')
+  }));
+
+}
+
+
+/**
+ * Set the Server Routes
+ * @private
+ */
+function _serveRoutes() {
+
+  // LOAD ROUTES
+  require('./routes/about/routes.js')(SERVER);
+  require('./routes/admin/routes.js')(SERVER);
+  require('./routes/favorites/routes.js')(SERVER);
+  require('./routes/routes/routes.js')(SERVER);
+  require('./routes/stops/routes.js')(SERVER);
+  require('./routes/trips/routes.js')(SERVER);
+  require('./routes/auth/routes.js')(SERVER);
+  require('./routes/users/routes.js')(SERVER);
+  require('./routes/realtime/routes.js')(SERVER);
+
+}
 
 
 
-// Connect to the MySQL Server
-mysql.connect();
-
-
-
-// Set up the Server
-let server = restify.createServer({
-  name: props.name,
-  version: props.version
-});
-
-
-// Start the Server
-server.listen({port: props.port, host: props.host}, function() {
-  console.log('===========================================================');
-  console.info('==> API Server is up and running @ ' + server.url + '...');
-  index.buildHTML();
-});
-
-
-
-// ERROR HANDLERS
-server.on('NotFound', errors.handleNotFoundError);
-server.on('MethodNotAllowed', errors.handleMethodNotAllowedError);
-server.on('InternalServer', errors.handleServerError);
-server.on('Error', errors.handleServerError);
-
-
-// Process Monitors
-process.on('uncaughtException', function(err) {
-  console.error("UNCAUGHT EXCEPTION");
-  console.error(err);
-});
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
-
-
-
-// SET HANDLER CHAIN
-server.use(logger);
-server.use(headers);
-server.use(agency);
-server.use(auth.getAuthAccess);
-server.use(authentication);
-server.use(timeout);
-server.use(restify.plugins.queryParser());
-server.use(restify.plugins.bodyParser());
-
-
-
-// SERVE INDEX PAGE
-server.get('/', index.serveHTML);
-
-// SERVE API DOCUMENTATION
-server.get('/doc', function(req, res, next) {
-  res.redirect('/doc/index.html', next);
-});
-server.get(/\/doc\/?.*/, restify.plugins.serveStatic({
-  directory: path.join(__dirname, '/../')
-}));
-
-// LOAD ROUTES
-require('./routes/about/routes.js')(server);
-require('./routes/admin/routes.js')(server);
-require('./routes/favorites/routes.js')(server);
-require('./routes/routes/routes.js')(server);
-require('./routes/stops/routes.js')(server);
-require('./routes/trips/routes.js')(server);
-require('./routes/auth/routes.js')(server);
-require('./routes/users/routes.js')(server);
-require('./routes/realtime/routes.js')(server);
-
-
-
-// HANDLE SHUTDOWN
-function shutdown() {
+/**
+ * Shutdown the Server and disconnect from the MySQL database
+ * @private
+ */
+function _shutdown() {
   console.log('===========================================================');
   console.log('SHUTTING DOWN API SERVER...');
 
   try {
-    server.close();
+    SERVER.close(function(){
+      console.log("...server shutdown complete.");
+    });
     mysql.close();
   }
   catch(err) {
@@ -124,3 +164,9 @@ function shutdown() {
 
   process.exit(0);
 }
+
+
+
+module.exports = {
+  start: start
+};
