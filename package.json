@@ -6,13 +6,15 @@
   "license": "MIT",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "apidocs": "node node_modules/apidoc/bin/apidoc -i src/ -o doc/"
+    "start": "node src/cli.js",
+    "docs": "node node_modules/apidoc/bin/apidoc -i src/ -o doc/"
   },
+  "bin": "src/cli.js",
   "dependencies": {
     "deepmerge": "^1.5.1",
     "dot": "^1.1.2",
     "email-validator": "^1.1.1",
+    "minimist": "^1.2.0",
     "mysql": "^2.14.1",
     "password-validator": "^4.0.0",
     "restify": "^6.0.0",
