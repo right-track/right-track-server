@@ -19,8 +19,8 @@
     "password-validator": "^4.0.0",
     "restify": "^6.0.0",
     "restify-errors": "^5.0.0",
-    "right-track-core": "^0.9.0",
-    "right-track-db-sqlite3": "^1.1.0",
+    "right-track-core": "~0.9.0",
+    "right-track-db-sqlite3": "~1.2.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
