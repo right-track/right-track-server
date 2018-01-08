@@ -1,6 +1,7 @@
 'use strict';
 
 const c = require('../config/server.js');
+const os = require('os');
 
 /**
  * Set the default Headers to return with each response
@@ -13,7 +14,7 @@ function setDefaultHeaders(req, res, next) {
   res.once('header', function() {
     res.setHeader('Server', config.name + '/' + config.version);
     res.setHeader('X-Powered-By', config.name + '/' + config.version);
-    res.setHeader('Via', req.log.fields.hostname);
+    res.setHeader('Via', os.hostname());
   });
   if ( next !== undefined ) {
     next();

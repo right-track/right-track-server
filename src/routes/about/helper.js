@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require("fs");
+const os = require("os");
 const core = require("right-track-core");
 const c = require("../../config/");
 const Response = require("../../response");
@@ -30,7 +31,7 @@ function buildServer(req) {
     version: config.version,
     url: config.url,
     host: req.headers.host,
-    hostname: req.log.fields.hostname
+    hostname: os.hostname()
   }
 }
 
