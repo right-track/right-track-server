@@ -92,6 +92,11 @@ function buildAgencies(callback) {
   let agencyCodes = c.agencies.getAgencies();
   let agencyModels = [];
 
+  // No agencies: return empty response
+  if ( agencyCodes.length === 0 ) {
+    return callback(null, agencyModels);
+  }
+
   // Loop through each agency code
   let rtn = 0;
   let errorFound = false;
