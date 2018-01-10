@@ -54,12 +54,6 @@ function buildDeparture(departure) {
   let destination = buildStop(departure.destination);
   let trip = buildTrip(departure.trip);
 
-  // TODO remove
-  if ( trip === undefined ) {
-    trip = {};
-    trip.shortName = 'NOT FOUND';
-  }
-
   return {
     departure: {
       time: departure.departure.getTimeReadable(),
@@ -67,8 +61,7 @@ function buildDeparture(departure) {
       date: departure.departure.getDateInt()
     },
     destination: destination,
-    //trip: trip,       // TODO uncomment
-    trip: trip.shortName, // TODO remove
+    trip: trip,
     status: {
       status: departure.status.status,
       delay: departure.status.delay,
@@ -157,6 +150,7 @@ function getStationFeed(req, res, next) {
       // BUILD AND SEND THE RESPONSE
       let response = Response.buildResponse(
         {
+          agency: agency,
           feed: buildFeed(stationFeed)
         }
       );
