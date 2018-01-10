@@ -67,8 +67,16 @@ function buildAgency(agencyCode, callback) {
     let agencyModel = {
       id: agencyConfig.id,
       name: agencyConfig.name,
-      version: about.version,
-      supportsStationFeed: c.agencies.isAgencyStationFeedSupported(agencyConfig.id)
+      database: {
+        version: about.version,
+        publish: about.publishDate,
+        compile: about.compileDate,
+        notes: about.notes
+      },
+      maintainer: {
+        name: agencyConfig.maintainer.name,
+        email: agencyConfig.maintainer.email
+      }
     };
 
     // Return model

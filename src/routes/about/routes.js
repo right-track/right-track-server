@@ -17,34 +17,42 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5002 API Server Error
    *
    * @apiSuccessExample {json} Example Response:
-   * HTTP/1.1 200 OK
-   * {
-   *   "status": "success",
-   *   "response": {
-   *     "server": {
-   *       "name": "Right Track API Server [ALPHA]",
-   *       "version": "0.0.1",
-   *       "host": "localhost:3000",
-   *       "hostname": "FINS.local"
-   *     },
-   *     "maintainer": {
-   *       "name": "David Waring",
-   *       "email": "webmaster@righttrack.io",
-   *       "source": "https://github.com/dwaring87/right-track-api-server"
-   *     },
-   *     "agencies": [
-   *       {
-   *         "id": "lirr",
-   *         "name": "Long Island Rail Road",
-   *         "version": 2017090912,
-   *         "supportsStationFeed": false
-   *       },
-   *       {
-   *         "...": "..."
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "status": "success",
+   *       "response": {
+   *         "server": {
+   *           "name": "Right Track API Server [ALPHA]",
+   *           "version": "1.1.2",
+   *           "host": "localhost:3000",
+   *           "hostname": "FINS.local"
+   *         },
+   *         "maintainer": {
+   *           "name": "David Waring",
+   *           "email": "webmaster@righttrack.io",
+   *           "source": "https://github.com/right-track/right-track-server"
+   *         },
+   *         "agencies": [
+   *           {
+   *             "id": "lirr",
+   *             "name": "Long Island Rail Road",
+   *             "database": {
+   *               "version": 2018010816,
+   *               "publish": 20180108,
+   *               "compile": 20180108,
+   *               "notes": "This schedule database was automatically compiled on 1/8/2018, 4:15:03 PM due to a schedule data update from Long Island Rail Road."
+   *             },
+   *             "maintainer": {
+   *               "name": "David Waring",
+   *               "email": "lirr@righttrack.io"
+   *             }
+   *           },
+   *           {
+   *             "...": "..."
+   *           }
+   *         ]
    *       }
-   *     ]
-   *   }
-   * }
+   *     }
    */
   server.get("/about", helper.getAbout);
 
@@ -61,23 +69,31 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5002 API Server Error
    *
    * @apiSuccessExample {json} Example Response:
-   * HTTP/1.1 200 OK
-   * {
-   *   "status": "success",
-   *   "response": {
-   *     "agencies": [
-   *       {
-   *         "id": "lirr",
-   *         "name": "Long Island Rail Road",
-   *         "version": 2017090912,
-   *         "supportsStationFeed": false
-   *       },
-   *       {
-   *         "...": "..."
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "status": "success",
+   *       "response": {
+   *         "agencies": [
+   *           {
+   *             "id": "lirr",
+   *             "name": "Long Island Rail Road",
+   *             "database": {
+   *               "version": 2018010816,
+   *               "publish": 20180108,
+   *               "compile": 20180108,
+   *               "notes": "This schedule database was automatically compiled on 1/8/2018, 4:15:03 PM due to a schedule data update from Long Island Rail Road."
+   *             },
+   *             "maintainer": {
+   *               "name": "David Waring",
+   *               "email": "lirr@righttrack.io"
+   *             }
+   *           },
+   *           {
+   *             "...": "..."
+   *           }
+   *         ]
    *       }
-   *     ]
-   *   }
-   * }
+   *     }
    */
   server.get("/about/agencies", helper.getAboutAgencies);
 
@@ -97,18 +113,26 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4041 Unsupported Agency
    *
    * @apiSuccessExample {json} Example Response:
-   * HTTP/1.1 200 OK
-   * {
-   *   "status": "success",
-   *   "response": {
-   *     "agency": {
-   *       "id": "mnr",
-   *       "name": "Metro North Railroad & SLE",
-   *       "version": 2017083014,
-   *       "supportsStationFeed": true
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "status": "success",
+   *       "response": {
+   *         "agency": {
+   *           "id": "mnr",
+   *           "name": "Metro North Railroad & SLE",
+   *           "database": {
+   *             "version": 2018011016,
+   *             "publish": 20180108,
+   *             "compile": 20180110,
+   *             "notes": "This update fixes some trips and transfer connections on the New Haven Line"
+   *           },
+   *           "maintainer": {
+   *             "name": "David Waring",
+   *             "email": "mnr@righttrack.io"
+   *           }
+   *         }
+   *       }
    *     }
-   *   }
-   * }
    */
   server.get("/about/agencies/:agency", helper.getAboutAgency);
 
