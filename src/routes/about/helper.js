@@ -31,7 +31,8 @@ function buildServer(req) {
     version: config.version,
     url: config.url,
     host: req.headers.host,
-    hostname: os.hostname()
+    hostname: os.hostname(),
+    maintainer: buildMaintainer()
   }
 }
 
@@ -136,7 +137,6 @@ function buildAgencies(callback) {
  */
 function buildAbout(req, callback) {
   let server = buildServer(req);
-  let maintainer = buildMaintainer();
 
   buildAgencies(function(err, agencies) {
     if ( err ) {
@@ -146,7 +146,6 @@ function buildAbout(req, callback) {
     // Build About Model
     let aboutModel = {
       server: server,
-      maintainer: maintainer,
       agencies: agencies
     };
 
