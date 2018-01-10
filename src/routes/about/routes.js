@@ -26,11 +26,11 @@ let routes = function(server) {
    *           "version": "1.1.2",
    *           "host": "localhost:3000",
    *           "hostname": "FINS.local"
-   *         },
-   *         "maintainer": {
-   *           "name": "David Waring",
-   *           "email": "webmaster@righttrack.io",
-   *           "source": "https://github.com/right-track/right-track-server"
+   *           "maintainer": {
+   *             "name": "David Waring",
+   *             "email": "webmaster@righttrack.io",
+   *             "source": "https://github.com/right-track/right-track-server"
+   *           }
    *         },
    *         "agencies": [
    *           {
