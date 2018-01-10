@@ -1,6 +1,7 @@
 'use strict';
 
 const core = require('right-track-core');
+const auth = require('../../handlers/authorization.js');
 const agencies = require('../../config/agencies.js');
 const Response = require('../../response');
 const buildStop = require('../stops/helper.js').buildStop;
@@ -93,73 +94,77 @@ function getStationFeed(req, res, next) {
   let originId = req.params.stopId;
   let db = agencies.getAgencyDB(agency);
 
+  // Check for API Access
+  if ( auth.checkAuthAccess("stations", req, res, next) ) {
 
-  // Get the Origin Information
-  core.query.stops.getStop(db, originId, function(err, origin) {
+    // Get the Origin Information
+    core.query.stops.getStop(db, originId, function (err, origin) {
 
-    // DATABASE ERROR
-    if ( err ) {
-      return next(Response.getInternalServerError());
-    }
-
-
-    // STOP NOT FOUND
-    if ( origin === undefined ) {
-      let error = Response.buildError(
-        4042,
-        "Stop Not Found",
-        "The requested Stop (" + originId + ") could not be found."
-      );
-      res.send(error.code, error.response);
-      return next();
-    }
-
-
-    // STATION FEED NOT SUPPORTED
-    if ( !agencies.isAgencyStationFeedSupported(agency) ) {
-      let error = Response.buildError(
-        4051,
-        "Station Feed Not Supported",
-        "The specified agency (" + agency + ") does not support real-time station feeds."
-      );
-      res.send(error.code, error.response);
-      return next();
-    }
-
-
-    // Load the Station Feed
-    agencies.loadAgencyFeed(agency, db, origin, function(err, stationFeed) {
-
-      // STATION FEED ERROR
+      // DATABASE ERROR
       if ( err ) {
-        try {
-          let parts = err.message.split('|');
-          let error = new Response.buildError(
-            parseInt(parts[0]),
-            parts[1],
-            parts[2]
-          );
-          res.send(error.code, error.response);
-          return next();
-        }
-        catch(err) {
-          return next(Response.getInternalServerError());
-        }
+        return next(Response.getInternalServerError());
       }
 
-      // BUILD AND SEND THE RESPONSE
-      let response = Response.buildResponse(
-        {
-          agency: agency,
-          feed: buildFeed(stationFeed)
+
+      // STOP NOT FOUND
+      if ( origin === undefined ) {
+        let error = Response.buildError(
+          4042,
+          "Stop Not Found",
+          "The requested Stop (" + originId + ") could not be found."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+
+      // STATION FEED NOT SUPPORTED
+      if ( !agencies.isAgencyStationFeedSupported(agency) ) {
+        let error = Response.buildError(
+          4051,
+          "Station Feed Not Supported",
+          "The specified agency (" + agency + ") does not support real-time station feeds."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+
+      // Load the Station Feed
+      agencies.loadAgencyFeed(agency, db, origin, function (err, stationFeed) {
+
+        // STATION FEED ERROR
+        if ( err ) {
+          try {
+            let parts = err.message.split('|');
+            let error = new Response.buildError(
+              parseInt(parts[0]),
+              parts[1],
+              parts[2]
+            );
+            res.send(error.code, error.response);
+            return next();
+          }
+          catch (err) {
+            return next(Response.getInternalServerError());
+          }
         }
-      );
-      res.send(response.code, response.response);
-      return next();
+
+        // BUILD AND SEND THE RESPONSE
+        let response = Response.buildResponse(
+          {
+            agency: agency,
+            feed: buildFeed(stationFeed)
+          }
+        );
+        res.send(response.code, response.response);
+        return next();
+
+      });
 
     });
 
-  });
+  }
 
 }
 
