@@ -37,5 +37,6 @@
       "blacklist": "./static/password-blacklist.txt"
     }
   },
+  "requireClientAuth": true,
   "allowDebugAccess": false
 }

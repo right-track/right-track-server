@@ -19,6 +19,18 @@ function getAuthAccess(req, res, next) {
   // Set list of approved access codes
   req.access = ['public'];
 
+  // Client Auth Not Required...
+  if ( !config.get().requireClientAuth ) {
+    req.access.push('auth');
+    req.access.push('registration');
+    req.access.push('favorites');
+    req.access.push('transit');
+    req.access.push('gtfs');
+    req.access.push('stations');
+    req.access.push('trips');
+    req.access.push('updates');
+  }
+
   // Get Authorization header
   let header = req.header('Authorization');
 

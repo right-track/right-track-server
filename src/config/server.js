@@ -92,6 +92,16 @@ function read(location=defaultConfigLocation) {
     console.warn("***********************************************************");
   }
 
+  // Warn when client authentication is not required
+  if ( !CONFIG.requireClientAuth ) {
+    console.warn("***********************************************************");
+    console.warn("* ====> CLIENT AUTHORIZATION NOT REQUIRED ON SERVER <==== *");
+    console.warn("* This should only be allowed in development environments *");
+    console.warn("* since it may reveal sensitive information.  To disable  *");
+    console.warn("* this set the 'requireClientAuth' server setting to true.*");
+    console.warn("***********************************************************");
+  }
+
 }
 
 
