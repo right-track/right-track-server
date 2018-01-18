@@ -30,6 +30,7 @@ error response in the following format:
  4005 | Password Not Valid | New User Registration: The password provided does not meet the minimum password requirements
  4006 | Favorites Not Valid | Adding Favorites: The body of the request does not follow the required favorites format
  4007 | Unsupported Station | Station Feed: The requested Stop does not support real-time station feeds
+ 4008 | Invalid Date/Time | The Date and/or Time supplied could not be properly parsed - make sure they follow the documented formats
  
  
 ### HTTP Status: 401

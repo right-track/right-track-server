@@ -35,6 +35,8 @@
     "getUsers",
     "getFavoritesModificationDate",
     "getFavorites",
-    "addFavorites"
+    "addFavorites",
+    "tripSearch",
+    "tripSearchwithDateandTime"
   ]
 }
