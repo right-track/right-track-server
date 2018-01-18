@@ -19,8 +19,9 @@ The following features are supported by the API Server:
     - Routes
     - Stops
     - Trips
-- Right Track Station Feeds  
+- Right Track Station Feeds
 (real-time departure status information)
+- Trip Searches (direct and with transfers)
 - Right Track User Registration
 - Right Track User Authentication
 - User Favorites
