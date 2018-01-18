@@ -28,22 +28,28 @@ let buildStopTime = function(stopTime) {
   let stop = stopHelper.buildStop(stopTime.stop);
   let arrivalTime = DateTime.createFromTime(stopTime.arrivalTimeSeconds).getTimeReadable();
   let departureTime = DateTime.createFromTime(stopTime.departureTimeSeconds).getTimeReadable();
-  if (stopTime.date === 19700101) stopTime.date = undefined;
+  let arrivalDate = undefined;
+  let departureDate = undefined;
+  if ( stopTime.date !== 19700101 ) {
+    arrivalDate = stopTime.arrival.getDateInt();
+    departureDate = stopTime.departure.getDateInt();
+  }
 
   return {
     stop: stop,
     arrival: {
       time: arrivalTime,
-      seconds: stopTime.arrivalTimeSeconds
+      seconds: stopTime.arrivalTimeSeconds,
+      date: arrivalDate
     },
     departure: {
       time: departureTime,
-      seconds: stopTime.departureTimeSeconds
+      seconds: stopTime.departureTimeSeconds,
+      date: departureDate
     },
     stopSequence: stopTime.stopSequence,
     pickupType: stopTime.pickupType,
-    dropOffType: stopTime.dropOffType,
-    date: stopTime.date
+    dropOffType: stopTime.dropOffType
   }
 };
 
@@ -162,5 +168,6 @@ let getTrip = function(req, res, next) {
 // Export the functions
 module.exports = {
   getTrip: getTrip,
-  buildTrip: buildTrip
+  buildTrip: buildTrip,
+  buildStopTime: buildStopTime
 };
