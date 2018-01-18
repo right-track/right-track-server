@@ -29,6 +29,7 @@ function getAuthAccess(req, res, next) {
     req.access.push('stations');
     req.access.push('trips');
     req.access.push('updates');
+    req.access.push('search');
   }
 
   // Get Authorization header
