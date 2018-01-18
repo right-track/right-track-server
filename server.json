@@ -37,6 +37,15 @@
       "blacklist": "./static/password-blacklist.txt"
     }
   },
+  "search": {
+    "allowTransfers": true,
+    "allowChangeInDirection": true,
+    "preDateHours": 3,
+    "postDateHours": 6,
+    "maxLayoverMins": 30,
+    "minLayoverMins": 0,
+    "maxTransfers": 2
+  },
   "requireClientAuth": true,
   "allowDebugAccess": false
 }
