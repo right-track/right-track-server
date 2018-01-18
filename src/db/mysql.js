@@ -32,8 +32,7 @@ function connect() {
     }
     if ( err ) {
       console.error("COULD NOT CONNECT TO THE MYSQL DATABASE");
-      console.error(config.database);
-      console.error(err);
+      console.error("Make sure the MySQL Server is running and that the MySQL host, username and password are set in the server configuration file");
       process.exit(1);
     }
     else {
