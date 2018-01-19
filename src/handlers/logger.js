@@ -12,6 +12,22 @@ function log(req, res, next) {
   let method = req.method;
   let path = req.getPath();
 
+  // Skip /doc assets
+  if( path.startsWith("/doc") && path !== "/doc/index.html" ) {
+    return next();
+  }
+
+  // Add Query Params to Path
+  let q = [];
+  for ( let property in req.query ) {
+    if ( req.query.hasOwnProperty(property) ) {
+      q.push(property + "=" + req.query[property]);
+    }
+  }
+  if ( q.length > 0 ) {
+    path = path + "?" + q.join('&');
+  }
+
   // Get API Key, if provided
   let auth = req.header('Authorization');
   if ( auth !== undefined ) {
@@ -19,18 +35,27 @@ function log(req, res, next) {
     auth = auth.replace(':', '');
     auth = auth.replace('token', '');
     auth = auth.replace(' ', '');
-    auth = ' [' + auth + ']';
+    if ( auth.length > 8 ) {
+      auth = auth.substring(0, 4) + "..." + auth.substring(auth.length-4);
+    }
   }
   else {
     auth = '';
   }
+  if ( auth.length > 0 ) {
+    auth = ' [' + auth + ']';
+  }
+
 
   // Get date
   let ts = DateTime.now().toString();
 
+  // Print the Log to the console
   console.log('' + ts + ' - {' + method + '} ' + path + auth);
 
-  next();
+  // Continue the handler chain
+  return next();
+
 }
 
 

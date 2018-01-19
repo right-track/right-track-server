@@ -91,13 +91,13 @@ function _setListeners() {
 function _setMiddleware() {
 
   // SET HANDLER CHAIN
+  SERVER.use(restify.plugins.queryParser());
   SERVER.use(logger);
   SERVER.use(headers);
   SERVER.use(agency);
   SERVER.use(auth.getAuthAccess);
   SERVER.use(authentication);
   SERVER.use(timeout);
-  SERVER.use(restify.plugins.queryParser());
   SERVER.use(restify.plugins.bodyParser());
 
 }
