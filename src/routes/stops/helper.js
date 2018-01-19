@@ -74,42 +74,60 @@ function getStops(req, res, next) {
   // Check for API Access
   if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
 
-    // Just stops with a Status ID requested...
-    if ( req.query.hasOwnProperty("hasFeed") && req.query.hasFeed.toLowerCase() === 'true' ) {
+    // Get Filter Parameters
+    let hasFeed = req.query.hasOwnProperty("hasFeed") && req.query.hasFeed.toLowerCase() === "true";
+    let routeFilter = req.query.hasOwnProperty("routeId");
+    let routeId = req.query.routeId;
+    let locationFilter = req.query.hasOwnProperty("lat") && req.query.hasOwnProperty("lon");
+    let lat = req.query.lat;
+    let lon = req.query.lon;
+    let count = req.query.hasOwnProperty("count") ? req.query.count : -1;
+    let distance = req.query.hasOwnProperty("distance") ? req.query.distance : -1;
 
-      // Query the DB for the list of stops with a status id
-      core.query.stops.getStopsWithStatus(db, function(err, stops) {
-
-        // Server Error
-        if ( err ) {
-          return next(Response.getInternalServerError());
-        }
-
-        // Continue to build the Response...
-        return getStopsResponse(req, res, next, agency, stops);
-
-      });
-
+    // When count or distance are provided, must provide lat and lon
+    if ( (count !== -1 || distance !== -1) && (lat === undefined || lon === undefined) ) {
+      let error = Response.buildError(
+        400,
+        "Bad Request",
+        "When either the count or distance query parameters are provided, a location's lat and lon parameters are required"
+      );
+      res.send(error.code, error.response);
+      return next();
     }
 
+    // Get All Stops
+    if ( !routeFilter && !locationFilter ) {
+      core.query.stops.getStops(db, hasFeed, _finish);
+    }
 
-    // All stops requested...
+    // Get Stops By Route
+    else if ( routeFilter && !locationFilter ) {
+      core.query.stops.getStopsByRoute(db, routeId, hasFeed, _finish);
+    }
+
+    // Get Stops By Location
     else {
-
-      // Query the DB for the list of all stops for this agency
-      core.query.stops.getStops(db, function(err, stops) {
-
-        // Server Error
-        if ( err ) {
-          return next(Response.getInternalServerError());
-        }
-
-        // Continue to build the Response...
-        return getStopsResponse(req, res, next, agency, stops);
-
-      });
-
+      core.query.stops.getStopsByLocation(db, lat, lon, count, distance, hasFeed, routeId, _finish);
     }
+
+  }
+
+
+  /**
+   * Process the Stops and Build the Response
+   * @param {Error} err Database Query Error
+   * @param {Stop[]} stops List of Stops
+   * @private
+   */
+  function _finish(err, stops) {
+
+    // Server Error
+    if ( err ) {
+      return next(Response.getInternalServerError());
+    }
+
+    // Build the Response
+    _buildStopsResponse(req, res, next, agency, stops);
 
   }
 
@@ -124,41 +142,24 @@ function getStops(req, res, next) {
  * @param next API Handler Stack
  * @param {string} agency RT Agency Code
  * @param {Stop[]} stops list of Stops
+ * @private
  */
-function getStopsResponse(req, res, next, agency, stops) {
+function _buildStopsResponse(req, res, next, agency, stops) {
 
-  // Check if any stops were found...
-  if (stops.length > 0) {
+  // Build the Stop Models
+  let stopModels = buildStops(stops);
 
-    // Build the Stop Models
-    let stopModels = buildStops(stops);
+  // Set the Response Model
+  let response = Response.buildResponse(
+    {
+      agency: agency,
+      stops: stopModels
+    }
+  );
 
-    // Set the Response Model
-    let response = Response.buildResponse(
-      {
-        agency: agency,
-        stops: stopModels
-      }
-    );
-
-    // Send the Response
-    res.send(response.code, response.response);
-    return next();
-
-  }
-
-  // No stops were found...
-  else {
-
-    let error = Response.buildError(
-      4042,
-      "Stops Not Found",
-      "The requested Stops for Agency (" + agency + ") could not be found."
-    );
-    res.send(error.code, error.response);
-    return next();
-
-  }
+  // Send the Response
+  res.send(response.code, response.response);
+  return next();
 
 }
 

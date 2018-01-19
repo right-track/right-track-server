@@ -10,11 +10,36 @@ let routes = function(server) {
    * @api {GET} /stops/:agency Get Stops
    * @apiName getStops
    * @apiGroup Stops
-   * @apiDescription Get the GTFS Stops for the specified agency.  Optionally, add the query param ?hasFeed=true to request just the stops with a valid Status ID (ie Stops that have a Real-Time Station Feed).
+   * @apiDescription Get the GTFS Stops for the specified agency.  Optionally, filter
+   * the returned Stops by Route ID, whether the Stop supports real-time Station Feeds,
+   * and/or by location.
    * @apiPermission gtfs
    *
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Path) {string} agency RT Agency Code
+   * @apiParam (Query) {string} [routeId] When set to a GTFS Route ID, return Stops associated with that Route
+   * @apiParam (Query) {boolean=true} [hasFeed] Set to true to return Stops that support real-time station feeds
+   * @apiParam (Query) {number} [lat] Location Latitude (Decimal Degrees)
+   * @apiParam (Query) {number} [lon] Location Longitude (Decimal Degrees)
+   * @apiParam (Query) {int} [count] Get (up to) the `count` closest Stops from the location (requires `lat` and `lon`)
+   * @apiParam (Query) {number} [distance] Max distance (miles) Stops can be from the location (requires `lat` and `lon`)
+   *
+   * @apiExample Get All Stops
+   *     GET /stops/mnr
+   * @apiExample Get Stops Along Route
+   *     GET /stops/mnr?routeId=1
+   * @apiExample Get Stops w/ Station Feed
+   *     GET /stops/mnr?hasFeed=true
+   * @apiExample Get Stops Along Route w/ Station Feed
+   *     GET /stops/mnr?routeId=1&hasFeed=true
+   * @apiExample Get Stops Sorted By Distance
+   *     GET /stops/mnr?lat=40.9359&lon=-73.7797
+   * @apiExample Get 5 Closest Stops
+   *     GET /stops/mnr?lat=40.9359&lon=-73.7797&count=5
+   * @apiExample Get Stops Within 10 Miles
+   *     GET /stops/mnr?lat=40.9359&lon=-73.7797&distance=10
+   * @apiExample Get 5 Closest Stops Within 10 Miles
+   *     GET /stops/mnr?lat=40.9359&lon=-73.7797&count=5&distance=10
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
