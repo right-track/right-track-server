@@ -213,12 +213,29 @@ function getSearchResults(req, res, next) {
     }
   }
 
-  // Set Trip Search Options
-  let options = c.get().search;
+  // Get Default Trip Search Options
+  let options = Object.assign({}, c.get().search);
 
-  // TODO: Override Options with Query Params
+  // Set the options values
+  if ( req.query.hasOwnProperty('allowTransfers') ) options.allowTransfers = req.query.allowTransfers.toLowerCase() === 'true';
+  if ( req.query.hasOwnProperty('allowChangeInDirection') ) options.allowChangeInDirection = req.query.allowChangeInDirection.toLowerCase() === 'true';
+  if ( req.query.hasOwnProperty('preDateHours') ) options.preDateHours = parseInt(req.query.preDateHours);
+  if ( req.query.hasOwnProperty('postDateHours') ) options.postDateHours = parseInt(req.query.postDateHours);
+  if ( req.query.hasOwnProperty('maxLayoverMins') ) options.maxLayoverMins = parseInt(req.query.maxLayoverMins);
+  if ( req.query.hasOwnProperty('minLayoverMins') ) options.minLayoverMins = parseInt(req.query.minLayoverMins);
+  if ( req.query.hasOwnProperty('maxLayovers') ) options.maxLayovers = parseInt(req.query.maxLayovers);
 
-
+  // Check option values
+  if ( isNaN(options.preDateHours) ||  isNaN(options.postDateHours) ||  isNaN(options.maxLayoverMins) ||
+    isNaN(options.minLayoverMins) ||  isNaN(options.maxTransfers) ) {
+    let e = Response.buildError(
+      400,
+      "Bad Request",
+      "Could not properly parse one or more of the query arguments"
+    );
+    res.send(e.code, e.response);
+    return next();
+  }
 
   // Get Agency DB
   let db = agencies.getAgencyDB(agency);

@@ -17,6 +17,13 @@ let routes = function(server) {
    * @apiParam (Path) {string} agency RT Agency Code
    * @apiParam (Path) {string} originId GTFS Stop ID for Origin
    * @apiParam (Path) {string} destinationId GTFS Stop ID for Destination
+   * @apiParam (Query) {boolean} [allowTransfers=true] (Dis)allow transfers in results
+   * @apiParam (Query) {boolean} [allowChangeInDirection=true] (Dis)allow transfers between Trips in opposite directions
+   * @apiParam (Query) {int} [preDateHours=3] Set the number of hours before the current time to include in results
+   * @apiParam (Query) {int} [postDateHours=6] Set the number of hours after the current time to include in results
+   * @apiParam (Query) {int} [maxLayoverMins=30] Set the maximum number of minutes allowed at a transfer
+   * @apiParam (Query) {int} [minLayoverMins=0] Set the minimum number of minutes allowed at a transfer
+   * @apiParam (Query) {int} [maxTransfers=2] Set the maximum number of transfers allowed per result
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
@@ -265,6 +272,13 @@ let routes = function(server) {
    * @apiParam (Path) {string} destinationId GTFS Stop ID for Destination
    * @apiParam (Path) {number} date Departure Date in YYYYMMDD format (ex: 20180117)
    * @apiParam (Path) {number} time Departure Time in HHMM format (ex: 0930 or 2130)
+   * @apiParam (Query) {boolean} [allowTransfers=true] (Dis)allow transfers in results
+   * @apiParam (Query) {boolean} [allowChangeInDirection=true] (Dis)allow transfers between Trips in opposite directions
+   * @apiParam (Query) {int} [preDateHours=3] Set the number of hours before the departure time to include in results
+   * @apiParam (Query) {int} [postDateHours=6] Set the number of hours after the departure time to include in results
+   * @apiParam (Query) {int} [maxLayoverMins=30] Set the maximum number of minutes allowed at a transfer
+   * @apiParam (Query) {int} [minLayoverMins=0] Set the minimum number of minutes allowed at a transfer
+   * @apiParam (Query) {int} [maxTransfers=2] Set the maximum number of transfers allowed per result
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
