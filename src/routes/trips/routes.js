@@ -7,6 +7,31 @@ let routes = function(server) {
 
 
   /**
+   * @api {GET} /trips/:agency Get Trips
+   * @apiName getTrips
+   * @apiGroup Trips
+   * @apiDescription Get the GTFS Trips that match the specified criteria.  If no date
+   * is specified, the current date will be used.
+   * @apiPermission gtfs
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Path) {string} agency RT Agency Code
+   * @apiParam (Query) {number} [date=today] Return trips that run on the date (YYYYMMDD format)
+   * @apiParam (Query) {string} [routeId] When a GTFS Route ID is provided, only return Trips that operate on the Route
+   * @apiParam (Query) {string} [stopId] When a GTFS Stop ID is provided, only return Trips that stop at the Stop
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4031 Debug Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (404 Error Codes) 4041 Unsupported Agency
+   */
+  server.get("/trips/:agency", helper.getTrips);
+
+
+  /**
    * @api {GET} /trips/:agency/:tripID Get Trip
    * @apiName getTrip
    * @apiGroup Trips

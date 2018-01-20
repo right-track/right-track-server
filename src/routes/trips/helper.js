@@ -163,11 +163,73 @@ let getTrip = function(req, res, next) {
 };
 
 
+/**
+ * Get the Trip Models and send the Response
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getTrips(req, res, next) {
+  let agency = req.params.agency;
+  let db = agencies.getAgencyDB(agency);
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+
+    // Get / Set the Date
+    let date = req.query.hasOwnProperty("date") ? req.query.date : DateTime.now().getDateInt();
+
+    // Set the Options
+    let opts = {};
+    opts.routeId = req.query.routeId;
+    opts.stopId = req.query.stopId;
+
+    // TODO: Check the Stop ID matches a real Stop
+
+    // Get Trips
+    core.query.trips.getTripsByDate(db, date, opts, function(err, trips) {
+
+      // Server Error
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+
+      // List of Trip Models
+      let tripModels = [];
+
+      // Build each of the Trip Models
+      for ( let i = 0; i < trips.length; i++ ) {
+        tripModels.push(
+          buildTrip(trips[i])
+        );
+      }
+
+      // TODO: add filter params to response
+
+      // Set the Response Model
+      let response = Response.buildResponse(
+        {
+          agency: agency,
+          trips: tripModels
+        }
+      );
+
+      // Send the Response
+      res.send(response.code, response.response);
+      return next();
+
+    });
+
+  }
+
+}
+
 
 
 // Export the functions
 module.exports = {
   getTrip: getTrip,
+  getTrips: getTrips,
   buildTrip: buildTrip,
   buildStopTime: buildStopTime
 };
