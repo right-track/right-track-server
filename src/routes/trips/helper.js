@@ -184,8 +184,6 @@ function getTrips(req, res, next) {
     opts.routeId = req.query.routeId;
     opts.stopId = req.query.stopId;
 
-    // TODO: Check the Stop ID matches a real Stop
-
     // Get Trips
     core.query.trips.getTripsByDate(db, date, opts, function(err, trips) {
 
@@ -203,8 +201,6 @@ function getTrips(req, res, next) {
           buildTrip(trips[i])
         );
       }
-
-      // TODO: add filter params to response
 
       // Set the Response Model
       let response = Response.buildResponse(
