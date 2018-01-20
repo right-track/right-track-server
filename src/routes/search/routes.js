@@ -19,8 +19,8 @@ let routes = function(server) {
    * @apiParam (Path) {string} destinationId GTFS Stop ID for Destination
    * @apiParam (Query) {boolean} [allowTransfers=true] (Dis)allow transfers in results
    * @apiParam (Query) {boolean} [allowChangeInDirection=true] (Dis)allow transfers between Trips in opposite directions
-   * @apiParam (Query) {int} [preDateHours=3] Set the number of hours before the current time to include in results
-   * @apiParam (Query) {int} [postDateHours=6] Set the number of hours after the current time to include in results
+   * @apiParam (Query) {int} [preDepartureHours=3] Set the number of hours before the current time to include in results
+   * @apiParam (Query) {int} [postDepartureHours=6] Set the number of hours after the current time to include in results
    * @apiParam (Query) {int} [maxLayoverMins=30] Set the maximum number of minutes allowed at a transfer
    * @apiParam (Query) {int} [minLayoverMins=0] Set the minimum number of minutes allowed at a transfer
    * @apiParam (Query) {int} [maxTransfers=2] Set the maximum number of transfers allowed per result
@@ -59,8 +59,8 @@ let routes = function(server) {
    *         "options": {
    *           "allowTransfers": true,
    *           "allowChangeInDirection": true,
-   *           "preDateHours": 3,
-   *           "postDateHours": 6,
+   *           "preDepartureHours": 3,
+   *           "postDepartureHours": 6,
    *           "maxLayoverMins": 30,
    *           "minLayoverMins": 0,
    *           "maxTransfers": 2,
@@ -274,8 +274,8 @@ let routes = function(server) {
    * @apiParam (Path) {number} time Departure Time in HHMM format (ex: 0930 or 2130)
    * @apiParam (Query) {boolean} [allowTransfers=true] (Dis)allow transfers in results
    * @apiParam (Query) {boolean} [allowChangeInDirection=true] (Dis)allow transfers between Trips in opposite directions
-   * @apiParam (Query) {int} [preDateHours=3] Set the number of hours before the departure time to include in results
-   * @apiParam (Query) {int} [postDateHours=6] Set the number of hours after the departure time to include in results
+   * @apiParam (Query) {int} [preDepartureHours=3] Set the number of hours before the departure time to include in results
+   * @apiParam (Query) {int} [postDepartureHours=6] Set the number of hours after the departure time to include in results
    * @apiParam (Query) {int} [maxLayoverMins=30] Set the maximum number of minutes allowed at a transfer
    * @apiParam (Query) {int} [minLayoverMins=0] Set the minimum number of minutes allowed at a transfer
    * @apiParam (Query) {int} [maxTransfers=2] Set the maximum number of transfers allowed per result
@@ -315,8 +315,8 @@ let routes = function(server) {
    *         "options": {
    *           "allowTransfers": true,
    *           "allowChangeInDirection": true,
-   *           "preDateHours": 3,
-   *           "postDateHours": 6,
+   *           "preDepartureHours": 3,
+   *           "postDepartureHours": 6,
    *           "maxLayoverMins": 30,
    *           "minLayoverMins": 0,
    *           "maxTransfers": 2,

@@ -41,7 +41,7 @@ function buildResponse(agency, search, results) {
  * @param {TripSearch} search Trip Search
  */
 function buildOptions(search) {
-  let datetime = search.datetime;
+  let datetime = search.departure;
   let options = search.options;
   options.departure = {
     time: datetime.getTimeReadable(),
@@ -219,14 +219,14 @@ function getSearchResults(req, res, next) {
   // Set the options values
   if ( req.query.hasOwnProperty('allowTransfers') ) options.allowTransfers = req.query.allowTransfers.toLowerCase() === 'true';
   if ( req.query.hasOwnProperty('allowChangeInDirection') ) options.allowChangeInDirection = req.query.allowChangeInDirection.toLowerCase() === 'true';
-  if ( req.query.hasOwnProperty('preDateHours') ) options.preDateHours = parseInt(req.query.preDateHours);
-  if ( req.query.hasOwnProperty('postDateHours') ) options.postDateHours = parseInt(req.query.postDateHours);
+  if ( req.query.hasOwnProperty('preDepartureHours') ) options.preDepartureHours = parseInt(req.query.preDepartureHours);
+  if ( req.query.hasOwnProperty('postDepartureHours') ) options.postDepartureHours = parseInt(req.query.postDepartureHours);
   if ( req.query.hasOwnProperty('maxLayoverMins') ) options.maxLayoverMins = parseInt(req.query.maxLayoverMins);
   if ( req.query.hasOwnProperty('minLayoverMins') ) options.minLayoverMins = parseInt(req.query.minLayoverMins);
   if ( req.query.hasOwnProperty('maxLayovers') ) options.maxLayovers = parseInt(req.query.maxLayovers);
 
   // Check option values
-  if ( isNaN(options.preDateHours) ||  isNaN(options.postDateHours) ||  isNaN(options.maxLayoverMins) ||
+  if ( isNaN(options.preDepartureHours) ||  isNaN(options.postDepartureHours) ||  isNaN(options.maxLayoverMins) ||
     isNaN(options.minLayoverMins) ||  isNaN(options.maxTransfers) ) {
     let e = Response.buildError(
       400,
