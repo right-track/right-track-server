@@ -93,16 +93,17 @@ let routes = function(server) {
    *                 },
    *                 "arrival": {
    *                   "time": "3:52 PM",
-   *                   "seconds": 57120
+   *                   "seconds": 57120,
+   *                   "date": 20171004
    *                 },
    *                 "departure": {
    *                   "time": "3:52 PM",
-   *                   "seconds": 57120
+   *                   "seconds": 57120,
+   *                   "date": 20171004
    *                 },
    *                 "stopSequence": 1,
    *                 "pickupType": 0,
-   *                 "dropOffType": 0,
-   *                 "date": 20171004
+   *                 "dropOffType": 0
    *               },
    *               {
    *                 "...": "..."

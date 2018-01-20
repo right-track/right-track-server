@@ -201,12 +201,6 @@ function removeUser(req, res, next) {
  */
 function getUsers(req, res, next) {
 
-
-  // TODO: Filter by email and/or username
-  let filterEmail = req.query.email;
-  let filterUsername = req.query.username;
-
-
   // Check for API Access
   if ( auth.checkAuthAccess("debug", req, res, next) ) {
 

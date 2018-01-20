@@ -27,6 +27,7 @@
     "getRoute",
     "getStops",
     "getStop",
+    "getTrips",
     "getTrip",
     "registrationRequirements",
     "addUser",

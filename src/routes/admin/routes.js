@@ -12,6 +12,7 @@ let routes = function(server) {
    * @apiGroup Admin
    * @apiDescription Disply the API Server Configuration.
    * @apiPermission debug
+   * @apiPrivate
    *
    * @apiParam (Header) {string} Authorization Token {API Key}
    *

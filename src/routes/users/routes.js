@@ -188,6 +188,7 @@ let routes = function(server) {
    * @apiGroup Users
    * @apiDescription Get the registration and session information for all registered Users.  Optionally filter by email and/or username.
    * @apiPermission debug
+   * @apiPrivate
    *
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Query) {string} [email] Filter by email address

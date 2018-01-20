@@ -149,6 +149,8 @@ function _buildStopsResponse(req, res, next, agency, stops) {
   // Build the Stop Models
   let stopModels = buildStops(stops);
 
+  // TODO: Add filter params to the Response
+
   // Set the Response Model
   let response = Response.buildResponse(
     {
