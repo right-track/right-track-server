@@ -19,11 +19,18 @@ const Response = require('../../response');
 /**
  * Build the Stop model
  * @param {Stop} stop GTFS Stop Class
+ * @param {boolean} [displayDistance=false] Toggle the display of stop distance
  * @return {object} Stop Model
  */
-function buildStop(stop) {
+function buildStop(stop, displayDistance=false) {
   if ( stop === undefined ) {
     return undefined;
+  }
+
+  // Set distance to display
+  let distance = undefined;
+  if ( displayDistance ) {
+    distance = stop.distance;
   }
 
   return {
@@ -32,7 +39,8 @@ function buildStop(stop) {
     lat: stop.lat,
     lon: stop.lon,
     url: stop.url,
-    wheelchairBoarding: stop.wheelchairBoarding
+    wheelchairBoarding: stop.wheelchairBoarding,
+    distance: distance
   }
 }
 
@@ -40,14 +48,15 @@ function buildStop(stop) {
 /**
  * Build the list of Stop Models
  * @param {Stop[]} stops List of GTFS Stops
+ * @param {boolean} [displayDistance=false] Toggle the display of stop distance
  * @return {object[]} List of Stop Models
  */
-function buildStops(stops) {
+function buildStops(stops, displayDistance=false) {
   let stopModels = [];
 
   for ( let i = 0; i < stops.length; i++ ) {
     let stop = stops[i];
-    let stopModel = buildStop(stop);
+    let stopModel = buildStop(stop, displayDistance);
     stopModels.push(stopModel);
   }
 
@@ -71,14 +80,16 @@ function getStops(req, res, next) {
   let agency = req.params.agency;
   let db = agencies.getAgencyDB(agency);
 
+  // Set Stop Filters
+  let hasFeed = req.query.hasOwnProperty("hasFeed") && req.query.hasFeed.toLowerCase() === "true";
+  let locationFilter = req.query.hasOwnProperty("lat") && req.query.hasOwnProperty("lon");
+  let routeFilter = req.query.hasOwnProperty("routeId");
+
   // Check for API Access
   if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
 
     // Get Filter Parameters
-    let hasFeed = req.query.hasOwnProperty("hasFeed") && req.query.hasFeed.toLowerCase() === "true";
-    let routeFilter = req.query.hasOwnProperty("routeId");
     let routeId = req.query.routeId;
-    let locationFilter = req.query.hasOwnProperty("lat") && req.query.hasOwnProperty("lon");
     let lat = req.query.lat;
     let lon = req.query.lon;
     let count = req.query.hasOwnProperty("count") ? req.query.count : -1;
@@ -107,7 +118,7 @@ function getStops(req, res, next) {
 
     // Get Stops By Location
     else {
-      core.query.stops.getStopsByLocation(db, lat, lon, count, distance, hasFeed, routeId, _finish);
+      core.query.stops.getStopsByLocation(db, lat, lon, {count: count, distance: distance, hasFeed: hasFeed, routeId: routeId}, _finish);
     }
 
   }
@@ -127,7 +138,7 @@ function getStops(req, res, next) {
     }
 
     // Build the Response
-    _buildStopsResponse(req, res, next, agency, stops);
+    _buildStopsResponse(req, res, next, agency, stops, locationFilter);
 
   }
 
@@ -142,12 +153,13 @@ function getStops(req, res, next) {
  * @param next API Handler Stack
  * @param {string} agency RT Agency Code
  * @param {Stop[]} stops list of Stops
+ * @param {boolean} [displayDistance=false] Toggle the display of stop distance
  * @private
  */
-function _buildStopsResponse(req, res, next, agency, stops) {
+function _buildStopsResponse(req, res, next, agency, stops, displayDistance=false) {
 
   // Build the Stop Models
-  let stopModels = buildStops(stops);
+  let stopModels = buildStops(stops, displayDistance);
 
   // Set the Response Model
   let response = Response.buildResponse(

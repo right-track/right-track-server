@@ -26,8 +26,6 @@ const stopHelper = require('../stops/helper.js');
  */
 let buildStopTime = function(stopTime) {
   let stop = stopHelper.buildStop(stopTime.stop);
-  let arrivalTime = DateTime.createFromTime(stopTime.arrivalTimeSeconds).getTimeReadable();
-  let departureTime = DateTime.createFromTime(stopTime.departureTimeSeconds).getTimeReadable();
   let arrivalDate = undefined;
   let departureDate = undefined;
   if ( stopTime.date !== 19700101 ) {
@@ -38,13 +36,13 @@ let buildStopTime = function(stopTime) {
   return {
     stop: stop,
     arrival: {
-      time: arrivalTime,
-      seconds: stopTime.arrivalTimeSeconds,
+      time: stopTime.arrival.getTimeReadable(),
+      seconds: stopTime.arrival.getTimeSeconds(),
       date: arrivalDate
     },
     departure: {
-      time: departureTime,
-      seconds: stopTime.departureTimeSeconds,
+      time: stopTime.departure.getTimeReadable(),
+      seconds: stopTime.departure.getTimeSeconds(),
       date: departureDate
     },
     stopSequence: stopTime.stopSequence,

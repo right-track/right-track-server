@@ -63,6 +63,7 @@ let routes = function(server) {
    *         "lon": -73.079892,
    *         "url": "http://as0.mta.info/mnr/stations/station_detail.cfm?key=292",
    *         "wheelchairBoarding": 0
+   *         "distance": 1.1457
    *       },
    *       {
    *         "...": "..."
