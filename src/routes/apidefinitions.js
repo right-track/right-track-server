@@ -23,8 +23,8 @@
  * in the body of the request and should be JSON formatted.
  */
 
-// ==== PERMISSION DEFINITIONS ===== //
 
+// ==== PERMISSION DEFINITIONS ===== //
 
 /**
  * @apiDefine public API-Access: public
@@ -76,9 +76,9 @@
  */
 
 /**
- * @apiDefine trips API-Access: trips
+ * @apiDefine search API-Access: search
  * These API endpoints require an API client key with
- * 'trips' privileges.  These endpoints can perform
+ * 'search' privileges.  These endpoints can perform
  * trip searches on a supported Agency's GTFS
  * schedule data.
  */
