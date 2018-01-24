@@ -52,11 +52,20 @@ function buildMaintainer() {
 /**
  * Build the Agency Model
  * @param {string} agencyCode Agency Code
+ * @param {boolean} showConfig Include the agency configuration in the response
  * @param {buildCallback} callback Callback function(err, AgencyModel)
  */
-function buildAgency(agencyCode, callback) {
+function buildAgency(agencyCode, showConfig, callback) {
   let db = c.agencies.getAgencyDB(agencyCode);
   let agencyConfig = c.agencies.getAgencyConfig(agencyCode);
+
+  // Add config, if requested
+  let config = undefined;
+  if ( showConfig ) {
+    config = {
+      colors: agencyConfig.colors
+    };
+  }
 
   // Get agency database version
   core.query.about.getAbout(db, function(err, about) {
@@ -77,7 +86,8 @@ function buildAgency(agencyCode, callback) {
       maintainer: {
         name: agencyConfig.maintainer.name,
         email: agencyConfig.maintainer.email
-      }
+      },
+      config: config
     };
 
     // Return model
@@ -87,9 +97,10 @@ function buildAgency(agencyCode, callback) {
 
 /**
  * Build the Agency List
+ * @param {boolean} showConfig Include the agency configuration in the response
  * @param {buildCallback} callback Callback function(err, AgencyList)
  */
-function buildAgencies(callback) {
+function buildAgencies(showConfig, callback) {
   let agencyCodes = c.agencies.getAgencies();
   let agencyModels = [];
 
@@ -105,7 +116,7 @@ function buildAgencies(callback) {
     let agencyCode = agencyCodes[i];
 
     // Build the Agency Model
-    buildAgency(agencyCode, function(err, agencyModel) {
+    buildAgency(agencyCode, showConfig, function(err, agencyModel) {
       if ( err && !errorFound ) {
         errorFound = true;
         return callback(err);
@@ -133,12 +144,13 @@ function buildAgencies(callback) {
 /**
  * Build the About Model
  * @param req API Request
+ * @param {boolean} showConfig Include the agency configuration in the response
  * @param {buildCallback} callback Callback function(AboutModel)
  */
-function buildAbout(req, callback) {
+function buildAbout(req, showConfig, callback) {
   let server = buildServer(req);
 
-  buildAgencies(function(err, agencies) {
+  buildAgencies(showConfig, function(err, agencies) {
     if ( err ) {
       return callback(err);
     }
@@ -270,7 +282,7 @@ function buildLinks(agency, callback) {
  * @param next API Handler Stack
  */
 function getAbout(req, res, next) {
-  buildAbout(req, function(err, model) {
+  buildAbout(req, _showConfig(req), function(err, model) {
     if ( err ) {
       return next(Response.getInternalServerError());
     }
@@ -289,7 +301,7 @@ function getAbout(req, res, next) {
  * @param next API Handler Stack
  */
 function getAboutAgencies(req, res, next) {
-  buildAgencies(function(err, model) {
+  buildAgencies(_showConfig(req), function(err, model) {
     if ( err ) {
       return next(Response.getInternalServerError());
     }
@@ -309,7 +321,7 @@ function getAboutAgencies(req, res, next) {
  */
 function getAboutAgency(req, res, next) {
   let agency = req.params.agency;
-  buildAgency(agency, function(err, model) {
+  buildAgency(agency, _showConfig(req), function(err, model) {
     if ( err ) {
       return next(Response.getInternalServerError());
     }
@@ -372,6 +384,17 @@ function getAboutAgencyIcon(req, res, next) {
     return next();
 
   });
+}
+
+
+/**
+ * Check if the request has the `agencyConfig` query param set to true
+ * @param req
+ * @returns {boolean}
+ * @private
+ */
+function _showConfig(req) {
+  return req.query.hasOwnProperty("agencyConfig") && req.query.agencyConfig.toLowerCase() === "true";
 }
 
 

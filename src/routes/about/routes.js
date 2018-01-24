@@ -12,6 +12,8 @@ let routes = function(server) {
    * @apiDescription Get information about the Right Track API Server and its supported agencies and transit agencies.
    * @apiPermission public
    *
+   * @apiParam (Query) {boolean=true} [agencyConfig] When set to true, show additional configuration variables for each Agency
+   *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
    * @apiError (5xx Error Codes) 5002 API Server Error
@@ -64,6 +66,8 @@ let routes = function(server) {
    * @apiDescription Get information about all of the agencies supported by the Right Track API Server.
    * @apiPermission public
    *
+   * @apiParam (Query) {boolean=true} [agencyConfig] When set to true, show additional configuration variables for each Agency
+   *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
    * @apiError (5xx Error Codes) 5002 API Server Error
@@ -106,6 +110,7 @@ let routes = function(server) {
    * @apiPermission public
    *
    * @apiParam (Path) {string} agency RT Agency Code
+   * @apiParam (Query) {boolean=true} [agencyConfig] When set to true, show additional configuration variables for each Agency
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
