@@ -30,7 +30,6 @@ function buildFavorite(favorite) {
       sequence: favorite.sequence,
       stop: {
         id: favorite.parameters.stop.id,
-        statusId: favorite.parameters.stop.statusId,
         name: favorite.parameters.stop.name
       },
       options: favorite.options
@@ -44,12 +43,10 @@ function buildFavorite(favorite) {
       sequence: favorite.sequence,
       origin: {
         id: favorite.parameters.origin.id,
-        statusId: favorite.parameters.origin.statusId,
         name: favorite.parameters.origin.name
       },
       destination: {
         id: favorite.parameters.destination.id,
-        statusId: favorite.parameters.destination.statusId,
         name: favorite.parameters.destination.name
       },
       options: {
@@ -183,8 +180,8 @@ function addFavs(req, res, next) {
       // Parse the favorites
       for ( let i = 0; i < favs.length; i++ ) {
         let favorite = favs[i];
-        let type = favorite.type;
-        let sequence = favorite.sequence;
+        let type = parseInt(favorite.type);
+        let sequence = parseInt(favorite.sequence);
 
         // Parse the Favorite Type
         if ( type !== undefined && sequence !== undefined ) {

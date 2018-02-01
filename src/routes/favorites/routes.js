@@ -86,7 +86,6 @@ let routes = function(server) {
    *         "sequence": 1,
    *         "stop": {
    *           "id": "1",
-   *           "statusId": "1",
    *           "name": "Grand Central Terminal"
    *         },
    *         "options": {}
@@ -96,12 +95,10 @@ let routes = function(server) {
    *         "sequence": 2,
    *         "origin": {
    *           "id": "1",
-   *           "statusId": "1",
    *           "name": "Grand Central Terminal"
    *         },
    *         "destination": {
    *           "id": "110",
-   *           "statusId": "110",
    *           "name": "Larchmont"
    *         },
    *           "options": {
@@ -141,8 +138,7 @@ let routes = function(server) {
    *   "type": 1,
    *   "sequence": 1,
    *   "stop": {
-   *     "id": "1",
-   *     "statusId": "56",
+   *     "id": "56",
    *     "name": "Fordham"
    *   },
    *   "options": {}
@@ -154,12 +150,10 @@ let routes = function(server) {
    *   "sequence": 2,
    *   "origin": {
    *     "id": "1",
-   *     "statusId": "1",
    *     "name": "Grand Central Terminal"
    *   },
    *   "destination": {
    *     "id": "110",
-   *     "statusId": "110",
    *     "name": "Larchmont"
    *   },
    *   "options": {
@@ -202,7 +196,6 @@ let routes = function(server) {
    *         "sequence": 1,
    *         "stop": {
    *           "id": "56",
-   *           "statusId": "56",
    *           "name": "Fordham"
    *         },
    *         "options": {}
@@ -212,12 +205,10 @@ let routes = function(server) {
    *         "sequence": 2,
    *         "origin": {
    *           "id": "1",
-   *           "statusId": "1",
    *           "name": "Grand Central Terminal"
    *         },
    *         "destination": {
    *           "id": "110",
-   *           "statusId": "110",
    *           "name": "Larchmont"
    *         },
    *         "options": {
