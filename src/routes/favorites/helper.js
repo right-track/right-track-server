@@ -167,7 +167,7 @@ function getFavs(req, res, next) {
 function addFavs(req, res, next) {
   let agency = req.params.agency;
   let userPID = req.params.userPID;
-  let favs = req.body.favorites;
+  let favs = req.body.favorites === undefined ? [] : req.body.favorites;
   let parsed = true;
 
   // Check for API Access
