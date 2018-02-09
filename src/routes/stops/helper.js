@@ -40,6 +40,7 @@ function buildStop(stop, displayDistance=false) {
     lon: stop.lon,
     url: stop.url,
     wheelchairBoarding: stop.wheelchairBoarding,
+    hasFeed: stop.statusId !== "-1",
     distance: distance
   }
 }

@@ -62,7 +62,8 @@ let routes = function(server) {
    *         "lat": 41.344156,
    *         "lon": -73.079892,
    *         "url": "http://as0.mta.info/mnr/stations/station_detail.cfm?key=292",
-   *         "wheelchairBoarding": 0
+   *         "wheelchairBoarding": 0,
+   *         "hasFeed": false,
    *         "distance": 1.1457
    *       },
    *       {
@@ -108,8 +109,7 @@ let routes = function(server) {
    *       "lon": -73.759792,
    *       "url": "http://as0.mta.info/mnr/stations/station_detail.cfm?key=208",
    *       "wheelchairBoarding": 1,
-   *       "statusId": "110",
-   *       "transferWeight": 1171
+   *       "hasFeed": true
    *     }
    *     }
    *   }
