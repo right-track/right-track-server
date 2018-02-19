@@ -92,6 +92,7 @@ let buildTrip = function(trip) {
       id: trip.directionId,
       description: trip.directionDescription
     },
+    peak: trip.peak,
     stops: stops
   }
 };
