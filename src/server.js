@@ -55,6 +55,17 @@ function start() {
     console.log('===========================================================');
     console.info('==> API Server is up and running @ ' + SERVER.url + '...');
     index.buildHTML();
+
+    // Warn when allow debug access is set
+    if ( config.allowDebugAccess ) {
+      console.warn("***********************************************************");
+      console.warn("* =======> DEBUG ACCESS IS ALLOWED ON THE SERVER <======= *");
+      console.warn("* This should only be allowed in development environments *");
+      console.warn("* since it may reveal sensitive information.  To disable  *");
+      console.warn("* this set the 'allowDebugAccess' server setting to false.*");
+      console.warn("***********************************************************");
+    }
+
   });
 
 }

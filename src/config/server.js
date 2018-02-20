@@ -9,8 +9,7 @@ const props = require('../../package.json');
 const defaultConfigLocation = path.normalize(path.join(__dirname, "/../../server.json"));
 
 // Setup Configuration Manager
-let CONFIG = new config();
-read(defaultConfigLocation);
+let CONFIG = new config(defaultConfigLocation, _parse);
 
 
 
@@ -57,50 +56,37 @@ function read(location) {
     console.log("==> READING SERVER CONFIG FILE: " + location);
 
     // Read the Config file
-    CONFIG.read(location, function(config) {
-
-      // Get undefined name from package description
-      if ( config.name === undefined || config.name === "" ) {
-        config.name = props.description;
-      }
-
-      // Get undefined version from package version
-      if ( config.version === undefined || config.version === "" ) {
-        temp.version = props.version;
-        CONFIG.set(temp);
-      }
-
-      return config;
-    });
+    CONFIG.read(location, _parse);
 
     // Parse the agency config information
     agencies.parseAgencyConfigs(CONFIG.get().agencies);
-
-    // Warn when allow debug access is set
-    if ( CONFIG.get().allowDebugAccess ) {
-      console.warn("***********************************************************");
-      console.warn("* =======> DEBUG ACCESS IS ALLOWED ON THE SERVER <======= *");
-      console.warn("* This should only be allowed in development environments *");
-      console.warn("* since it may reveal sensitive information.  To disable  *");
-      console.warn("* this set the 'allowDebugAccess' server setting to false.*");
-      console.warn("***********************************************************");
-    }
-
-    // Warn when client authentication is not required
-    if ( !CONFIG.get().requireClientAuth ) {
-      console.warn("***********************************************************");
-      console.warn("* ====> CLIENT AUTHORIZATION NOT REQUIRED ON SERVER <==== *");
-      console.warn("* This should only be allowed in development environments *");
-      console.warn("* since it may reveal sensitive information.  To disable  *");
-      console.warn("* this set the 'requireClientAuth' server setting to true.*");
-      console.warn("***********************************************************");
-    }
 
   }
 
 }
 
 
+/**
+ * Config parse function
+ * @param {Object} config
+ * @returns {object} config
+ * @private
+ */
+function _parse(config) {
+
+  // Get undefined name from package description
+  if ( config.name === undefined || config.name === "" ) {
+    config.name = props.description;
+  }
+
+  // Get undefined version from package version
+  if ( config.version === undefined || config.version === "" ) {
+    config.version = props.version;
+  }
+
+  return config;
+
+}
 
 
 
