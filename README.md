@@ -136,7 +136,7 @@ Once the Server has been properly configured, use the `right-track-server`
 executable to start the server:
 
 ```shell
-right-track-server ./my_serer.json
+right-track-server ./my_server.json
 ```
 
 The full usage of the `right-track-server` executable is:

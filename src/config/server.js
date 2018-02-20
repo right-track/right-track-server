@@ -1,22 +1,16 @@
 'use strict';
 
-const path = require("path");
-const fs = require("fs");
-const merge = require("deepmerge");
+const path = require('path');
+const config = require('@dwaring87/config');
 const agencies = require('./agencies.js');
-const utils = require('./utils.js');
+const props = require('../../package.json');
 
 // Default Configuration File Location
 const defaultConfigLocation = path.normalize(path.join(__dirname, "/../../server.json"));
 
-// Server Configuration
-let CONFIG = {};
-
-
-
-// Load and parse default server config when the file is required
-read();
-
+// Setup Configuration Manager
+let CONFIG = new config();
+read(defaultConfigLocation);
 
 
 
@@ -27,10 +21,10 @@ read();
  * Get the current configuration variables. This will be the default
  * configuration along with any merged config variables added with the
  * read() function.
- * @returns {*} configuration variables
+ * @returns {object} configuration variables
  */
 function get() {
-  return CONFIG;
+  return CONFIG.get();
 }
 
 
@@ -38,7 +32,7 @@ function get() {
  * Clear the stored config and agency information
  */
 function clear() {
-  CONFIG = {};
+  CONFIG.clear();
 }
 
 
@@ -46,60 +40,62 @@ function clear() {
  * Read an additional config file from the specified location
  * and merge it with the existing configuration.  This will combine
  * any arrays (such as the lists of supported app agencies).
- * @param {string} [location=defaultConfiguration] Path to config file (relative paths are relative to path of node process)
+ * @param {string} [location] Path to config file (relative paths are relative to path of node process)
  */
-function read(location=defaultConfigLocation) {
+function read(location) {
 
-  console.log('===========================================================');
+  if ( location ) {
 
-  // Relative path is relative to shell path of node process
-  if ( utils.isRelativePath(location) ) {
-    location = utils.makeAbsolutePath(process.cwd(), location);
-  }
+    console.log('===========================================================');
 
-  // Server config to process...
-  console.log("==> READING SERVER CONFIG FILE: " + location);
-
-  // Load the config file to add
-  let add = JSON.parse(fs.readFileSync(location, 'utf8'));
-
-  // Get directory of config file
-  let dirname = path.dirname(location);
-
-  // Parse the config file
-  add = utils.parseServerConfig(add, dirname);
-
-  // Merge the additional config file to the existing config
-  CONFIG = merge(CONFIG, add, {
-    arrayMerge: function(d, s) {
-      return d.concat(s);
+    // Relative path is relative to shell path of node process
+    if ( !path.isAbsolute(location) ) {
+      location = path.normalize(process.cwd() + '/' + location);
     }
-  });
 
-  // Check the name and version properties
-  CONFIG = utils.checkNameVersion(CONFIG);
+    // Server config to process...
+    console.log("==> READING SERVER CONFIG FILE: " + location);
 
-  // Parse the agency config information
-  agencies.parseAgencyConfigs(CONFIG.agencies);
+    // Read the Config file
+    CONFIG.read(location, function(config) {
 
-  // Warn when allow debug access is set
-  if ( CONFIG.allowDebugAccess ) {
-    console.warn("***********************************************************");
-    console.warn("* =======> DEBUG ACCESS IS ALLOWED ON THE SERVER <======= *");
-    console.warn("* This should only be allowed in development environments *");
-    console.warn("* since it may reveal sensitive information.  To disable  *");
-    console.warn("* this set the 'allowDebugAccess' server setting to false.*");
-    console.warn("***********************************************************");
-  }
+      // Get undefined name from package description
+      if ( config.name === undefined || config.name === "" ) {
+        config.name = props.description;
+      }
 
-  // Warn when client authentication is not required
-  if ( !CONFIG.requireClientAuth ) {
-    console.warn("***********************************************************");
-    console.warn("* ====> CLIENT AUTHORIZATION NOT REQUIRED ON SERVER <==== *");
-    console.warn("* This should only be allowed in development environments *");
-    console.warn("* since it may reveal sensitive information.  To disable  *");
-    console.warn("* this set the 'requireClientAuth' server setting to true.*");
-    console.warn("***********************************************************");
+      // Get undefined version from package version
+      if ( config.version === undefined || config.version === "" ) {
+        temp.version = props.version;
+        CONFIG.set(temp);
+      }
+
+      return config;
+    });
+
+    // Parse the agency config information
+    agencies.parseAgencyConfigs(CONFIG.get().agencies);
+
+    // Warn when allow debug access is set
+    if ( CONFIG.get().allowDebugAccess ) {
+      console.warn("***********************************************************");
+      console.warn("* =======> DEBUG ACCESS IS ALLOWED ON THE SERVER <======= *");
+      console.warn("* This should only be allowed in development environments *");
+      console.warn("* since it may reveal sensitive information.  To disable  *");
+      console.warn("* this set the 'allowDebugAccess' server setting to false.*");
+      console.warn("***********************************************************");
+    }
+
+    // Warn when client authentication is not required
+    if ( !CONFIG.get().requireClientAuth ) {
+      console.warn("***********************************************************");
+      console.warn("* ====> CLIENT AUTHORIZATION NOT REQUIRED ON SERVER <==== *");
+      console.warn("* This should only be allowed in development environments *");
+      console.warn("* since it may reveal sensitive information.  To disable  *");
+      console.warn("* this set the 'requireClientAuth' server setting to true.*");
+      console.warn("***********************************************************");
+    }
+
   }
 
 }

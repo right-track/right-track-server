@@ -13,12 +13,7 @@
     "password": "mysql_password",
     "name": "rt_api"
   },
-  "agencies": [
-    {
-      "require": "right-track-agency-example",
-      "config": "/path/to/optional/agency/config.json"
-    }
-  ],
+  "agencies": [],
   "registration": {
     "username": {
       "cannotContain": "@ ",
