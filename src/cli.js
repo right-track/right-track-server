@@ -115,6 +115,11 @@ function _printConfig() {
   console.log("===========================================================");
   _printAgencyConfigs();
 
+  // Display the the agency information
+  console.log("==> TRANSIT AGENCIES:");
+  console.log("===========================================================");
+  _printTransitAgencies();
+
 }
 
 
@@ -163,6 +168,14 @@ function _printAgencyConfigs() {
   let agencies = config.getAgencies();
   for ( let i = 0; i < agencies.length; i++ ) {
     console.log(JSON.stringify(config.getAgencyConfig(agencies[i]), null, 4));
+  }
+}
+
+function _printTransitAgencies() {
+  const config = require('./config/transit.js');
+  let agencies = config.getTransitAgencies();
+  for ( let i = 0; i < agencies.length; i++ ) {
+    console.log(JSON.stringify(config.getTransitAgency(agencies[i]), null, 4));
   }
 }
 
