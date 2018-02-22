@@ -38,6 +38,10 @@
     "getFavorites",
     "addFavorites",
     "tripSearch",
-    "tripSearchwithDateandTime"
+    "tripSearchwithDateandTime",
+    "listTransitAgencies",
+    "getTransitFeed",
+    "getTransitAgencyIcon",
+    "getTransitDivisionIcon"
   ]
 }
