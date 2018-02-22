@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 const auth = require('../../handlers/authorization.js');
 const Response = require('../../response');
 const c = require("../../config/");
@@ -73,7 +74,7 @@ function buildTransitFeed(ta, feed) {
   for ( let i = 0; i < rtn.divisions.length; i++ ) {
     if ( rtn.divisions[i].iconPath !== undefined ) {
       if ( fs.existsSync(rtn.divisions[i].iconPath) ) {
-        rtn.divisions[i].icon = "/transit/" + ta + "/icon?division=" + rtn.divisions[i].code;
+        rtn.divisions[i].icon = "/transit/" + ta + "/" + rtn.divisions[i].code + "/icon";
         rtn.divisions[i].iconPath = undefined;
       }
     }
@@ -83,6 +84,45 @@ function buildTransitFeed(ta, feed) {
   return rtn;
 
 }
+
+
+/**
+ * Build a response that returns the specified icon image
+ * @param {string} file Path to icon file
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function buildIcon(file, res, next) {
+
+  // Read the icon file from the specified path
+  fs.readFile(file, function(err, data) {
+
+    // Icon file could not be read, most likely file not found
+    if (err) {
+      let error = Response.buildError(
+        4049,
+        "File Not Found",
+        "Requested icon file not found on server"
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+
+    // Set filename and extension
+    let name = path.basename(file);
+    let ext = path.extname(file).replace('.', '');
+
+    // Return the icon image
+    res.header("content-type", "image/" + ext);
+    res.header("content-disposition", "filename=\"" + name + "\"");
+    res.header("content-length", fs.statSync(file).size);
+    res.sendRaw(data);
+    return next();
+
+  });
+}
+
+
 
 
 
@@ -170,10 +210,73 @@ function getTransitFeed(req, res, next) {
 
 }
 
+/**
+ * Get and return the Transit Agency Icon
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getTransitAgencyIcon(req, res, next) {
+
+  // Get the Transit Agency Code
+  let code = req.params.transitAgency;
+
+  // Check if Transit Agency is Supported
+  if ( !c.transit.isTransitAgencySupported(code) ) {
+    let error = Response.buildError(
+      4044,
+      'Unsupported Transit Agency',
+      'The transit agency code ' + code + ' does not correspond to a supported transit agency.'
+    );
+    res.send(error.code, error.response);
+    return next(false);
+  }
+
+  // Get the Transit Agency class
+  let ta = c.transit.getTransitAgency(code);
+
+  // Send the Icon file
+  buildIcon(ta.iconPath, res, next);
+
+}
+
+/**
+ * Get and return the Transit Division Icon
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getTransitDivisionIcon(req, res, next) {
+
+  // Get the Transit Agency and Division Codes
+  let agency = req.params.transitAgency;
+  let division = req.params.transitDivision;
+
+  // Check if Transit Agency is Supported
+  if ( !c.transit.isTransitAgencySupported(agency) ) {
+    let error = Response.buildError(
+      4044,
+      'Unsupported Transit Agency',
+      'The transit agency code ' + agency + ' does not correspond to a supported transit agency.'
+    );
+    res.send(error.code, error.response);
+    return next(false);
+  }
+
+  // Get the Transit Agency class
+  let ta = c.transit.getTransitAgency(agency);
+
+  // Send the Division Icon file
+  buildIcon(ta.getDivisionIconPath(division), res, next);
+
+}
+
 
 
 module.exports = {
   getTransitAgencyList: getTransitAgencyList,
   getTransitFeed: getTransitFeed,
+  getTransitAgencyIcon: getTransitAgencyIcon,
+  getTransitDivisionIcon: getTransitDivisionIcon,
   buildTransitAgencies: buildTransitAgencies
 };

@@ -106,6 +106,44 @@ let routes = function(server) {
    */
   server.get("/transit/:transitAgency", helper.getTransitFeed);
 
+  /**
+   * @api {GET} /transit/:transitAgency/icon Get Transit Agency Icon
+   * @apiName getTransitAgencyIcon
+   * @apiGroup Transit
+   * @apiDescription Get the icon for the specified transit agency.
+   * @apiPermission public
+   *
+   * @apiParam (Path) {string} transitAgency RT Transit Agency Code
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (404 Error Codes) 4044 Unsupported Transit Agency
+   * @apiError (404 Error Codes) 4049 Transit Agency Icon Not Found
+   *
+   */
+  server.get("/transit/:transitAgency/icon", helper.getTransitAgencyIcon);
+
+
+  /**
+   * @api {GET} /transit/:transitAgency/:transitDivision/icon Get Transit Division Icon
+   * @apiName getTransitDivisionIcon
+   * @apiGroup Transit
+   * @apiDescription Get the icon for the specified transit division.
+   * @apiPermission public
+   *
+   * @apiParam (Path) {string} transitAgency RT Transit Agency Code
+   * @apiParam (Path) {string} transitDivision RT Transit Division Code
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (404 Error Codes) 4044 Unsupported Transit Agency
+   * @apiError (404 Error Codes) 4049 Transit Division Icon Not Found
+   *
+   */
+  server.get("/transit/:transitAgency/:transitDivision/icon", helper.getTransitDivisionIcon);
+
 };
 
 

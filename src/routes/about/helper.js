@@ -381,8 +381,9 @@ function getAboutAgencyIcon(req, res, next) {
 
     // Return the icon image
     res.header("content-type", "image/png");
-    res.header("content-disposition", "attachment; filename=\"" + agency +".png\"");
-    res.send(200, data);
+    res.header("content-disposition", "filename=\"" + agency +".png\"");
+    res.header("content-length", fs.statSync(path).size);
+    res.sendRaw(data);
     return next();
 
   });
