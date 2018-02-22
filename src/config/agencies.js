@@ -10,6 +10,7 @@ let AGENCIES = [];
 
 /**
  * Parse the supported agency configurations
+ * @param {Object[]} agencies List of agency configurations
  */
 function parseAgencyConfigs(agencies) {
 

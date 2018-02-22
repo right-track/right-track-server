@@ -3,6 +3,7 @@
 const path = require('path');
 const config = require('@dwaring87/config');
 const agencies = require('./agencies.js');
+const transit = require('./transit.js');
 const props = require('../../package.json');
 
 // Default Configuration File Location
@@ -60,6 +61,9 @@ function read(location) {
 
     // Parse the agency config information
     agencies.parseAgencyConfigs(CONFIG.get().agencies);
+
+    // Parse the transit agency config information
+    transit.parseTransitAgencies(CONFIG.get().transit);
 
   }
 
