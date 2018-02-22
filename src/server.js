@@ -151,6 +151,7 @@ function _serveRoutes() {
   require('./routes/users/routes.js')(SERVER);
   require('./routes/stations/routes.js')(SERVER);
   require('./routes/search/routes.js')(SERVER);
+  require('./routes/transit/routes.js')(SERVER);
 
 }
 

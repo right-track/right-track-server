@@ -60,6 +60,7 @@ error response in the following format:
  4041 | Unsupported Agency | The agency code provided in the request path does not correspond to an agency supported by the API Server
  4042 | GTFS Data Not Found | The requested GTFS resource could not be found.  Most likely, the ID of the requested resource does not exists in the GTFS data.
  4043 | Information Not Found | The information of the requested resource could not be found
+ 4044 | Unsupported Transit Agency | The transit agency code provided in the request path does not correspond to a transit agency supported by the API Server
  4049 | File Not Found | A file associated with the requested resource could not be found on the Server
 
 
@@ -69,6 +70,7 @@ error response in the following format:
 |------------|------------|-------------|
  405  | Method Not Allowed | The requests's HTTP Method is not allowed for the requested resource
  4051 | Station Feeds Not Supported | The requested agency does not support real-time station feeds
+ 4052 | Transit Feeds Not Supported | The requested transit agency does not support real-time transit feeds
  
 
 ### HTTP Status: 500
@@ -79,3 +81,4 @@ error response in the following format:
  5001 | API Server Timeout | The API Server could not generate the response in time.  This may be temporary so try again later.
  5002 | API Server Error | An unexpected error occurred with the API Server.  This may be temporary so try again later.
  5003 | Could Not Parse Station Data | Station Feeds: Could not parse the response provided by the agency's real-time station information source.  This may be temporary so try again later.
+ 5004 | Could Not Parse Transit Data | Transit Feeds: Could not parse the response provided by the transit agency's real time transit information source.  This may be temporary so try again later.
