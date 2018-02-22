@@ -96,11 +96,3 @@
  * 'admin' privileges.  These endpoints alter the state
  * of the API server.
  */
-
-/**
- * @apiDefine debug API-Access: debug
- * These API endpoints require an API client key with
- * 'debug' privileges.  These endpoints can display
- * sensitive information and need to be explicitly
- * enabled.
- */

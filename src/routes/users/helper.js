@@ -192,69 +192,6 @@ function removeUser(req, res, next) {
 
 }
 
-
-/**
- * Get the User Models and send the Response
- * @param req API Request
- * @param res API Response
- * @param next API Handler Stack
- */
-function getUsers(req, res, next) {
-
-  // Check for API Access
-  if ( auth.checkAuthAccess("debug", req, res, next) ) {
-
-    // Array of User Models
-    let userModels = [];
-
-    // Get the Users from the DB
-    users.getUsers(function(err, userResults) {
-
-      // Server Error
-      if ( err || userResults.length === 0 ) {
-        return next(Response.getInternalServerError());
-      }
-
-      // Parse Each User
-      let count = 0;
-      for ( let i = 0; i < userResults.length; i++ ) {
-        let user = userResults[i];
-
-        // Get Sessions for user
-        sessions.getSessions(user.pid, function(err, sessions) {
-
-          // Server Error
-          if ( err ) {
-            return next(Response.getInternalServerError());
-          }
-
-          // Build User Model
-          let userModel = buildUser(user, sessions);
-          userModels.push(userModel);
-
-          // Return User Models
-          count++;
-          if ( count === userResults.length ) {
-            let response = Response.buildResponse(
-              {
-                users: userModels
-              }
-            );
-            res.send(response.code, response.response);
-            return next();
-          }
-
-        });
-
-      }
-
-    });
-
-  }
-
-}
-
-
 /**
  * Get the User Model for the specified User and send the Response
  * @param req API Request
@@ -322,6 +259,5 @@ module.exports = {
   getRegistrationRequirements: getRegistrationRequirements,
   registerUser: registerUser,
   removeUser: removeUser,
-  getUsers: getUsers,
   getUser: getUser
 };

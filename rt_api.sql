@@ -47,7 +47,7 @@ CREATE TABLE `clients` (
   `client_name` varchar(64) NOT NULL DEFAULT '',
   `client_id` varchar(64) NOT NULL DEFAULT '',
   `client_key` varchar(64) NOT NULL DEFAULT '',
-  `access` set('auth','registration','favorites','transit','gtfs','stations','search','updates','debug','admin') NOT NULL DEFAULT '',
+  `access` set('auth','registration','favorites','transit','gtfs','stations','search','updates','admin') NOT NULL DEFAULT '',
   `session_length_max` int(11) DEFAULT '30',
   `session_length_inactive` int(11) DEFAULT '7',
   PRIMARY KEY (`id`)

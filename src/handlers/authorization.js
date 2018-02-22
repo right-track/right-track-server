@@ -2,7 +2,6 @@
 
 const Response = require('../response');
 const clients = require('../db/clients.js');
-const config = require('../config/server.js');
 
 
 /**
@@ -18,19 +17,6 @@ function getAuthAccess(req, res, next) {
 
   // Set list of approved access codes
   req.access = ['public'];
-
-  // Client Auth Not Required...
-  if ( !config.get().requireClientAuth ) {
-    req.access.push('auth');
-    req.access.push('registration');
-    req.access.push('favorites');
-    req.access.push('transit');
-    req.access.push('gtfs');
-    req.access.push('stations');
-    req.access.push('trips');
-    req.access.push('updates');
-    req.access.push('search');
-  }
 
   // Get Authorization header
   let header = req.header('Authorization');
@@ -91,25 +77,9 @@ function getAuthAccess(req, res, next) {
  * @returns {boolean} true if the Request has access
  */
 function checkAuthAccess(access, req, res, next) {
-  let allowDebug = config.get().allowDebugAccess;
-
-  // When debug access is not allowed....
-  if (
-    (!allowDebug && access === 'debug') ||               // Deny requests to endpoints that require debug access
-    (!allowDebug && req.access.indexOf('debug') !== -1)  // Deny requests using a client key with debug access
-  ) {
-    let error = Response.buildError(
-      4031,
-      "Debug Access Denied",
-      "Debug client keys and functions have been prohibited on this server."
-    );
-    res.send(error.code, error.response);
-    next(false);
-    return false;
-  }
 
   // Access is allowed
-  else if ( req.access.indexOf(access) !== -1 || req.access.indexOf('debug') !== -1 ) {
+  if ( req.access.indexOf(access) !== -1 ) {
     return true;
   }
 

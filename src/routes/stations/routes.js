@@ -23,7 +23,6 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5003 Could Not Parse Station Data
    * @apiError (400 Error Codes) 4007 Unsupported Station
    * @apiError (403 Error Codes) 403 API Access Denied
-   * @apiError (403 Error Codes) 4031 Debug Access Denied
    * @apiError (403 Error Codes) 4039 Authorization Header Format Error
    * @apiError (404 Error Codes) 4041 Unsupported Agency
    * @apiError (404 Error Codes) 4042 Stop Not Found

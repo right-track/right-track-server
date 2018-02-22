@@ -18,7 +18,6 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5001 API Server Timeout
    * @apiError (5xx Error Codes) 5002 API Server Error
    * @apiError (403 Error Codes) 403 API Access Denied
-   * @apiError (403 Error Codes) 4031 Debug Access Denied
    * @apiError (403 Error Codes) 4039 Authorization Header Format Error
    *
    * @apiSuccessExample {json} Example Response:
@@ -59,7 +58,6 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5002 API Server Error
    * @apiError (5xx Error Codes) 5004 Could Not Parse Transit Data
    * @apiError (403 Error Codes) 403 API Access Denied
-   * @apiError (403 Error Codes) 4031 Debug Access Denied
    * @apiError (403 Error Codes) 4039 Authorization Header Format Error
    * @apiError (404 Error Codes) 4044 Unsupported Transit Agency
    * @apiError (405 Error Codes) 4052 Transit Feeds Not Supported

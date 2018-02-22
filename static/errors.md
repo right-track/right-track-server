@@ -48,7 +48,6 @@ error response in the following format:
 | Error Code | Error Type | Description |
 |------------|------------|-------------|
  403  | API Access Denied | The API Key does not have access to the requested endpoint's API access scope
- 4031 | Debug Access Denied | The API Server is set to deny all requests using a debug API key and debug endpoints
  4039 | Authorization Header Format Error | The endpoint requires an API Key sent in the `Authorization` Header in the format `Token: {API Key}`
  
  

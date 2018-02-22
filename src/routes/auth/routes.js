@@ -22,7 +22,6 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5001 API Server Timeout
    * @apiError (5xx Error Codes) 5002 API Server Error
    * @apiError (403 Error Codes) 403 API Access Denied
-   * @apiError (403 Error Codes) 4031 Debug Access Denied
    * @apiError (403 Error Codes) 4039 Authorization Header Format Error
    * @apiError (401 Error Codes) 401 Not Authorized
    * @apiError (401 Error Codes) 4019 User Not Registered
@@ -70,7 +69,6 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5001 API Server Timeout
    * @apiError (5xx Error Codes) 5002 API Server Error
    * @apiError (403 Error Codes) 403 API Access Denied
-   * @apiError (403 Error Codes) 4031 Debug Access Denied
    * @apiError (403 Error Codes) 4039 Authorization Header Format Error
    * @apiError (401 Error Codes) 401 Not Authorized
    * @apiError (401 Error Codes) 4011 X-Session-Token Header Not Sent

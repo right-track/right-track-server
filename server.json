@@ -41,7 +41,5 @@
     "maxLayoverMins": 30,
     "minLayoverMins": 0,
     "maxTransfers": 2
-  },
-  "requireClientAuth": true,
-  "allowDebugAccess": false
+  }
 }
