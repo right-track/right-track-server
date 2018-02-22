@@ -149,7 +149,7 @@ function _serveRoutes() {
   require('./routes/trips/routes.js')(SERVER);
   require('./routes/auth/routes.js')(SERVER);
   require('./routes/users/routes.js')(SERVER);
-  require('./routes/realtime/routes.js')(SERVER);
+  require('./routes/stations/routes.js')(SERVER);
   require('./routes/search/routes.js')(SERVER);
 
 }
