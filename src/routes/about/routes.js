@@ -52,6 +52,16 @@ let routes = function(server) {
    *           {
    *             "...": "..."
    *           }
+   *         ],
+   *         "transit": [
+   *           {
+   *             "id": "mta",
+   *             "name": "MTA",
+   *             "description": "The Metropolitan Transportation Authority operates public transit in the greater New York City region.  This feed includes the NYC Transit Subway, NYCT and MTA Buses, Long Island Rail Road, Metro-North Railroad, and MTA-operated (NY intrastate) bridges and tunnels."
+   *           },
+   *           {
+   *             "...": "..."
+   *           }
    *         ]
    *       }
    *     }

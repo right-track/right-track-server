@@ -142,6 +142,34 @@ function buildAgencies(showConfig, callback) {
 }
 
 /**
+ * Build the Transit Agency List
+ * @returns {Object[]} List of Transit Agency Models
+ */
+function buildTransitAgencies() {
+
+  // Models to Return
+  let rtn = [];
+
+  // Get the Supported Transit Agencies
+  let transitAgencyCodes = c.transit.getTransitAgencies();
+
+  // Build each Transit Agency
+  for ( let i = 0; i < transitAgencyCodes.length; i++ ) {
+    let ta = c.transit.getTransitAgency(transitAgencyCodes[i]);
+    let model = {
+      id: ta.id,
+      name: ta.name,
+      description: ta.description
+    };
+    rtn.push(model);
+  }
+
+  // Return the Models
+  return rtn;
+
+}
+
+/**
  * Build the About Model
  * @param req API Request
  * @param {boolean} showConfig Include the agency configuration in the response
@@ -158,7 +186,8 @@ function buildAbout(req, showConfig, callback) {
     // Build About Model
     let aboutModel = {
       server: server,
-      agencies: agencies
+      agencies: agencies,
+      transit: buildTransitAgencies()
     };
 
     // Return About Model
