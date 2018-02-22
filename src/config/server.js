@@ -32,7 +32,7 @@ function get() {
  * Clear the stored config and agency information
  */
 function clear() {
-  CONFIG.clear();
+  CONFIG.reset();
 }
 
 
