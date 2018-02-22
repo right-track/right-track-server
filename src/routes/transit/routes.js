@@ -8,7 +8,7 @@ let routes = function(server) {
   /**
    * @api {GET} /transit List Transit Agencies
    * @apiName listTransitAgencies
-   * @apiGroup Transit
+   * @apiGroup Transit Feeds
    * @apiDescription List the supported Transit Agencies that are available for building real-time Transit Feeds.
    * @apiPermission transit
    *
@@ -46,7 +46,7 @@ let routes = function(server) {
   /**
    * @api {GET} /transit/:transitAgency Get Transit Feed
    * @apiName getTransitFeed
-   * @apiGroup Transit
+   * @apiGroup Transit Feeds
    * @apiDescription Display the real-time transit information for the specified transit agency
    * @apiPermission transit
    *
@@ -107,7 +107,7 @@ let routes = function(server) {
   /**
    * @api {GET} /transit/:transitAgency/icon Get Transit Agency Icon
    * @apiName getTransitAgencyIcon
-   * @apiGroup Transit
+   * @apiGroup Transit Feeds
    * @apiDescription Get the icon for the specified transit agency.
    * @apiPermission public
    *
@@ -126,7 +126,7 @@ let routes = function(server) {
   /**
    * @api {GET} /transit/:transitAgency/:transitDivision/icon Get Transit Division Icon
    * @apiName getTransitDivisionIcon
-   * @apiGroup Transit
+   * @apiGroup Transit Feeds
    * @apiDescription Get the icon for the specified transit division.
    * @apiPermission public
    *

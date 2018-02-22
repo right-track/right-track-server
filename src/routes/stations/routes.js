@@ -9,7 +9,7 @@ let routes = function(server) {
   /**
    * @api {GET} /stops/:agency/:stopID/feed Station Feed
    * @apiName stationFeed
-   * @apiGroup RealTime
+   * @apiGroup Station Feeds
    * @apiDescription Display the real-time status and track information for upcoming departures
    * @apiPermission stations
    *

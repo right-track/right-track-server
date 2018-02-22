@@ -20,6 +20,17 @@ let routes = function(server) {
    * @apiParam (Query) {string} [routeId] When a GTFS Route ID is provided, only return Trips that operate on the Route
    * @apiParam (Query) {string} [stopId] When a GTFS Stop ID is provided, only return Trips that stop at the Stop
    *
+   * @apiExample Get Today's Trips
+   *     GET /trips/mnr
+   * @apiExample Get Today's Trips Along Route
+   *     GET /trips/mnr?routeId=1
+   * @apiExample Get Today's Trips From Stop
+   *     GET /trips/mnr?stopId=56
+   * @apiExample Get Date's Trips
+   *     GET /trips/mnr?date=20180227
+   * @apiExample Get Date's Trips From Stop
+   *     GET /trips/mnr?date=20180227&stopId=56
+   *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
    * @apiError (5xx Error Codes) 5002 API Server Error
