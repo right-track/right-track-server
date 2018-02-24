@@ -10,6 +10,41 @@ const DateTime = require('right-track-core').utils.DateTime;
 
 
 /**
+ * Build the Transit Agency Model
+ * @param {string} code Transit Agency Code
+ * @returns {object}
+ */
+function buildTransitAgency(code) {
+
+  // Get the Transit Agency
+  let ta = c.transit.getTransitAgency(code);
+
+  // Set URL
+  let url = '/transit/' + ta.id;
+
+  // Set Icon URL
+  let icon = undefined;
+  if ( ta.iconPath ) {
+    if ( fs.existsSync(ta.iconPath) ) {
+      icon = '/transit/' + ta.id + '/icon';
+    }
+  }
+
+  // Build the Transit Agency Model
+  let model = {
+    id: ta.id,
+    name: ta.name,
+    description: ta.description,
+    url: url,
+    icon: icon
+  };
+
+  // Return the model
+  return model
+
+}
+
+/**
  * Build the Transit Agency List
  * @returns {Object[]} List of Transit Agency Models
  */
@@ -23,30 +58,9 @@ function buildTransitAgencies() {
 
   // Build each Transit Agency
   for ( let i = 0; i < transitAgencyCodes.length; i++ ) {
-    let ta = c.transit.getTransitAgency(transitAgencyCodes[i]);
-
-    // Set URL
-    let url = '/transit/' + ta.id;
-
-    // Set Icon URL
-    let icon = undefined;
-    if ( ta.iconPath ) {
-      if ( fs.existsSync(ta.iconPath) ) {
-        icon = '/transit/' + ta.id + '/icon';
-      }
-    }
-
-    // Build the Transit Agency Model
-    let model = {
-      id: ta.id,
-      name: ta.name,
-      description: ta.description,
-      url: url,
-      icon: icon
-    };
 
     // Add Model to List
-    rtn.push(model);
+    rtn.push(buildTransitAgency(transitAgencyCodes[i]));
 
   }
 
@@ -67,17 +81,38 @@ function buildTransitFeed(ta, feed) {
   // Copy the feed to a new return object
   let rtn = Object.assign({}, feed);
 
+  // Add the Transit Agency model
+  rtn.agency = buildTransitAgency(ta);
+
   // Set updated format
   rtn.updated = DateTime.createFromJSDate(rtn.updated).toHTTPString();
 
-  // Parse Division Icons
+  // Set the event count
+  rtn.eventCount = feed.getEventCount();
+
+  // PARSE DIVISIONS
   for ( let i = 0; i < rtn.divisions.length; i++ ) {
+
+    // Set Icon Path
     if ( rtn.divisions[i].iconPath !== undefined ) {
       if ( fs.existsSync(rtn.divisions[i].iconPath) ) {
         rtn.divisions[i].icon = "/transit/" + ta + "/" + rtn.divisions[i].code + "/icon";
         rtn.divisions[i].iconPath = undefined;
       }
     }
+
+    // Set Event Count
+    rtn.divisions[i].eventCount = rtn.divisions[i].getEventCount();
+
+
+    // PARSE LINES
+    for ( let j = 0; j < rtn.divisions[i].lines.length; j++ ) {
+
+      // Set Event Count
+      rtn.divisions[i].lines[j].eventCount = rtn.divisions[i].lines[j].getEventCount();
+
+    }
+
   }
 
   // Return the Model
