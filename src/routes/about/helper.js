@@ -64,7 +64,8 @@ function buildAgency(agencyCode, showConfig, callback) {
   let config = undefined;
   if ( showConfig ) {
     config = {
-      colors: agencyConfig.colors
+      colors: agencyConfig.colors,
+      transit: agencyConfig.transit
     };
   }
 
