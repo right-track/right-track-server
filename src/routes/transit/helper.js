@@ -81,9 +81,6 @@ function buildTransitFeed(ta, feed) {
   // Copy the feed to a new return object
   let rtn = Object.assign({}, feed);
 
-  // Add the Transit Agency model
-  rtn.agency = buildTransitAgency(ta);
-
   // Set updated format
   rtn.updated = DateTime.createFromJSDate(rtn.updated).toHTTPString();
 
@@ -233,7 +230,7 @@ function getTransitFeed(req, res, next) {
 
       // BUILD AND SEND THE RESPONSE
       let response = Response.buildResponse({
-        transitAgency: code,
+        transitAgency: buildTransitAgency(code),
         feed: buildTransitFeed(code, feed)
       });
       res.send(response.code, response.response);
