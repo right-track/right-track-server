@@ -1,7 +1,7 @@
 {
   "name": "right-track-server",
   "version": "1.5.1",
-  "description": "Right Track API Server",
+  "description": "Right Track Server",
   "author": "David Waring <dev@davidwaring.net> (https://davidwaring.net)",
   "license": "MIT",
   "main": "src/server.js",

@@ -87,7 +87,8 @@
  * @apiDefine updates API-Access: updates
  * These API endpoints require an API client key with
  * 'updates' privileges.  These endpoints can access the
- * update information for apps and Right Track databases.
+ * update information for apps and Right Track databases in
+ * addition to agency and client messages.
  */
 
 /**

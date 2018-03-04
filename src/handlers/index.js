@@ -31,10 +31,18 @@ function buildHTML() {
       agencies[agencyCodes[i]] = c.agencies.getAgencyConfig(agencyCodes[i]);
     }
 
+    // Add Transit Agency Information
+    let transitCodes = c.transit.getTransitAgencies();
+    let transit = [];
+    for ( let i = 0; i < transitCodes.length; i++ ) {
+      transit[transitCodes[i]] = c.transit.getTransitAgency(transitCodes[i]);
+    }
+
     // Build Template properties
     let it = {
       config: config,
       agencies: agencies,
+      transit: transit,
       copyrightYear: new Date().getFullYear(),
       build: new DateTime.now().toHTTPString()
     };
