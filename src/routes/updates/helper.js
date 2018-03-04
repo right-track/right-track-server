@@ -87,8 +87,54 @@ function getMessages(req, res, next) {
 
 }
 
+/**
+ * Get and Build the Response for the specified Message
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getMessage(req, res, next) {
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("updates", req, res, next) ) {
+
+    // Get the Message ID
+    let id = req.params.id;
+
+    // Get the Message
+    messages.getMessage(id, function(err, message) {
+
+      // DATABASE ERROR
+      if ( err ){
+        return next(Response.getInternalServerError());
+      }
+
+      // MESSAGE NOT FOUND
+      if ( message === undefined ) {
+        let error = Response.buildError(
+          4043,
+          "Message Not Found",
+          "The requested Message (" + id + ") could not be found."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+      // BUILD AND SEND THE RESPONSE
+      let response = Response.buildResponse({
+        message: buildMessage(message)
+      });
+      res.send(response.code, response.response);
+      return next();
+
+    });
+
+  }
+
+}
 
 
 module.exports = {
-  getMessages: getMessages
+  getMessages: getMessages,
+  getMessage: getMessage
 };

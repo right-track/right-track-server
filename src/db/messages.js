@@ -48,8 +48,6 @@ function getMessages(opts, callback) {
   }
   select += ";";
 
-  console.log(select);
-
   // Perform Query
   mysql.select(select, function(err, messages) {
     return callback(err, messages);
@@ -58,8 +56,21 @@ function getMessages(opts, callback) {
 }
 
 
+/**
+ * Get the specified Message
+ * @param {int} id Message ID
+ * @param {function} callback Callback function accepting the Message
+ */
+function getMessage(id, callback) {
+  let select = "SELECT id, agency, client, enabled, title, body, link_title, link_url, timestamp FROM messages WHERE id=" + id + ";";
+  mysql.get(select, function(err, message) {
+    return callback(err, message);
+  });
+}
+
 
 // Export the functions
 module.exports = {
-  getMessages: getMessages
+  getMessages: getMessages,
+  getMessage: getMessage
 };

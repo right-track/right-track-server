@@ -14,13 +14,16 @@ function timeoutHandler(req, res, next) {
   // Set the timeout, return a 500 error if the response has not finished by the timeout time
   setTimeout(function() {
     if ( !res.finished ) {
-      let error = Response.buildError(
-        5001,
-        "API Server Timeout",
-        "The Server could not return a response in time.  Please try again later.  If this continues, please contact the server maintainer at " + config.maintainer.email + "."
-      );
-      res.send(error.code, error.response);
-      res.end();
+      try {
+        let error = Response.buildError(
+          5001,
+          "API Server Timeout",
+          "The Server could not return a response in time.  Please try again later.  If this continues, please contact the server maintainer at " + config.maintainer.email + "."
+        );
+        res.send(error.code, error.response);
+        res.end();
+      }
+      catch(err) {}
     }
   }, timeout);
 }
