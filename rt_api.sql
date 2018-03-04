@@ -96,13 +96,14 @@ DROP TABLE IF EXISTS `messages`;
 
 CREATE TABLE `messages` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `agency` varchar(8) NOT NULL DEFAULT '',
+  `agency` text,
+  `client` text,
   `enabled` tinyint(1) NOT NULL DEFAULT '0',
   `title` varchar(36) NOT NULL DEFAULT '',
   `body` text NOT NULL,
   `link_title` varchar(36) DEFAULT NULL,
   `link_url` varchar(72) DEFAULT NULL,
-  `timestamp` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
