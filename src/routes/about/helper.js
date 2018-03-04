@@ -87,7 +87,8 @@ function buildAgency(agencyCode, showConfig, callback) {
       },
       maintainer: {
         name: agencyConfig.maintainer.name,
-        email: agencyConfig.maintainer.email
+        email: agencyConfig.maintainer.email,
+        source: agencyConfig.maintainer.source
       },
       config: config
     };
