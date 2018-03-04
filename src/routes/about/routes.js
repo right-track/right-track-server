@@ -46,7 +46,8 @@ let routes = function(server) {
    *             },
    *             "maintainer": {
    *               "name": "David Waring",
-   *               "email": "lirr@righttrack.io"
+   *               "email": "lirr@righttrack.io",
+   *               "source": "https://github.com/right-track/right-track-agency-lirr"
    *             }
    *           },
    *           {
@@ -57,7 +58,12 @@ let routes = function(server) {
    *           {
    *             "id": "mta",
    *             "name": "MTA",
-   *             "description": "The Metropolitan Transportation Authority operates public transit in the greater New York City region.  This feed includes the NYC Transit Subway, NYCT and MTA Buses, Long Island Rail Road, Metro-North Railroad, and MTA-operated (NY intrastate) bridges and tunnels."
+   *             "description": "The Metropolitan Transportation Authority operates public transit in the greater New York City region.  This feed includes the NYC Transit Subway, NYCT and MTA Buses, Long Island Rail Road, Metro-North Railroad, and MTA-operated (NY intrastate) bridges and tunnels.",
+   *             "maintainer": {
+   *                "name": "David Waring",
+   *                "email": "lirr@righttrack.io",
+   *                "source":"https://github.com/right-track/right-track-agency-lirr"
+   *             }
    *           },
    *           {
    *             "...": "..."
@@ -99,7 +105,8 @@ let routes = function(server) {
    *             },
    *             "maintainer": {
    *               "name": "David Waring",
-   *               "email": "lirr@righttrack.io"
+   *               "email": "lirr@righttrack.io",
+   *               "source": "https://github.com/right-track/right-track-agency-lirr"
    *             }
    *           },
    *           {
@@ -143,7 +150,8 @@ let routes = function(server) {
    *           },
    *           "maintainer": {
    *             "name": "David Waring",
-   *             "email": "mnr@righttrack.io"
+   *             "email": "mnr@righttrack.io",
+   *             "source": "https://github.com/right-track/right-track-agency-mnr"
    *           }
    *         }
    *       }
