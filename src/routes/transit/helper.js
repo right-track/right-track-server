@@ -31,16 +31,18 @@ function buildTransitAgency(code) {
   }
 
   // Build the Transit Agency Model
-  let model = {
+  return {
     id: ta.id,
     name: ta.name,
     description: ta.description,
     url: url,
-    icon: icon
+    icon: icon,
+    maintainer: {
+      name: ta.maintainer.name,
+      email: ta.maintainer.email,
+      source: ta.maintainer.source
+    }
   };
-
-  // Return the model
-  return model
 
 }
 
