@@ -86,9 +86,29 @@ function addMessage(message, callback) {
 }
 
 
+/**
+ * Update the specified Message
+ * @param {int} id Message ID
+ * @param {object} message Updated Message
+ * @param {function} callback Callback function
+ */
+function updateMessage(id, message, callback) {
+  message.enabled = message.enabled ? 1 : 0;
+  message.agency = message.agency ? "'" + message.agency + "'" : "NULL";
+  message.client = message.client ? "'" + message.client + "'" : "NULL";
+  let update = "UPDATE messages SET agency=" + message.agency + ", client=" + message.client + ", enabled=" + message.enabled + ", " +
+    "title='" + message.title + "', body='" + message.body + "', link_title='" + message.linkTitle + "', link_url='" + message.linkUrl + "' " +
+    "WHERE id=" + id + ";";
+  mysql.update(update, function(err) {
+    return callback(err);
+  });
+}
+
+
 // Export the functions
 module.exports = {
   getMessages: getMessages,
   getMessage: getMessage,
-  addMessage: addMessage
+  addMessage: addMessage,
+  updateMessage: updateMessage,
 };
