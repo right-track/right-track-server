@@ -191,6 +191,12 @@ let routes = function(server) {
    * @apiError (403 Error Codes) 4031 Debug Access Denied
    * @apiError (403 Error Codes) 4039 Authorization Header Format Error
    *
+   * @apiSuccessExample {json} Example Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "status": "success",
+   *       "response": {}
+   *     }
    */
   server.del("/updates/messages/:id", helper.removeMessage);
 

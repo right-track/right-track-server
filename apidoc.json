@@ -42,6 +42,11 @@
     "listTransitAgencies",
     "getTransitFeed",
     "getTransitAgencyIcon",
-    "getTransitDivisionIcon"
+    "getTransitDivisionIcon",
+    "getMessages",
+    "getMessage",
+    "addMessage",
+    "updateMessage",
+    "removeMessage"
   ]
 }
