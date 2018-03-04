@@ -31,7 +31,8 @@ error response in the following format:
  4006 | Favorites Not Valid | Adding Favorites: The body of the request does not follow the required favorites format
  4007 | Unsupported Station | Station Feed: The requested Stop does not support real-time station feeds
  4008 | Invalid Date/Time | The Date and/or Time supplied could not be properly parsed - make sure they follow the documented formats
- 
+ 4009 | Invalid Message | The provided message is invalid.  Make sure it contains an agency and/or client property and message title and body properties
+
  
 ### HTTP Status: 401
  

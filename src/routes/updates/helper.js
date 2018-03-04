@@ -134,7 +134,67 @@ function getMessage(req, res, next) {
 }
 
 
+/**
+ * Add the new message to the server database
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function addMessage(req, res, next) {
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("admin", req, res, next) ) {
+
+    // Get the Body
+    let message = req.body;
+
+    // Check Message Properties
+    let valid = true;
+    let props = "";
+    if ( (message.agency === undefined || message.agency === "") && (message.client === undefined || message.client === "") ) {
+      valid = false;
+      props = "Agency Code and/or Client ID";
+    }
+    else if ( message.title === undefined || message.title === "" ) {
+      valid = false;
+      props = "Message Title";
+    }
+    else if ( message.body === undefined || message.body === "" ) {
+      valid = false;
+      props = "Message Body";
+    }
+    if ( !valid ) {
+      let error = Response.buildError(
+        4009,
+        "Invalid Message",
+        "The provided message is missing properties (" + props + ")"
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+
+    // Add the Message
+    messages.addMessage(message, function(err) {
+
+      // Database Error
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+
+      // Message Added
+      let response = Response.buildResponse({});
+      res.send(response.code, response.response);
+      return next();
+
+    });
+
+  }
+
+}
+
+
 module.exports = {
   getMessages: getMessages,
-  getMessage: getMessage
+  getMessage: getMessage,
+  addMessage: addMessage
 };

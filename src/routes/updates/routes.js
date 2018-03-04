@@ -75,7 +75,6 @@ let routes = function(server) {
    * @apiError (5xx Error Codes) 5001 API Server Timeout
    * @apiError (5xx Error Codes) 5002 API Server Error
    * @apiError (403 Error Codes) 403 API Access Denied
-   * @apiError (403 Error Codes) 4031 Debug Access Denied
    * @apiError (403 Error Codes) 4039 Authorization Header Format Error
    * @apiError (404 Error Codes) 4043 Message Not Found
    *
@@ -104,6 +103,40 @@ let routes = function(server) {
    *     }
    */
   server.get("/updates/messages/:id", helper.getMessage);
+
+
+  /**
+   * @api {POST} /updates/messages Add Message
+   * @apiName addMessage
+   * @apiGroup Messages
+   * @apiDescription Add a new Message for the specified agency and/or client.
+   * @apiPermission admin
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Header) {string="application/json","application/x-www-form-urlencoded"} Content-Type Media type of the Request body.
+   * @apiParam (Body) {string} [agency] Right Track Agency Code
+   * @apiParam (Body) {string} [client] Right Track API Server Client ID
+   * @apiParam (Body) {boolean} enabled Enabled state of the Message
+   * @apiParam (Body) {string} title Message Title
+   * @apiParam (Body) {string} body Message Body (html supported)
+   * @apiParam (Body) {string} linkTitle Message Link Title
+   * @apiParam (Body) {string} linkUrl Message Link URL
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (400 Error Codes) 4009 Invalid Message
+   *
+   * @apiSuccessExample {json} Example Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "status": "success",
+   *       "response": {}
+   *     }
+   */
+  server.post("/updates/messages", helper.addMessage);
 
 
 };

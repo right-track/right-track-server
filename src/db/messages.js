@@ -69,8 +69,26 @@ function getMessage(id, callback) {
 }
 
 
+/**
+ * Add the specified Message to the database
+ * @param {object} message New Message
+ * @param {function} callback Callback function
+ */
+function addMessage(message, callback) {
+  message.enabled = message.enabled ? 1 : 0;
+  message.agency = message.agency ? "'" + message.agency + "'" : "NULL";
+  message.client = message.client ? "'" + message.client + "'" : "NULL";
+  let insert = "INSERT INTO messages (agency, client, enabled, title, body, link_title, link_url) " +
+    "VALUES (" + message.agency + ", " + message.client + ", " + message.enabled + ", '" + message.title + "', '" + message.body + "', '" + message.linkTitle + "', '" + message.linkUrl + "');"
+  mysql.insert(insert, function(err) {
+    return callback(err);
+  });
+}
+
+
 // Export the functions
 module.exports = {
   getMessages: getMessages,
-  getMessage: getMessage
+  getMessage: getMessage,
+  addMessage: addMessage
 };
