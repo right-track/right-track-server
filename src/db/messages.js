@@ -105,10 +105,24 @@ function updateMessage(id, message, callback) {
 }
 
 
+/**
+ * Remove the specified Message
+ * @param {int} id Message ID
+ * @param callback
+ */
+function removeMessage(id, callback) {
+  let del = "DELETE FROM messages WHERE id=" + id + ";";
+  mysql.delet(del, function(err) {
+    return callback(err);
+  });
+}
+
+
 // Export the functions
 module.exports = {
   getMessages: getMessages,
   getMessage: getMessage,
   addMessage: addMessage,
   updateMessage: updateMessage,
+  removeMessage: removeMessage
 };

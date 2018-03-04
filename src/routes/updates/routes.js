@@ -173,6 +173,27 @@ let routes = function(server) {
    */
   server.put("/updates/messages/:id", helper.updateMessage);
 
+
+  /**
+   * @api {DELETE} /updates/messages/:messageId Remove Message
+   * @apiName removeMessage
+   * @apiGroup Messages
+   * @apiDescription Remove the specified Message
+   * @apiPermission admin
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Path) {int} messageID Message ID
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4031 Debug Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   *
+   */
+  server.del("/updates/messages/:id", helper.removeMessage);
+
 };
 
 

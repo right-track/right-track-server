@@ -255,9 +255,44 @@ function updateMessage(req, res, next) {
 }
 
 
+/**
+ * Remove the specified Message from the server database
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function removeMessage(req, res, next) {
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("admin", req, res, next) ) {
+
+    // Get the Message ID
+    let id = req.params.id;
+
+    // Remove the Message
+    messages.removeMessage(id, function(err) {
+
+      // Database Error
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+
+      // Message Added
+      let response = Response.buildResponse({});
+      res.send(response.code, response.response);
+      return next();
+
+    });
+
+  }
+
+}
+
+
 module.exports = {
   getMessages: getMessages,
   getMessage: getMessage,
   addMessage: addMessage,
   updateMessage: updateMessage,
+  removeMessage: removeMessage
 };
