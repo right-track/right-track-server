@@ -68,7 +68,7 @@ function login(req, res, next) {
         let error = Response.buildError(
           4019,
           "User Not Registered",
-          "The login is not associated with a registered account.  Register an account first before logging in"
+          "The login is not associated with a registered account.  Register an account first before logging in."
         );
         res.send(error.code, error.response);
         return next();
@@ -85,6 +85,12 @@ function login(req, res, next) {
 
         // Incorrect Login Credentials
         if ( !correct ) {
+
+          // LOG THE LOGIN FAILURE
+          console.error("[LOGIN FAILURE]");
+          console.error("    IP: " + req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+          console.error("    LOGIN: " + login);
+
           let error = Response.buildError(
             401,
             "Not Authorized",
@@ -141,7 +147,7 @@ function login(req, res, next) {
  * @param next API Handler Chain
  */
 function logout(req, res, next) {
-  let userPID = req.params.userPIDl
+  let userPID = req.params.userPID;
   let sessionPID = req.header("X-session-token");
 
   // Check for API Access
