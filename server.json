@@ -23,7 +23,7 @@
     },
     "password": {
       "minLength": 8,
-      "maxLength": 999,
+      "maxLength": 128,
       "requireLetters": true,
       "requireUppercase": false,
       "requireLowercase": false,
