@@ -85,12 +85,7 @@ function login(req, res, next) {
 
         // Incorrect Login Credentials
         if ( !correct ) {
-
-          // LOG THE LOGIN FAILURE
-          console.error("[LOGIN FAILURE]");
-          console.error("    IP: " + req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-          console.error("    LOGIN: " + login);
-
+          console.error("[LOGIN FAILURE] " + login + " @ " + req.headers['x-forwarded-for'] || req.connection.remoteAddress);
           let error = Response.buildError(
             401,
             "Not Authorized",
