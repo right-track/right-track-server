@@ -74,32 +74,49 @@ function addUser(email, username, password, callback) {
   let pid = utils.genPid();
 
   // Generate Salt
-  let salt = utils.genSalt();
+  utils.genSalt(function(err, salt) {
 
-  // Generate Password Hash
-  let password_hash = utils.genHash(salt, password);
-
-  // Get DateTime
-  let datetime = DateTime.now().toMySQLString();
-
-  // Create INSERT statements
-  let insert = "INSERT INTO users (pid, username, email, password, salt, user_modified, " +
-    "password_modified) VALUES ('" + pid + "', '" + username + "', '" + email + "', '" +
-    password_hash + "', '" + salt + "', '" + datetime + "', '" + datetime + "');";
-
-  // Insert into the DB
-  mysql.insert(insert, function(err) {
-
-    // Database error
+    // Salt Error
     if ( err ) {
-      return callback(err);
+      return callback(new Error('Could not generate password salt.  User not added.'));
     }
 
-    // Add user to favorites_modified table
-    let favs = "INSERT INTO favorites_modified (user_id) " +
-      "VALUES ((SELECT id FROM users WHERE pid='" + pid + "'));";
-    mysql.insert(favs, function(err) {
-      return callback(err, pid);
+    // Generate Password Hash
+    utils.genHash(salt, password, function(err, password_hash) {
+
+      // Hash Error
+      if ( err ) {
+        return callback(new Error('Could not generate password hash. User not added.'));
+      }
+
+
+      // Get DateTime
+      let datetime = DateTime.now().toMySQLString();
+
+      // Create INSERT statements
+      let insert = "INSERT INTO users (pid, username, email, password, salt, user_modified, " +
+        "password_modified) VALUES ('" + pid + "', '" + username + "', '" + email + "', '" +
+        password_hash + "', '" + salt + "', '" + datetime + "', '" + datetime + "');";
+
+      // Insert into the DB
+      mysql.insert(insert, function(err) {
+
+        // Database error
+        if ( err ) {
+          return callback(err);
+        }
+
+        // Add user to favorites_modified table
+        let favs = "INSERT INTO favorites_modified (user_id) " +
+          "VALUES ((SELECT id FROM users WHERE pid='" + pid + "'));";
+        mysql.insert(favs, function(err) {
+          return callback(err, pid);
+        });
+
+      });
+
+
+
     });
 
   });
@@ -237,14 +254,23 @@ function checkUserPassword(pid, password, callback) {
       return callback(err, false);
     }
 
+    // Get the stored properties
     let correctPassHash = result.password;
     let salt = result.salt;
 
-    // Calculate hash of provided password
-    let checkHash = utils.genHash(salt, password);
+    // Generate a password hash to compare
+    utils.genHash(salt, password, function(err, checkHash) {
 
-    // Return if match
-    return callback(null, correctPassHash === checkHash);
+      // Generate Hash Error
+      if ( err ) {
+        return callback(new Error('Could not generate password check hash.'));
+      }
+
+      // Return if match
+      return callback(null, correctPassHash === checkHash);
+
+    });
+
   });
 
 }
