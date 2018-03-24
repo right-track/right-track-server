@@ -68,7 +68,7 @@ function login(req, res, next) {
         let error = Response.buildError(
           4019,
           "User Not Registered",
-          "The login is not associated with a registered account.  Register an account first before logging in."
+          "Login credentials provided are incorrect.  Please try again."
         );
         res.send(error.code, error.response);
         return next();

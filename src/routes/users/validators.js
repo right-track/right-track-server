@@ -29,7 +29,7 @@ function validateEmail(req, res, next, email, proceed) {
     let error = Response.buildError(
       4001,
       "Registration Error",
-      "The email provided (" + email + ") is not a valid email."
+      "The email provided is not a valid email."
     );
     res.send(error.code, error.response);
     return next();
@@ -49,7 +49,7 @@ function validateEmail(req, res, next, email, proceed) {
       let error = Response.buildError(
         4002,
         "Registration Error",
-        "The email provided (" + email + ") is already registered with an account"
+        "The email provided is already registered with an account"
       );
       res.send(error.code, error.response);
       return next();
@@ -92,7 +92,7 @@ function validateUsername(req, res, next, username, proceed) {
       let error = Response.buildError(
         4004,
         "Username Already Registered",
-        "The username provided (" + username + ") is already registered with an account."
+        "The username provided is already registered with an account."
       );
       res.send(error.code, error.response);
       return next();
@@ -130,7 +130,7 @@ function validateUsername(req, res, next, username, proceed) {
         error: {
           code: 4003,
           type: "Username Not Valid",
-          message: "The username provided (" + username + ") is not valid.",
+          message: "The username provided is not valid.",
           requirements: {
             username: reqs
           }
