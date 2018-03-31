@@ -60,10 +60,12 @@ let buildStopTime = function(stopTime) {
 let buildStopTimes = function(stopTimes) {
   let stopTimeModels = [];
 
-  for ( let i = 0; i < stopTimes.length; i++ ) {
-    let stopTime = stopTimes[i];
-    let stopTimeModel = buildStopTime(stopTime);
-    stopTimeModels.push(stopTimeModel);
+  if ( stopTimes ) {
+    for ( let i = 0; i < stopTimes.length; i++ ) {
+      let stopTime = stopTimes[i];
+      let stopTimeModel = buildStopTime(stopTime);
+      stopTimeModels.push(stopTimeModel);
+    }
   }
 
   return stopTimeModels;

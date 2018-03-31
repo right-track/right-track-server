@@ -22,20 +22,29 @@ const Response = require('../../response');
  * @return {object} Route Model
  */
 function buildRoute(route) {
-  return {
-    id: route.id,
-    shortName: route.shortName,
-    longName: route.longName,
-    type: route.type,
-    color: route.color,
-    textColor: route.textColor,
-    agency: {
-      id: route.agency.id,
-      name: route.agency.name,
-      url: route.agency.url,
-      timezone: route.agency.timezone
+  let rtn = undefined;
+
+  if ( route ) {
+    rtn = {
+      id: route.id,
+      shortName: route.shortName,
+      longName: route.longName,
+      type: route.type,
+      color: route.color,
+      textColor: route.textColor
+    };
+
+    if ( route.agency ) {
+      rtn.agency =  {
+        id: route.agency.id,
+        name: route.agency.name,
+        url: route.agency.url,
+        timezone: route.agency.timezone
+      }
     }
   }
+
+  return rtn;
 }
 
 
