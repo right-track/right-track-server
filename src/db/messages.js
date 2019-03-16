@@ -26,13 +26,17 @@ function getMessages(opts, callback) {
   let filters = [];
 
   if ( opts.agency && opts.client ) {
-    filters.push("(agency LIKE '%" + opts.agency + "%' OR client LIKE '%" + opts.client + "%')");
+    let filter = "";
+    filter += "(agency LIKE '%" + opts.agency + "%' AND client LIKE '%" + opts.client + "%')";
+    filter += "OR (agency IS NULL AND client LIKE '%" + opts.client + "%')";
+    filter += "OR (agency LIKE '%" + opts.agency + "%' AND client IS NULL)";
+    filters.push("(" + filter + ")");
   }
   else if ( opts.agency ) {
-    filters.push("(agency LIKE '%" + opts.agency + "%' AND client IS NULL)");
+    filters.push("(agency LIKE '%" + opts.agency + "%')");
   }
   else if ( opts.client ) {
-    filters.push("(client LIKE '%" + opts.client + "%' AND agency IS NULL)");
+    filters.push("(client LIKE '%" + opts.client + "%')");
   }
 
   if ( opts.includeDisabled !== undefined ) {
