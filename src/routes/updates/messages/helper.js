@@ -1,8 +1,8 @@
 'use strict';
 
-const auth = require('../../handlers/authorization.js');
-const messages = require('../../db/messages.js');
-const Response = require('../../response');
+const auth = require('../../../handlers/authorization.js');
+const messages = require('../../../db/messages.js');
+const Response = require('../../../response');
 
 
 /**

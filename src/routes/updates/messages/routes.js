@@ -5,7 +5,6 @@ const helper = require('./helper.js');
 
 let routes = function(server) {
 
-  server.get("/updates/messages", helper.getMessages);
   /**
    * @api {GET} /updates/messages Get Messages
    * @apiName getMessages
@@ -58,7 +57,7 @@ let routes = function(server) {
    *       }
    *     }
    */
-
+  server.get("/updates/messages", helper.getMessages);
 
 
   /**

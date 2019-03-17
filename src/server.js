@@ -140,7 +140,8 @@ function _serveRoutes() {
   require('./routes/users/routes.js')(SERVER);
   require('./routes/stations/routes.js')(SERVER);
   require('./routes/search/routes.js')(SERVER);
-  require('./routes/updates/routes.js')(SERVER);
+  require('./routes/updates/messages/routes.js')(SERVER);
+  require('./routes/updates/database/routes.js')(SERVER);
   require('./routes/transit/routes.js')(SERVER);
 
 }
