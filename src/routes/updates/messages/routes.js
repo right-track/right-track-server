@@ -8,7 +8,7 @@ let routes = function(server) {
   /**
    * @api {GET} /updates/messages Get Messages
    * @apiName getMessages
-   * @apiGroup Messages
+   * @apiGroup Updates Messages
    * @apiDescription Get messages for the specified agency and/or client.
    * @apiPermission updates
    *
@@ -63,7 +63,7 @@ let routes = function(server) {
   /**
    * @api {GET} /updates/messages/:messageID Get Message
    * @apiName getMessage
-   * @apiGroup Messages
+   * @apiGroup Updates Messages
    * @apiDescription Get the specified message
    * @apiPermission updates
    *
@@ -107,7 +107,7 @@ let routes = function(server) {
   /**
    * @api {POST} /updates/messages Add Message
    * @apiName addMessage
-   * @apiGroup Messages
+   * @apiGroup Updates Messages
    * @apiDescription Add a new Message for the specified agency and/or client.
    * @apiPermission admin
    *
@@ -141,7 +141,7 @@ let routes = function(server) {
   /**
    * @api {PUT} /updates/messages/:messageId Update Message
    * @apiName updateMessage
-   * @apiGroup Messages
+   * @apiGroup Updates Messages
    * @apiDescription Update the specified Message
    * @apiPermission admin
    *
@@ -176,7 +176,7 @@ let routes = function(server) {
   /**
    * @api {DELETE} /updates/messages/:messageId Remove Message
    * @apiName removeMessage
-   * @apiGroup Messages
+   * @apiGroup Updates Messages
    * @apiDescription Remove the specified Message
    * @apiPermission admin
    *
