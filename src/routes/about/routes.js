@@ -82,7 +82,7 @@ let routes = function(server) {
    * @apiDescription Get information about all of the agencies supported by the Right Track API Server.
    * @apiPermission public
    *
-   * @apiParam (Query) {boolean=true} [agencyConfig] When set to true, show additional configuration variables for each Agency
+   * @apiParam (Query) {boolean=true} [agencyConfig] When set to true, show the entire configuration for each Agency
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
@@ -127,7 +127,7 @@ let routes = function(server) {
    * @apiPermission public
    *
    * @apiParam (Path) {string} agency RT Agency Code
-   * @apiParam (Query) {boolean=true} [agencyConfig] When set to true, show additional configuration variables for each Agency
+   * @apiParam (Query) {boolean=true} [agencyConfig] When set to true, show the entire configuration for each Agency
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout

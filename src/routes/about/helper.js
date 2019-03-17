@@ -63,10 +63,7 @@ function buildAgency(agencyCode, showConfig, callback) {
   // Add config, if requested
   let config = undefined;
   if ( showConfig ) {
-    config = {
-      colors: agencyConfig.colors,
-      transit: agencyConfig.transit
-    };
+    config = agencyConfig;
   }
 
   // Get agency database version
