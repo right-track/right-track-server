@@ -54,6 +54,15 @@ function start() {
   SERVER.listen({port: config.port, host: config.host}, function() {
     console.log('===========================================================');
     console.info('==> API Server is up and running @ ' + SERVER.url + '...');
+
+    // Check for development mode
+    if ( config.mode === "development" ) {
+      console.warn("****************** WARNING *******************");
+      console.warn("* API Server is running in development mode. *");
+      console.warn("* All endpoints do not require an API key.   *")
+      console.warn("****************** WARNING *******************");
+    }
+
     index.buildHTML();
   });
 
