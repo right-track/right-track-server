@@ -41,6 +41,49 @@ let routes = function(server) {
   server.get("/updates/database/:agency", helper.getAgencyDatabase);
 
 
+  /**
+   * @api {GET} /updates/database/archive/:agency Archived Agency Database
+   * @apiName agencyArchiveDatabase
+   * @apiGroup Updates Database
+   * @apiDescription Get the archived agency database versions OR download the specified 
+   * archived agency database (when `?download=version`)
+   * @apiPermission updates
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Path) {string} agency RT Agency Code
+   * @apiParam (Query) {number} [max] Set the maximum number of archived database versions to return
+   * @apiParam (Query) {string} [download] When set to the agency database version code, download 
+   * the specified archived database
+   * @apiParam (Query) [zip] When present with the `download` param, download the zipped version 
+   * of the specified archived database
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4031 Debug Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (404 Error Codes) 4041 Unsupported Agency
+   * @apiError (404 Error Codes) 4049 Agency Database Not Found
+   *
+   * @apiSuccessExample {json} Example Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "status": "success",
+   *       "response": {
+   *         "agency": "mnr",
+   *         "archive": 
+   *            [
+   *               "2019031801", 
+   *               "2019031701", 
+   *               "2019030701"
+   *            ]
+   *       }
+   *     }
+   */
+  server.get("/updates/database/archive/:agency", helper.getAgencyDatabaseArchive);
+
+
 };
 
 
