@@ -6,7 +6,7 @@ const helper = require('./helper.js');
 let routes = function(server) {
 
   /**
-   * @api {OPTIONS} /users Registration Requirements
+   * @api {GET} /users Registration Requirements
    * @apiName registrationRequirements
    * @apiGroup Users
    * @apiDescription Get the User registration requirements for a new User's username and password.
@@ -46,7 +46,7 @@ let routes = function(server) {
    *   }
    * }
    */
-  server.opts("/users", helper.getRegistrationRequirements);
+  server.get("/users", helper.getRegistrationRequirements);
 
 
   /**
