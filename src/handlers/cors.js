@@ -14,9 +14,9 @@ function setCORSResponse(req, res, next) {
   res.setHeader('Server', config.name + '/' + config.version);
   res.setHeader('X-Powered-By', config.name + '/' + config.version);
   res.setHeader('Via', os.hostname());
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'HEAD, GET, POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'authorization,content-type,x-session-token');
+  res.setHeader('Access-Control-Allow-Origin', config.cors.origin);
+  res.setHeader('Access-Control-Allow-Methods', config.cors.methods);
+  res.setHeader('Access-Control-Allow-Headers', config.cors.headers);
   res.setHeader('Content-Type', 'text/plain');
   res.setHeader('Content-Length', 0);
   return next();
