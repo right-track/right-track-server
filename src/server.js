@@ -11,6 +11,7 @@ const config = require('./config/server.js').get();
 const mysql = require('./db/mysql.js');
 
 // Import Handlers
+const cors = require('./handlers/cors.js');
 const logger = require('./handlers/logger.js');
 const errors = require('./handlers/errors.js');
 const headers = require('./handlers/headers.js');
@@ -137,6 +138,12 @@ function _serveStatic() {
  * @private
  */
 function _serveRoutes() {
+
+  // CORS
+  SERVER.opts('/\.*/', cors, function(req, res, next) {
+    res.send(204);
+    return next();
+  });
 
   // LOAD ROUTES
   require('./routes/about/routes.js')(SERVER);
