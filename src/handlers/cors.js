@@ -4,7 +4,7 @@ const c = require('../config/server.js');
 const os = require('os');
 
 /**
- * Set the default Headers to return with each response
+ * Set the Headers to return to a CORS pre-flight request (OPTIONS)
  * @param req API Request
  * @param res API Response
  * @param next API Handler chain

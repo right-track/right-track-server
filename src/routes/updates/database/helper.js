@@ -30,7 +30,12 @@ function buildDatabaseVersion(agencyCode, callback) {
       return callback(
         Response.buildResponse({
           agency: agencyCode,
-          version: about.version
+          version: about.version,
+          compiled: about.compileDate,
+          published: about.publishDate,
+          startDate: about.startDate,
+          endDate: about.endDate,
+          notes: about.notes
         })
       );
     }
