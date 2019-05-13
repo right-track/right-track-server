@@ -34,7 +34,12 @@ let routes = function(server) {
    *       "status": "success",
    *       "response": {
    *         "agency": "mnr",
-   *         "version": 2019030701
+   *         "version": 2019051301,
+   *         "compiled": 20190513,
+   *         "published": 20190513,
+   *         "startDate": 20190414,
+   *         "endDate": 20191121,
+   *         "notes":" This schedule database was automatically compiled on 2019-5-13 01:15:05 due to a schedule data update from Metro North Railroad."
    *       }
    *     }
    */
