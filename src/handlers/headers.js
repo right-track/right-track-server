@@ -15,6 +15,12 @@ function setDefaultHeaders(req, res, next) {
     res.setHeader('Server', config.name + '/' + config.version);
     res.setHeader('X-Powered-By', config.name + '/' + config.version);
     res.setHeader('Via', os.hostname());
+    
+    // Set CORS Origin Header based on request origin
+    let origin = req.header('Origin');
+    if ( origin && (config.cors.origins.includes(origin) || config.cors.origins.includes("*")) ) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
   });
   if ( next !== undefined ) {
     next();

@@ -141,7 +141,6 @@ function _serveRoutes() {
 
   // CORS
   SERVER.opts('/\.*/', cors, function(req, res, next) {
-    res.send(204);
     return next();
   });
 

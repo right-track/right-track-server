@@ -14,9 +14,10 @@
     "name": "rt_api"
   },
   "cors": {
-    "origin": "*",
+    "origins": ["*"],
     "methods": "HEAD, GET, POST, DELETE, OPTIONS",
-    "headers": "content-type,authorization,x-session-token"
+    "headers": "content-type,authorization,x-session-token",
+    "maxAge": 86400
   },
   "agencies": [],
   "transit": [],
