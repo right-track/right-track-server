@@ -382,6 +382,7 @@ function getAboutAgencyIcon(req, res, next) {
     res.header("content-type", "image/png");
     res.header("content-disposition", "filename=\"" + agency +".png\"");
     res.header("content-length", fs.statSync(path).size);
+    res.header("cache-control", "public, max-age=31536000");
     res.sendRaw(data);
     return next();
 
