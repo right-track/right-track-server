@@ -1,6 +1,7 @@
 'use strict';
 
 const nodemailer = require("nodemailer");
+const auth = require('../../handlers/authorization');
 const c = require("../../config/");
 const Response = require("../../response");
 const clients = require("../../db/clients");
@@ -9,6 +10,25 @@ const users = require("../../db/users");
 
 // ==== HELPER FUNCTIONS ==== //
 
+/**
+ * Build a list representing the properties and 
+ * values of the specified metadata object
+ * @param  {Object} object Metadata object
+ * @return {string}        List HTML
+ */
+let _buildList = function(object) {
+  let html = "<ul>";
+  for ( let property in object ) {
+      if ( object.hasOwnProperty(property) ) {
+          let value = object[property];
+          html += "<li><strong>" + property + ":</strong> ";
+          html += typeof(value) === 'object' ? _buildList(value) : value;
+          html += "</li>";
+      }
+  }
+  html += "</ul>";
+  return html;
+}
 
 /**
  * Send an Email with the specified properties
@@ -48,17 +68,26 @@ function _sendEmail(replyTo, subject, body, callback) {
  * @param next API Handler Stack
  */
 function submit(req, res, next) {
-  console.log("SUBMIT FEEDBACK");
 
-  // Get BODY params
-  let replyTo = req.body.replyTo;
-  let subject = req.body.subject;
-  let body = req.body.body;
-  let metadata = req.body.metadata;
+  // Check the API access
+  if ( auth.checkAuthAccess("feedback", req, res, next) ) {
 
-  // Get Client Info
-  clients.getClientByKey(req.APIClientKey, function(err, client) {
-    metadata.client = client.client_name;
+    // Get BODY params
+    let replyTo = req.body.replyTo;
+    let subject = req.body.subject;
+    let body = req.body.body;
+    let metadata = req.body.metadata;
+
+    // Check for subject and body
+    if ( !subject || !body || subject === "" || body === "" ) {
+      let error = new Response.buildError(
+        400,
+        "Missing Feedback Paramaters",
+        "Feedback subject and body are required."
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
 
     // Get User Info
     users.getUserBySession(req.header('X-Session-Token'), function(err, user) {
@@ -69,52 +98,45 @@ function submit(req, res, next) {
         }
       }
 
-      // Append Metadata To HTML Body
-      body += "<br /><strong>Metadata:</strong><ul>";
-      for ( let property in metadata ) {
-        if ( metadata.hasOwnProperty(property) ) {
-          let value = metadata[property];
-          if ( typeof(value) === 'object' ) {
-            body += "<li><strong>" + property + ":</strong><ul>";
-            for ( let subproperty in value ) {
-              if ( value.hasOwnProperty(subproperty) ) {
-                let subvalue = value[subproperty];
-                body += "<li><strong>" + subproperty + ":</strong> " + subvalue + "</li>";
-              }
-            }
-            body += "</ul>";
+      // Get Client Info
+      clients.getClientByKey(req.APIClientKey, function(err, client) {
+        metadata.client = client.client_name;
+
+        // Add Request IP
+        metadata.ip = req.header('X-Real-IP');
+
+        // Append Metadata To HTML Body
+        body += "<div class='metadata'>";
+        body += _buildList(metadata);
+        body += "</div>";
+
+        // Add Metadata Style
+        body += "<style type='text/css'>.metadata {padding: 5px 10px; background-color: #f0f0f0; font-family: monospace;} .metadata > ul {list-style: none; padding-left: 0;} ul > * > ul {list-style: circle; padding-left: 25px}</style>";
+
+        // Send Email
+        _sendEmail(replyTo, subject, body, function(err) {
+
+          // Send Error Response
+          if ( err ) {
+            let error = new Response.buildError(
+              5005,
+              "Could Not Submit Feedback",
+              "Could not submit the feedback.  This may be temporary so try again later."
+            );
+            res.send(error.code, error.response);
+            return next();
           }
-          else {
-            body += "<li><strong>" + property + ":</strong> " + value + "</li>"
-          }
-        }
-      }
-      body += "</ul>";
 
-
-      // Send Email
-      _sendEmail(replyTo, subject, body, function(err) {
-
-        // Send Error Response
-        if ( err ) {
-          let error = new Response.buildError(
-            5005,
-            "Could Not Submit Feedback",
-            "Could not submit the feedback.  This may be temporary so try again later."
-          );
-          res.send(error.code, error.response);
+          // Send Success Response
+          let response = Response.buildResponse({});
+          res.send(response.code, response.response);
           return next();
-        }
 
-        // Send Success Response
-        let response = Response.buildResponse({});
-        res.send(response.code, response.response);
-        return next();
-
-
+        });
       });
     });
-  });
+
+  }
 
 }
 

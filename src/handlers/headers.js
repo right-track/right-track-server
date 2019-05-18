@@ -21,6 +21,7 @@ function setDefaultHeaders(req, res, next) {
     if ( origin && (config.cors.origins.includes(origin) || config.cors.origins.includes("*")) ) {
       res.setHeader('Access-Control-Allow-Origin', origin);
     }
+    res.setHeader('Allow', config.cors.methods);
   });
   if ( next !== undefined ) {
     next();
