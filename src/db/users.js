@@ -222,6 +222,23 @@ function getUser(pid, callback) {
 
 
 /**
+ * Get the registration information for User specified by it's session PID
+ * @param  {string}   session  Session PID
+ * @param  {Function} callback Callback function accepting User
+ */
+function getUserBySession(session, callback) {
+  getUserPIDBySession(session, function(err, pid) {
+    if ( err ) {
+      return callback(err);
+    }
+    getUser(pid, function(err, user) {
+      return callback(err, user);
+    })
+  });
+}
+
+
+/**
  * Get the User's Public ID by their email or username
  * @param {string} login User email or username
  * @param callback Callback function accepting User PID
@@ -236,6 +253,20 @@ function getUserPIDByLogin(login, callback) {
   });
 }
 
+/**
+ * Get the User's Public ID by their session PID
+ * @param  {string}   session  User Session PID
+ * @param  {Function} callback Callback function accepting User PID
+ */
+function getUserPIDBySession(session, callback) {
+  let select = "SELECT pid FROM users WHERE id = (SELECT user_id FROM sessions WHERE pid='" + session + "');"
+  mysql.get(select, function(err, result) {
+    if ( err || result === undefined ) {
+      return callback(err, undefined);
+    }
+    return callback(err, result.pid);
+  });
+}
 
 /**
  * Check if the provided User password is correct
@@ -284,7 +315,9 @@ module.exports = {
   addUser: addUser,
   removeUser: removeUser,
   getUserPIDByLogin: getUserPIDByLogin,
+  getUserPIDBySession: getUserPIDBySession,
   getUsers: getUsers,
   getUser: getUser,
+  getUserBySession: getUserBySession,
   checkUserPassword: checkUserPassword
 };

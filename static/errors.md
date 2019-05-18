@@ -82,3 +82,4 @@ error response in the following format:
  5002 | API Server Error | An unexpected error occurred with the API Server.  This may be temporary so try again later.
  5003 | Could Not Parse Station Data | Station Feeds: Could not parse the response provided by the agency's real-time station information source.  This may be temporary so try again later.
  5004 | Could Not Parse Transit Data | Transit Feeds: Could not parse the response provided by the transit agency's real time transit information source.  This may be temporary so try again later.
+ 5005 | Could Not Submit Feedback | Feedback: Could not submit the feedback.  This may be temporary so try again later.

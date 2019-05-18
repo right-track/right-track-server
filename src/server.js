@@ -158,6 +158,7 @@ function _serveRoutes() {
   require('./routes/updates/messages/routes.js')(SERVER);
   require('./routes/updates/database/routes.js')(SERVER);
   require('./routes/transit/routes.js')(SERVER);
+  require('./routes/feedback/routes.js')(SERVER);
 
 }
 

@@ -13,6 +13,19 @@
     "password": "mysql_password",
     "name": "rt_api"
   },
+  "mail": {
+    "to": "contact@domain.com",
+    "from": "Feedback Form <contact@domain.com>",
+    "smtp": {
+      "host": "",
+      "port": 587,
+      "secure": false,
+      "auth": {
+        "user": "",
+        "pass": ""
+      }
+    }
+  },
   "cors": {
     "origins": ["*"],
     "methods": "HEAD, GET, POST, DELETE, OPTIONS",
