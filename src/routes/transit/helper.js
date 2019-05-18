@@ -147,10 +147,10 @@ function buildIcon(file, res, next) {
     let ext = path.extname(file).replace('.', '');
 
     // Return the icon image
-    res.header("content-type", "image/" + ext);
-    res.header("content-disposition", "filename=\"" + name + "\"");
-    res.header("content-length", fs.statSync(file).size);
-    res.header("cache-control", "public, max-age=31536000");
+    res.header("Content-Type", "image/" + ext);
+    res.header("Content-Disposition", "filename=\"" + name + "\"");
+    res.header("Content-Length", fs.statSync(file).size);
+    res.header("Cache-Control", "public, max-age=31536000");
     res.sendRaw(data);
     return next();
 
