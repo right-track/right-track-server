@@ -1221,6 +1221,136 @@
     "groupTitle": "Favorites"
   },
   {
+    "type": "POST",
+    "url": "/feedback",
+    "title": "Submit Feedback",
+    "name": "submitFeedback",
+    "group": "Feedback",
+    "description": "<p>Submit feedback that will be sent to the configured contact address by the API Server via email.</p>",
+    "permission": [
+      {
+        "name": "feedback"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Headers": [
+          {
+            "group": "Header",
+            "type": "string",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>Token {API Key}</p>"
+          },
+          {
+            "group": "Header",
+            "type": "string",
+            "optional": true,
+            "field": "X-Session-Token",
+            "description": "<p>{User Session Token}</p>"
+          },
+          {
+            "group": "Header",
+            "type": "string",
+            "allowedValues": [
+              "\"application/json\"",
+              "\"application/x-www-form-urlencoded\""
+            ],
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>Media type of the Request body.</p>"
+          }
+        ],
+        "Body Parameters": [
+          {
+            "group": "Body",
+            "type": "string",
+            "optional": true,
+            "field": "replyTo",
+            "description": "<p>The submitter's reply email address</p>"
+          },
+          {
+            "group": "Body",
+            "type": "string",
+            "optional": false,
+            "field": "subject",
+            "description": "<p>Feedback subject</p>"
+          },
+          {
+            "group": "Body",
+            "type": "string",
+            "optional": false,
+            "field": "body",
+            "description": "<p>Feedback body</p>"
+          },
+          {
+            "group": "Body",
+            "type": "Object",
+            "optional": false,
+            "field": "metadata",
+            "description": "<p>Additional properties to be submitted</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "5xx Error Codes": [
+          {
+            "group": "5xx Error Codes",
+            "optional": false,
+            "field": "500",
+            "description": "<p>Internal Server Error</p>"
+          },
+          {
+            "group": "5xx Error Codes",
+            "optional": false,
+            "field": "5001",
+            "description": "<p>API Server Timeout</p>"
+          },
+          {
+            "group": "5xx Error Codes",
+            "optional": false,
+            "field": "5002",
+            "description": "<p>API Server Error</p>"
+          },
+          {
+            "group": "5xx Error Codes",
+            "optional": false,
+            "field": "5005",
+            "description": "<p>Could Not Submit Feedback</p>"
+          }
+        ],
+        "403 Error Codes": [
+          {
+            "group": "403 Error Codes",
+            "optional": false,
+            "field": "403",
+            "description": "<p>API Access Denied</p>"
+          },
+          {
+            "group": "403 Error Codes",
+            "optional": false,
+            "field": "4039",
+            "description": "<p>Authorization Header Format Error</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Example Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"response\": {}\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/feedback/routes.js",
+    "groupTitle": "Feedback"
+  },
+  {
     "type": "GET",
     "url": "/routes/:agency/:routeID",
     "title": "Get Route",
