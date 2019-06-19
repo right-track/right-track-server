@@ -32,6 +32,10 @@ function getMessages(opts, callback) {
     filter += "OR (agency LIKE '%" + opts.agency + "%' AND client IS NULL)";
     filters.push("(" + filter + ")");
   }
+  else if ( opts.client && !opts.agency ) {
+    filters.push("(client LIKE '%" + opts.client + "%')");
+    filters.push("(agency IS NULL)");
+  }
   else if ( opts.agency ) {
     filters.push("(agency LIKE '%" + opts.agency + "%')");
   }
