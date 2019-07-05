@@ -46,14 +46,18 @@ function buildDatabaseVersion(agencyCode, callback) {
 /**
  * Send the Database file to the Response
  * @param {string} agencyCode Agency Code
+ * @param {boolean} zip Send zipped file
  * @param {Response} res API Response
  * @param {function} callback Callback function()
  */
-function sendDatabase(agencyCode, res, callback) {
+function sendDatabase(agencyCode, zip, res, callback) {
 
   // Get DB Path
   let agencyConfig = config.agencies.getAgencyConfig(agencyCode);
   let dbPath = path.normalize(agencyConfig.db.location);
+  if ( zip ) {
+    dbPath += ".zip";
+  }
 
   // Read the database file from the specified path
   fs.readFile(dbPath, function(err, data) {
@@ -70,8 +74,14 @@ function sendDatabase(agencyCode, res, callback) {
     }
 
     // Return the database file
-    res.header("content-type", "application/x-sqlite3");
-    res.header("content-disposition", "filename=\"" + agencyCode + ".db\"");
+    if ( zip ) {
+      res.header("content-type", "application/zip");
+      res.header("content-disposition", "filename=\"" + agencyCode + ".db.zip\"");
+    }
+    else {
+      res.header("content-type", "application/x-sqlite3");
+      res.header("content-disposition", "filename=\"" + agencyCode + ".db\"");
+    }
     res.header("content-length", fs.statSync(dbPath).size);
     res.sendRaw(data);
     return callback();
@@ -96,7 +106,7 @@ function getAgencyDatabase(req, res, next) {
 
     // Send Database Response
     if ( req.query.hasOwnProperty("download") && downloadCodes.includes(req.query.download.toLowerCase()) ) {
-      sendDatabase(agencyCode, res, function() {
+      sendDatabase(agencyCode, req.query.hasOwnProperty("zip"), res, function() {
         return next();
       });
     }

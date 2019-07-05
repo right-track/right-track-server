@@ -17,6 +17,8 @@ let routes = function(server) {
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Path) {string} agency RT Agency Code
    * @apiParam (Query) {string} [download] When set to `true` or `latest`, download
+   * @apiParam (Query) [zip] When present with the `download` param, download the zipped version 
+   * of the latest database
    * the agency database file
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
