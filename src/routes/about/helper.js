@@ -364,6 +364,32 @@ function getAboutAgencyIcon(req, res, next) {
   let agency = req.params.agency;
   let path = c.agencies.getAgencyConfig(agency).static.img.icon;
 
+  // Get icon by type and size
+  if ( req.query.type ) {
+    if ( req.query.size ) {
+      if ( c.agencies.getAgencyConfig(agency).static.img[req.query.type] ) {
+        path = c.agencies.getAgencyConfig(agency).static.img[req.query.type][req.query.size];
+      }
+      else {
+        path = undefined;
+      }
+    }
+    else {
+      path = c.agencies.getAgencyConfig(agency).static.img[req.query.type];
+    }
+  }
+
+  // Undefined Path
+  if ( !path || typeof path !== 'string' ) {
+      let error = Response.buildError(
+        4049,
+        "File Not Found",
+        "Agency icon file not found on server"
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+
   // Read the icon file from the specified path
   fs.readFile(path, function(err, data) {
 

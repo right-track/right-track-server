@@ -168,6 +168,8 @@ let routes = function(server) {
    * @apiPermission public
    *
    * @apiParam (Path) {string} agency RT Agency Code
+   * @apiParam (Query) {string} [type] Icon Type
+   * @apiParam (Query) {string} [size] Icon Size
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
