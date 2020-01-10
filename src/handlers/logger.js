@@ -46,12 +46,14 @@ function log(req, res, next) {
     auth = ' [' + auth + ']';
   }
 
+  // Get IP Address
+  let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   // Get date
   let ts = DateTime.now().toString();
 
   // Print the Log to the console
-  console.log('' + ts + ' - {' + method + '} ' + path + auth);
+  console.log('' + ts + ' - ' + ip + ' - {' + method + '} ' + path + auth);
 
   // Continue the handler chain
   return next();
