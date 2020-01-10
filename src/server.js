@@ -108,6 +108,12 @@ function _setMiddleware() {
   SERVER.use(auth.getAuthAccess);
   SERVER.use(authentication);
   SERVER.use(timeout);
+  SERVER.use(function(req, res, next) {
+    if ( req.method === "POST" && !req.body ) {
+      req.body = {};
+    }
+    return next();
+  });
   SERVER.use(restify.plugins.bodyParser());
 
 }
