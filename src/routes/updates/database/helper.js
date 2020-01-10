@@ -161,12 +161,12 @@ function buildDatabaseArchiveList(agencyCode, max, callback) {
 
 /**
  * Build agency database archive list Response for archives stored in a Google Drive folder
- * @param  agencyCode      Right Track Agency code
- * @param  max             Max number of items to return
- * @param  archiveLocation ID of Google Drive folder
- * @param  callback        Callback function(Response)
+ * @param  agencyCode  Right Track Agency code
+ * @param  max         Max number of items to return
+ * @param  folderId    ID of Google Drive folder
+ * @param  callback    Callback function(Response)
  */
-function _buildDatabaseArchiveList_gdrive(agencyCode, max, archiveLocation, callback) {
+function _buildDatabaseArchiveList_gdrive(agencyCode, max, folderId, callback) {
 
   // Source Google Drive requirements
   const credentials = require('../../../../google_drive_credentials.json');
@@ -189,9 +189,9 @@ function _buildDatabaseArchiveList_gdrive(agencyCode, max, archiveLocation, call
   // Get the list of files
   drive.files.list({
     pageSize: max,
-    q: "'" + archiveLocation + "' in parents",
+    q: "'" + folderId + "' in parents",
     orderBy: "name desc",
-    fields: 'nextPageToken, files(id, name)'
+    fields: 'files(id, name)'
   }, function(err, resp) {
 
     // Set the archive list
@@ -283,17 +283,159 @@ function sendDatabaseArchive(agencyCode, version, zip, res, callback) {
 
   // Get DB Path
   let agencyConfig = config.agencies.getAgencyConfig(agencyCode);
-  let dbPath = path.normalize(agencyConfig.db.archiveDir + "/" + version + ".zip");
+  let archiveInfo = agencyConfig.db.archive;
+  let archiveSource = archiveInfo && archiveInfo.source ? archiveInfo.source : "none";
 
-  // ERROR: Database file not found
-  if ( !fs.existsSync(dbPath) ) {
+  // Source: Google Drive
+  if ( archiveSource === "google_drive" ) {
+    _sendDatabaseArchive_gdrive(agencyCode, version, zip, archiveInfo.location, res, callback);
+  }
+
+  // Source: Local
+  else if ( archiveSource === "local" ) {
+    let dbPath = path.normalize(archiveInfo.location + "/" + version + ".zip");
+    _sendDatabaseArchive_local(agencyCode, version, zip, dbPath, res, callback);
+  }
+
+  // Source: none
+  else {
     let error = Response.buildError(
+      4049,
+      "File Not Found",
+      "Agency database file not found on server"
+    );
+    res.send(error.code, error.response);
+    return callback();
+  }
+
+}
+
+
+/**
+ * Send the Archived Database file from a Google Drive folder to the Response
+ * @param {string} agencyCode Agency Code
+ * @param {string} version Archived Database version
+ * @param {boolean} zip True if to return a zipped database
+ * @param {string} folderId Google Drive folder ID
+ * @param {Response} res API Response
+ * @param {function} callback Callback function()
+ */
+function _sendDatabaseArchive_gdrive(agencyCode, version, zip, folderId, res, callback) {
+
+  // Source Google Drive requirements
+  const credentials = require('../../../../google_drive_credentials.json');
+  const {google} = require('googleapis');
+  const tmp = require('tmp')
+
+  // Setup Google Client
+  let client = new google.auth.JWT(
+    credentials.client_email,
+    null,
+    credentials.private_key,
+    ["https://www.googleapis.com/auth/drive"]
+  );
+
+  // Use Drive API v3
+  let drive = google.drive({
+    version: 'v3',
+    auth: client
+  });
+
+  // Get the list of files
+  drive.files.list({
+    q: "'" + folderId + "' in parents and name = '" + version + ".zip'",
+    fields: "files(id, name)"
+  }, function(err, resp) {
+
+    // API Error
+    if ( err ) {
+      let error = Response.buildError(
+        500,
+        "Server Error",
+        "Could not read archived agency database"
+      );
+      res.send(error.code, error.response);
+      return callback();
+    }
+
+    // Parse returned file
+    if ( resp && resp.data && resp.data.files && resp.data.files.length === 1 ) {
+      
+      // Create temp file
+      let dest = tmp.fileSync();
+      let dest_ws = fs.createWriteStream(dest.name);
+
+      // Get file from Google Drive, save to temp file
+      drive.files.get(
+        {fileId: resp.data.files[0].id, alt: 'media'}, 
+        {responseType: 'stream'},
+        function(gerr, gres) {
+           
+          // Download callbacks...
+          gres.data.on('end', function() {
+
+            // Send the Zipped or Unzipped File
+            if ( zip ) {
+              _sendDatabaseArchiveZip(agencyCode, version, dest.name, res, callback);
+            }
+            else {
+              _sendDatabaseArchive(agencyCode, version, dest.name, res, callback);
+            }
+
+          }).on('error', function(err) {
+              
+            // Download Error
+            let error = Response.buildError(
+              500,
+              "Server Error",
+              "Could not read archived agency database"
+            );
+            res.send(error.code, error.response);
+            return callback();
+
+          }).pipe(dest_ws);
+
+        }
+      );
+
+    }
+
+    // No file to return
+    else {
+      let error = Response.buildError(
         4049,
         "File Not Found",
         "Agency database file not found on server"
       );
       res.send(error.code, error.response);
       return callback();
+    }
+
+  });
+
+}
+
+
+/**
+ * Send the Archived Database file from a local directory to the Response
+ * @param {string} agencyCode Agency Code
+ * @param {string} version Archived Database version
+ * @param {boolean} zip True if to return a zipped database
+ * @param {string} dbPath Local path to database archive
+ * @param {Response} res API Response
+ * @param {function} callback Callback function()
+ */
+function _sendDatabaseArchive_local(agencyCode, version, zip, dbPath, res, callback) {
+  
+  // ERROR: Database file not found
+  if ( !fs.existsSync(dbPath) ) {
+    let error = Response.buildError(
+      4049,
+      "File Not Found",
+      "Agency database file not found on server"
+    );
+    res.send(error.code, error.response);
+    return callback();
   }
 
   // Send Zip or Unzipped File
@@ -305,6 +447,7 @@ function sendDatabaseArchive(agencyCode, version, zip, res, callback) {
   }
 
 }
+
 
 /**
  * Send the ZIPPED Archive Database file to the Response
