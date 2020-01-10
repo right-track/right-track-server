@@ -125,18 +125,109 @@ function getAgencyDatabase(req, res, next) {
 
 /**
  * Build agency database archive list Response
- * @param req API Request
- * @param res API Response
- * @param next API Handler Stack
+ * @param  agencyCode      Right Track Agency code
+ * @param  max             Max number of items to return
+ * @param  callback        Callback function(Response)
  */
 function buildDatabaseArchiveList(agencyCode, max, callback) {
   
-  // Get agency config and archive path
+  // Get agency config and archive info
   let agencyConfig = config.agencies.getAgencyConfig(agencyCode);
-  let archivePath = agencyConfig.db.archiveDir;
+  let archiveInfo = agencyConfig.db.archive;
+  let archiveSource = archiveInfo && archiveInfo.source ? archiveInfo.source : "none";
+
+  // Source: Goolge Drive
+  if ( archiveSource === "google_drive" ) {
+    _buildDatabaseArchiveList_gdrive(agencyCode, max, archiveInfo.location, callback);
+  }
+
+  // Source: Local
+  else if ( archiveSource === "local" ) {
+    _buildDatabaseArchiveList_local(agencyCode, max, archiveInfo.location, callback);
+  }
+
+  // Source: None
+  else {
+    return callback(
+      Response.buildResponse({
+        agency: agencyCode,
+        archive: []
+      })
+    );
+  }
+
+}
+
+
+/**
+ * Build agency database archive list Response for archives stored in a Google Drive folder
+ * @param  agencyCode      Right Track Agency code
+ * @param  max             Max number of items to return
+ * @param  archiveLocation ID of Google Drive folder
+ * @param  callback        Callback function(Response)
+ */
+function _buildDatabaseArchiveList_gdrive(agencyCode, max, archiveLocation, callback) {
+
+  // Source Google Drive requirements
+  const credentials = require('../../../../google_drive_credentials.json');
+  const {google} = require('googleapis');
+
+  // Setup Google Client
+  let client = new google.auth.JWT(
+    credentials.client_email,
+    null,
+    credentials.private_key,
+    ["https://www.googleapis.com/auth/drive"]
+  );
+
+  // Use Drive API v3
+  let drive = google.drive({
+    version: 'v3',
+    auth: client
+  });
+
+  // Get the list of files
+  drive.files.list({
+    pageSize: max,
+    q: "'" + archiveLocation + "' in parents",
+    orderBy: "name desc",
+    fields: 'nextPageToken, files(id, name)'
+  }, function(err, resp) {
+
+    // Set the archive list
+    let archive = [];
+    if ( resp && resp.data && resp.data.files ) {
+      for ( let i = 0; i < resp.data.files.length; i++ ) {
+        archive.push(
+          resp.data.files[i].name.replace(".zip", "")
+        );
+      }
+    }
+
+    // Build the Response
+    return callback(
+      Response.buildResponse({
+        agency: agencyCode,
+        archive: archive
+      })
+    );
+
+  });
+
+}
+
+
+/**
+ * Build agency database archive list Response for archives stored in a local directory
+ * @param  agencyCode      Right Track Agency code
+ * @param  max             Max number of items to return
+ * @param  archiveLocation Path to local directory containing archives
+ * @param  callback        Callback function(Response)
+ */
+function _buildDatabaseArchiveList_local(agencyCode, max, archiveLocation, callback) {
 
   // Get archive directory contents
-  fs.readdir(archivePath, function(err, items) {
+  fs.readdir(archiveLocation, function(err, items) {
     
     // Read Directory Error
     if ( err ) {
@@ -178,8 +269,6 @@ function buildDatabaseArchiveList(agencyCode, max, callback) {
   });
 
 }
-
-
 
 
 
@@ -313,7 +402,7 @@ function getAgencyDatabaseArchive(req, res, next) {
     if ( req.query.hasOwnProperty("download") ) {
       sendDatabaseArchive(agencyCode, version, zip, res, function() {
         return next();
-      })
+      });
     }
 
     // Build Version Response

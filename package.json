@@ -26,6 +26,9 @@
     "right-track-db-sqlite3": "^1.2.4",
     "uuid": "^3.1.0"
   },
+  "optionalDependencies": {
+    "googleapis": "^46.0.0"
+  },
   "devDependencies": {
     "apidoc": "^0.17.6"
   },
