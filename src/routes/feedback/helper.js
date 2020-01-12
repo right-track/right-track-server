@@ -32,14 +32,14 @@ let _buildList = function(object) {
 
 /**
  * Send an Email with the specified properties
- * @param  {string}   replyTo  Reply to Address
- * @param  {string}   subject  Email subject
- * @param  {string}   body     HTML Email body
- * @param  {Function} callback Callback function(err)
+ * @param  {string}   recipient The Email recipient
+ * @param  {string}   replyTo   Reply to Address
+ * @param  {string}   subject   Email subject
+ * @param  {string}   body      HTML Email body
+ * @param  {Function} callback  Callback function(err)
  */
-function _sendEmail(replyTo, subject, body, callback) {
+function _sendEmail(recipient, replyTo, subject, body, callback) {
   let config = c.server.get();
-  let to = config.mail.to;
   let from = config.mail.from;
   let smtp = config.mail.smtp;
 
@@ -49,9 +49,9 @@ function _sendEmail(replyTo, subject, body, callback) {
   // Set up Email
   let msg = {
     from: from,
-    to: to,
+    to: recipient,
     replyTo: replyTo,
-    subject: subject,
+    subject: "[Feedback] " + subject,
     html: body
   }
 
@@ -68,11 +68,13 @@ function _sendEmail(replyTo, subject, body, callback) {
  * @param next API Handler Stack
  */
 function submit(req, res, next) {
+  let server_config = c.server.get();
 
   // Check the API access
   if ( auth.checkAuthAccess("feedback", req, res, next) ) {
 
     // Get BODY params
+    let to = req.body.to;
     let replyTo = req.body.replyTo;
     let subject = req.body.subject;
     let body = req.body.body;
@@ -103,7 +105,7 @@ function submit(req, res, next) {
         metadata.client = client.client_name;
 
         // Add Request IP
-        metadata.ip = req.header('X-Real-IP');
+        metadata.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         // Append Metadata To HTML Body
         body += "<div class='metadata'>";
@@ -113,8 +115,20 @@ function submit(req, res, next) {
         // Add Metadata Style
         body += "<style type='text/css'>.metadata {padding: 5px 10px; background-color: #f0f0f0; font-family: monospace;} .metadata > ul {list-style: none; padding-left: 0;} ul > * > ul {list-style: circle; padding-left: 25px}</style>";
 
+        // Set recipient
+        let recipient = server_config.maintainer.email;
+        if ( to === "client" && client.email ) {
+          recipient = client.email;
+        }
+        else if ( to === "agency"  && metadata.agency ) {
+          let agencyConfig = c.agencies.getAgencyConfig(metadata.agency);
+          if ( agencyConfig && agencyConfig.maintainer && agencyConfig.maintainer.email ) {
+            recipient = agencyConfig.maintainer.email;
+          }
+        }
+
         // Send Email
-        _sendEmail(replyTo, subject, body, function(err) {
+        _sendEmail(recipient, replyTo, subject, body, function(err) {
 
           // Send Error Response
           if ( err ) {
