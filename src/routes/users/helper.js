@@ -267,9 +267,139 @@ function updateUser(req, res, next) {
   // Check the API access
   if ( auth.checkAuthAccess("registration", req, res, next) ) {
 
-    return next();
+    // Validate Properties
+    _validateEmail(function() {
+      _validateUsername(function() {
+        _validatePassword(function() {
+
+          // Update email, if provided
+          users.updateEmail(userPID, email, function(err) {
+            if ( err ) {
+              return next(Response.getInternalServerError());
+            }
+
+            // Update username, if provided
+            users.updateUsername(userPID, username, function(err) {
+              if ( err ) {
+                return next(Response.getInternalServerError());
+              }
+
+              // Update password, if provided
+              users.updatePassword(userPID, password.new, function(err) {
+                if ( err ) {
+                  return next(Response.getInternalServerError());
+                }
+
+                // Return the new User information
+                return getUser(req, res, next);
+
+              });
+            });
+          });
+        });
+      });
+    });
+
+  }
+
+
+  /**
+   * Validate the provided email address, if provided
+   * End request with Error if not valid
+   * @param callback Callback function
+   */
+  function _validateEmail(callback) {
+    if ( !email ) {
+      return callback();
+    }
+    validators.validateEmail(req, res, next, email, callback);
+  }
+
+  /**
+   * Validate the provided username, if provided
+   * End request with Error if not valid
+   * @param callback Callback function
+   */
+  function _validateUsername(callback) {
+    if ( !username ) {
+      return callback();
+    }
+    validators.validateUsername(req, res, next, username, callback);
+  }
+
+  /**
+   * Validate the provided password, if provided
+   * Make sure current and new password are provided, the current 
+   * password is correct and the new password is valid
+   * End request with Error if not valid
+   * @param callback Callback function
+   */
+  function _validatePassword(callback) {
     
-  };
+    // No password provided, skip
+    if ( !password ) {
+      return callback();
+    }
+
+    // Check for required arguments
+    if ( !password.current ) {
+      let error = new Response(
+        4003,
+        {
+          status: "error",
+          error: {
+            code: 4003,
+            type: "Password Not Valid",
+            message: "The password provided is not valid.  You must provide the current user password."
+          }
+        }
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+    if ( !password.new ) {
+      let error = new Response(
+        4003,
+        {
+          status: "error",
+          error: {
+            code: 4003,
+            type: "Password Not Valid",
+            message: "The password provided is not valid.  You must provide the new user password."
+          }
+        }
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+
+    // Check validity of currrent password
+    users.checkUserPassword(userPID, password.current, function(err, correct) {
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+      if ( !correct ) {
+        let error = new Response(
+          4011,
+          "Not Authorized",
+          "Current password is not correct"
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+      // Get the User for username
+      users.getUser(userPID, function(err, user) {
+        if ( err ) {
+          return next(Response.getInternalServerError());
+        }
+
+        // Validate new password
+        validators.validatePassword(req, res, next, user.username, password.new, callback);
+
+      });
+    });
+  }
 
 }
 

@@ -109,7 +109,7 @@ function _setMiddleware() {
   SERVER.use(authentication);
   SERVER.use(timeout);
   SERVER.use(function(req, res, next) {
-    if ( req.method === "POST" && !req.body ) {
+    if ( (req.method === "POST" || req.method === "PUT") && !req.body ) {
       req.body = {};
     }
     return next();

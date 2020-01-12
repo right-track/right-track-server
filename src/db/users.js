@@ -181,6 +181,96 @@ function removeUser(pid, callback) {
 
 
 
+// ==== UPDATE USER METHODS ==== //
+
+/**
+ * Update the specified User's email address
+ * @param {string} pid User Public ID
+ * @param {string} email The new email address
+ * @param callback Callback function
+ */
+function updateEmail(pid, email, callback) {
+
+  // Return if no email provided
+  if ( !email ) {
+    return callback();
+  }
+
+  // Build Update Statement
+  let update = "UPDATE users SET email = '" + email + "', user_modified = now() WHERE pid = '" + pid + "';";
+
+  // Update the users table
+  mysql.update(update, function(err) {
+    return callback(err);
+  });
+
+}
+
+
+/**
+ * Update the specified User's username
+ * @param {string} pid User Public ID
+ * @param {string} username The new username
+ * @param callback Callback function
+ */
+function updateUsername(pid, username, callback) {
+
+  // Return if no username provided
+  if ( !username ) {
+    return callback();
+  }
+
+  // Build Update Statement
+  let update = "UPDATE users SET username = '" + username + "', user_modified = now() WHERE pid = '" + pid + "';";
+
+  // Update the users table
+  mysql.update(update, function(err) {
+    return callback(err);
+  });
+
+}
+
+
+/**
+ * Update the specified User's password
+ * @param {string} pid User Public ID
+ * @param {string} password The new password
+ * @param callback Callback function
+ */
+function updatePassword(pid, password, callback) {
+
+  // Return if no password provided
+  if ( !password ) {
+    return callback();
+  }
+
+  // Generate Salt
+  utils.genSalt(function(err, salt) {
+    if ( err ) {
+      return callback(new Error('Could not generate password salt.  Password not updated.'));
+    }
+
+    // Generate Password Hash
+    utils.genHash(salt, password, function(err, password_hash) {
+      if ( err ) {
+        return callback(new Error('Could not generate password hash. Password not updated.'));
+      }
+
+      // Create UPDATE statement
+      let update = "UPDATE users SET password = '" + password_hash + "', salt = '" + salt + "', password_modified = now() " + 
+        "WHERE pid = '" + pid + "';";
+
+      // Update the users table
+      mysql.update(update, function(err) {
+        return callback(err);
+      });
+
+    });
+
+  });
+
+}
+
 
 // ==== USER METHODS ==== //
 
@@ -314,6 +404,9 @@ module.exports = {
   isUsernameRegistered: isUsernameRegistered,
   addUser: addUser,
   removeUser: removeUser,
+  updateEmail: updateEmail,
+  updateUsername: updateUsername,
+  updatePassword: updatePassword,
   getUserPIDByLogin: getUserPIDByLogin,
   getUserPIDBySession: getUserPIDBySession,
   getUsers: getUsers,
