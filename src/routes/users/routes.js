@@ -178,6 +178,64 @@ let routes = function(server) {
    */
   server.del("/users/:userPID", helper.removeUser);
 
+  /**
+   * @api {PUT} /users/:userID Update User
+   * @apiName updateUser
+   * @apiGroup Users
+   * @apiDescription Update one or more properties of the specified User.
+   * @apiPermission registration
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Header) {string} X-Session-Token {User Session Token}
+   * @apiParam (Path) {string} userID Public ID
+   * @apiParam (Body) {string} [email] The User's new email address
+   * @apiParam (Body) {string} [username] The User's new username
+   * @apiParam (Body) {string} [password] The User's password information
+   * @apiParam (Body) {string} password.current The User's current password
+   * @apiParam (Body) {string} password.new The User's new passsword
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (401 Error Codes) 401 Not Authorized
+   * @apiError (401 Error Codes) 4011 X-Session-Token Header Not Sent
+   * @apiError (401 Error Codes) 4012 Session Expired
+   * @apiError (404 Error Codes) 4043 User Not Found
+   *
+  * @apiSuccessExample {json} Example Response:
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
+   *     "user": {
+   *       "id": "f094eebab41c4f4fa209f8af48b51d4b",
+   *       "username": "user1",
+   *       "email": "test@example.com",
+   *       "verified": false,
+   *       "lastModifiedUser": "2017-09-24T20:56:00.000Z",
+   *       "lastModifiedPassword": "2017-09-24T20:56:00.000Z",
+   *       "sessions": [
+   *         {
+   *           "id": "fc8eb1473a1140c7ba24dec58b85bacc",
+   *           "client_name": "Debug Account",
+   *           "created": "2017-09-24T20:59:00.000Z",
+   *           "accessed": "2017-09-24T20:59:00.000Z",
+   *           "inactive": "2017-09-25T20:59:00.000Z",
+   *           "expires": "2027-09-22T20:59:00.000Z"
+   *         },
+   *         {
+   *           "...": "..."
+   *         }
+   *       ]
+   *     }
+   *   }
+   * }
+   */
+  server.put("/users/:userPID", helper.updateUser);
+
+
 };
 
 

@@ -42,7 +42,8 @@
  * @apiDefine registration API-Access: registration
  * These API endpoints require an API client key with
  * 'registration' privileges.  These endpoints allow the
- * client to register new Users and remove existing Users.
+ * client to register new Users, update existing User 
+ * information and remove existing Users.
  */
 
 /**

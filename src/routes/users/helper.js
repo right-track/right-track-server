@@ -252,6 +252,28 @@ function getUser(req, res, next) {
 }
 
 
+/**
+ * Update the provided User properties
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function updateUser(req, res, next) {
+  let userPID = req.params.userPID;
+  let email = req.body.email;
+  let username = req.body.username;
+  let password = req.body.password;
+
+  // Check the API access
+  if ( auth.checkAuthAccess("registration", req, res, next) ) {
+
+    return next();
+    
+  };
+
+}
+
+
 
 
 // Export the functions
@@ -259,5 +281,6 @@ module.exports = {
   getRegistrationRequirements: getRegistrationRequirements,
   registerUser: registerUser,
   removeUser: removeUser,
-  getUser: getUser
+  getUser: getUser,
+  updateUser: updateUser
 };
