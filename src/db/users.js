@@ -235,9 +235,17 @@ function updateUsername(pid, username, callback) {
  * Update the specified User's password
  * @param {string} pid User Public ID
  * @param {string} password The new password
+ * @param {string} [session] Current Session ID (all other sessions will be removed)
  * @param callback Callback function
  */
-function updatePassword(pid, password, callback) {
+function updatePassword(pid, password, session, callback) {
+  console.log("A: " + pid + " " + password + " " + session);
+
+  // Set params
+  if ( !callback && session ) {
+    callback = session;
+    session = undefined;
+  }
 
   // Return if no password provided
   if ( !password ) {
@@ -262,7 +270,29 @@ function updatePassword(pid, password, callback) {
 
       // Update the users table
       mysql.update(update, function(err) {
-        return callback(err);
+
+        // Keep all sessions...
+        if ( err || !session ) {
+          return callback(err);
+        }
+
+        // Get User Information
+        getUser(pid, function(err, user) {
+          if ( err || !user || !user.id ) {
+            return callback(err);
+          }
+
+          // Build DELETE statement
+          let del = "DELETE FROM sessions WHERE user_id = " + user.id + " AND " + 
+            "pid <> '" + session + "';";
+
+          // Remove the sessions
+          mysql.delet(del, function(err) {
+            return callback(err);
+          });
+
+        });
+
       });
 
     });

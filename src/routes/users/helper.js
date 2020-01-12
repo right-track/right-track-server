@@ -263,6 +263,7 @@ function updateUser(req, res, next) {
   let email = req.body.email;
   let username = req.body.username;
   let password = req.body.password;
+  let session = req.header('X-session-token');
 
   // Check the API access
   if ( auth.checkAuthAccess("registration", req, res, next) ) {
@@ -285,7 +286,7 @@ function updateUser(req, res, next) {
               }
 
               // Update password, if provided
-              users.updatePassword(userPID, password.new, function(err) {
+              users.updatePassword(userPID, password.new, session, function(err) {
                 if ( err ) {
                   return next(Response.getInternalServerError());
                 }
