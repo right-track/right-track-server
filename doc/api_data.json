@@ -3816,7 +3816,7 @@
       {
         "name": "registration",
         "title": "API-Access: registration",
-        "description": "<p>These API endpoints require an API client key with 'registration' privileges.  These endpoints allow the client to register new Users and remove existing Users.</p>"
+        "description": "<p>These API endpoints require an API client key with 'registration' privileges.  These endpoints allow the client to register new Users, update existing User information and remove existing Users.</p>"
       }
     ],
     "parameter": {
@@ -4082,7 +4082,7 @@
       {
         "name": "registration",
         "title": "API-Access: registration",
-        "description": "<p>These API endpoints require an API client key with 'registration' privileges.  These endpoints allow the client to register new Users and remove existing Users.</p>"
+        "description": "<p>These API endpoints require an API client key with 'registration' privileges.  These endpoints allow the client to register new Users, update existing User information and remove existing Users.</p>"
       }
     ],
     "parameter": {
@@ -4160,7 +4160,7 @@
       {
         "name": "registration",
         "title": "API-Access: registration",
-        "description": "<p>These API endpoints require an API client key with 'registration' privileges.  These endpoints allow the client to register new Users and remove existing Users.</p>"
+        "description": "<p>These API endpoints require an API client key with 'registration' privileges.  These endpoints allow the client to register new Users, update existing User information and remove existing Users.</p>"
       }
     ],
     "parameter": {
@@ -4263,6 +4263,165 @@
         {
           "title": "Example Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"response\": {\n    \"user\": {}\n  }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/routes/users/routes.js",
+    "groupTitle": "Users"
+  },
+  {
+    "type": "PUT",
+    "url": "/users/:userID",
+    "title": "Update User",
+    "name": "updateUser",
+    "group": "Users",
+    "description": "<p>Update one or more properties of the specified User.</p>",
+    "permission": [
+      {
+        "name": "registration",
+        "title": "API-Access: registration",
+        "description": "<p>These API endpoints require an API client key with 'registration' privileges.  These endpoints allow the client to register new Users, update existing User information and remove existing Users.</p>"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Headers": [
+          {
+            "group": "Header",
+            "type": "string",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>Token {API Key}</p>"
+          },
+          {
+            "group": "Header",
+            "type": "string",
+            "optional": false,
+            "field": "X-Session-Token",
+            "description": "<p>{User Session Token}</p>"
+          }
+        ],
+        "Path Parameters": [
+          {
+            "group": "Path",
+            "type": "string",
+            "optional": false,
+            "field": "userID",
+            "description": "<p>Public ID</p>"
+          }
+        ],
+        "Body Parameters": [
+          {
+            "group": "Body",
+            "type": "string",
+            "optional": true,
+            "field": "email",
+            "description": "<p>The User's new email address</p>"
+          },
+          {
+            "group": "Body",
+            "type": "string",
+            "optional": true,
+            "field": "username",
+            "description": "<p>The User's new username</p>"
+          },
+          {
+            "group": "Body",
+            "type": "string",
+            "optional": true,
+            "field": "password",
+            "description": "<p>The User's password information</p>"
+          },
+          {
+            "group": "Body",
+            "type": "string",
+            "optional": false,
+            "field": "password.current",
+            "description": "<p>The User's current password</p>"
+          },
+          {
+            "group": "Body",
+            "type": "string",
+            "optional": false,
+            "field": "password.new",
+            "description": "<p>The User's new passsword</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "5xx Error Codes": [
+          {
+            "group": "5xx Error Codes",
+            "optional": false,
+            "field": "500",
+            "description": "<p>Internal Server Error</p>"
+          },
+          {
+            "group": "5xx Error Codes",
+            "optional": false,
+            "field": "5001",
+            "description": "<p>API Server Timeout</p>"
+          },
+          {
+            "group": "5xx Error Codes",
+            "optional": false,
+            "field": "5002",
+            "description": "<p>API Server Error</p>"
+          }
+        ],
+        "403 Error Codes": [
+          {
+            "group": "403 Error Codes",
+            "optional": false,
+            "field": "403",
+            "description": "<p>API Access Denied</p>"
+          },
+          {
+            "group": "403 Error Codes",
+            "optional": false,
+            "field": "4039",
+            "description": "<p>Authorization Header Format Error</p>"
+          }
+        ],
+        "401 Error Codes": [
+          {
+            "group": "401 Error Codes",
+            "optional": false,
+            "field": "401",
+            "description": "<p>Not Authorized</p>"
+          },
+          {
+            "group": "401 Error Codes",
+            "optional": false,
+            "field": "4011",
+            "description": "<p>X-Session-Token Header Not Sent</p>"
+          },
+          {
+            "group": "401 Error Codes",
+            "optional": false,
+            "field": "4012",
+            "description": "<p>Session Expired</p>"
+          }
+        ],
+        "404 Error Codes": [
+          {
+            "group": "404 Error Codes",
+            "optional": false,
+            "field": "4043",
+            "description": "<p>User Not Found</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Example Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"response\": {\n    \"user\": {\n      \"id\": \"f094eebab41c4f4fa209f8af48b51d4b\",\n      \"username\": \"user1\",\n      \"email\": \"test@example.com\",\n      \"verified\": false,\n      \"lastModifiedUser\": \"2017-09-24T20:56:00.000Z\",\n      \"lastModifiedPassword\": \"2017-09-24T20:56:00.000Z\",\n      \"sessions\": [\n        {\n          \"id\": \"fc8eb1473a1140c7ba24dec58b85bacc\",\n          \"client_name\": \"Debug Account\",\n          \"created\": \"2017-09-24T20:59:00.000Z\",\n          \"accessed\": \"2017-09-24T20:59:00.000Z\",\n          \"inactive\": \"2017-09-25T20:59:00.000Z\",\n          \"expires\": \"2027-09-22T20:59:00.000Z\"\n        },\n        {\n          \"...\": \"...\"\n        }\n      ]\n    }\n  }\n}",
           "type": "json"
         }
       ]
