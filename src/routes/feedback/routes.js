@@ -17,7 +17,7 @@ let routes = function(server) {
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Header) {string} [X-Session-Token] {User Session Token}
    * @apiParam (Header) {string="application/json","application/x-www-form-urlencoded"} Content-Type Media type of the Request body.
-   * @apiParam (Body) {string="client","agency"} [to] Send email to registered client email or agency maintainer of the agency specified in the metadata. 
+   * @apiParam (Body) {string="client","agency"} [to] Send email to registered client email or agency maintainer of the agency specified in the metadata.  If not specified, the email will be sent to the API Server maintainer. 
    * @apiParam (Body) {string} [replyTo] The submitter's reply email address
    * @apiParam (Body) {string} subject Feedback subject
    * @apiParam (Body) {string} body Feedback body
