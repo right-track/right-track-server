@@ -14,7 +14,10 @@
     "name": "rt_api"
   },
   "mail": {
-    "from": "Feedback Form <contact@domain.com>",
+    "from": {
+      "feedback": "Right Track Feedback <contact@domain.com>",
+      "verification": "Right Track Email Verification <contact@domain.com>"
+    },
     "smtp": {
       "host": "",
       "port": 587,

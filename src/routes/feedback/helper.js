@@ -40,7 +40,7 @@ let _buildList = function(object) {
  */
 function _sendEmail(recipient, replyTo, subject, body, callback) {
   let config = c.server.get();
-  let from = config.mail.from;
+  let from = config.mail.from.feedback;
   let smtp = config.mail.smtp;
 
   // Set up transporter
