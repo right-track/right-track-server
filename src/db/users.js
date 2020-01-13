@@ -239,7 +239,6 @@ function updateUsername(pid, username, callback) {
  * @param callback Callback function
  */
 function updatePassword(pid, password, session, callback) {
-  console.log("A: " + pid + " " + password + " " + session);
 
   // Set params
   if ( !callback && session ) {
@@ -300,6 +299,22 @@ function updatePassword(pid, password, session, callback) {
   });
 
 }
+
+
+/**
+ * Update the specified User's email verification flag
+ * @param  {string}   pid      User Public ID
+ * @param  {boolean}  verified Email verification flag
+ * @param  {Function} callback Callback function
+ */
+function updateVerified(pid, verified, callback) {
+  let flag = verified ? 1 : 0;
+  let update = "UPDATE users SET verified = " + flag + " WHERE pid = '" + pid + "';";
+  mysql.update(update, function(err) {
+    return callback(err);
+  });
+}
+
 
 
 // ==== USER METHODS ==== //
@@ -437,6 +452,7 @@ module.exports = {
   updateEmail: updateEmail,
   updateUsername: updateUsername,
   updatePassword: updatePassword,
+  updateVerified: updateVerified,
   getUserPIDByLogin: getUserPIDByLogin,
   getUserPIDBySession: getUserPIDBySession,
   getUsers: getUsers,

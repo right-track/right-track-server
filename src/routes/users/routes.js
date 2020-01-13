@@ -264,8 +264,8 @@ let routes = function(server) {
    * @apiSuccessExample {json} Example Response:
    * HTTP/1.1 200 OK
    * {
-   * "status": "success",
-   *  "response": {
+   *   "status": "success",
+   *   "response": {
    *      "token": {
    *          "type": "email_verification",
    *          "created": "2020-01-13T19:43:49.000Z",
@@ -275,10 +275,45 @@ let routes = function(server) {
    *          "from": "Right Track <webmaster@righttrack.io>",
    *          "subject": "[Right Track] Email Verification"
    *      }
-   *  }
+   *   }
    * }
    */
   server.get("/users/:userPID/verify", helper.getEmailVerificationToken);
+
+
+  /**
+   * @api {PUT} /users/:userID/verify Verify Email Verification Token
+   * @apiName verifyEmailVerificationToken
+   * @apiGroup Users
+   * @apiDescription Verify the email verification Token for the specified User.
+   * @apiPermission registration
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Header) {string} X-Session-Token {User Session Token}
+   * @apiParam (Path) {string} userID Public ID
+   * @apiParam (Header) {string="application/json","application/x-www-form-urlencoded"} Content-Type Media type of the Request body.
+   * @apiParam (Body) {string} token The Token to verify as a valid email verification token
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (401 Error Codes) 401 Not Authorized
+   * @apiError (401 Error Codes) 4011 X-Session-Token Header Not Sent
+   * @apiError (401 Error Codes) 4012 Session Expired
+   * @apiError (401 Error Codes) 4013 Token Expired
+   * @apiError (401 Error Codes) 4014 Token Invalid
+   * @apiError (404 Error Codes) 4043 User Not Found
+   *
+   * @apiSuccessExample {json} Example Response:
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {}
+   * }
+   */
+  server.put("/users/:userPID/verify", helper.verifyEmailVerificationToken);
 
 };
 

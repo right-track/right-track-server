@@ -139,22 +139,26 @@ function checkToken(token, userPID, type, callback) {
 
   // Get the User ID
   users.getUser(userPID, function(err, user) {
+    if ( err ) {
+      return callback(err);
+    }
 
     // Get the Token information
     let select = "SELECT user_id, type, expires FROM tokens WHERE pid = '" + token + "';";
-    mysql.select(select, function(err, info) {
+    mysql.get(select, function(err, info) {
       if ( err ) {
         return callback(err);
       }
 
       // Check User ID and Type
-      if ( info.user_id !== user.id || info.type !== type ) {
+      if ( !info || info.user_id !== user.id || info.type !== type ) {
         return callback(null, TOKEN_INVALID);
       }
 
       // Check Token Expiration
-      let now = DateTime.now().toMySQLString();
-      if ( now > info.expires ) {
+      let now = new Date();
+      let expires = new Date(info.expires);
+      if ( now > expires ) {
         return callback(null, TOKEN_EXPIRED);
       }
 
@@ -189,6 +193,7 @@ module.exports = {
   createToken: createToken,
   getToken: getToken,
   deleteToken: deleteToken,
+  checkToken: checkToken,
   types: {
     email_verification: TOKEN_TYPE_EMAIL_VERIFICATION,
     password_reset: TOKEN_TYPE_PASSWORD_RESET

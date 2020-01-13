@@ -309,7 +309,8 @@ function updateUser(req, res, next) {
               }
 
               // Update password, if provided
-              users.updatePassword(userPID, password.new, session, function(err) {
+              let np = password && password.new ? password.new : undefined;
+              users.updatePassword(userPID, np, session, function(err) {
                 if ( err ) {
                   return next(Response.getInternalServerError());
                 }
@@ -480,6 +481,87 @@ function getEmailVerificationToken(req, res, next) {
 }
 
 
+
+/**
+ * Verify a provided email verification token
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function verifyEmailVerificationToken(req, res, next) {
+  let userPID = req.params.userPID;
+  let token = req.body.token;
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("registration", req, res, next) ) {
+
+    // Check the Token
+    tokens.checkToken(token, userPID, tokens.types.email_verification, function(err, code) {
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+
+      console.log("CHECK TOKEN: " + code);
+
+      // Expired Token
+      if ( code === tokens.validity_codes.expired ) {
+        let error = Response.buildError(
+          4013,
+          "Token Expired",
+          "The email verification token has expired.  You will need to request a new one."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+      // Invalid Token
+      else if ( code === tokens.validity_codes.invalid ) {
+        let error = Response.buildError(
+          4014,
+          "Token Invalid",
+          "The email verification token is not valid."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+      // Valid Token
+      else if ( code === tokens.validity_codes.valid ) {
+
+        // Update verification flag
+        users.updateVerified(userPID, true, function(err) {
+          if ( err ) {
+            return next(Response.getInternalServerError());
+          }
+
+          // Remove Token
+          tokens.deleteToken(token, function(err) {
+            if ( err ) {
+              return next(Response.getInternalServerError());
+            }
+
+            // Return Valid Response
+            let response = Response.buildResponse({});
+            res.send(response.code, response.response);
+            return next();
+
+          });
+        });
+
+      }
+
+      // Unknown code
+      else {
+        return next(Response.getInternalServerError());
+      }
+
+    });
+
+  }
+
+}
+
+
 // ==== USER MODIFICATION HELPER FUNCTIONS ==== //
 
 
@@ -587,5 +669,6 @@ module.exports = {
   removeUser: removeUser,
   getUser: getUser,
   updateUser: updateUser,
-  getEmailVerificationToken: getEmailVerificationToken
+  getEmailVerificationToken: getEmailVerificationToken,
+  verifyEmailVerificationToken: verifyEmailVerificationToken
 };
