@@ -197,7 +197,7 @@ function updateEmail(pid, email, callback) {
   }
 
   // Build Update Statement
-  let update = "UPDATE users SET email = '" + email + "', user_modified = now() WHERE pid = '" + pid + "';";
+  let update = "UPDATE users SET email = '" + email + "', verified = 0, user_modified = now() WHERE pid = '" + pid + "';";
 
   // Update the users table
   mysql.update(update, function(err) {
