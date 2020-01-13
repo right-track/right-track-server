@@ -263,6 +263,20 @@ let routes = function(server) {
    *
    * @apiSuccessExample {json} Example Response:
    * HTTP/1.1 200 OK
+   * {
+   * "status": "success",
+   *  "response": {
+   *      "token": {
+   *          "type": "email_verification",
+   *          "created": "2020-01-13T19:43:49.000Z",
+   *          "expires": "2020-01-20T19:43:49.000Z"
+   *      },
+   *      "confirmation": {
+   *          "from": "Right Track <webmaster@righttrack.io>",
+   *          "subject": "[Right Track] Email Verification"
+   *      }
+   *  }
+   * }
    */
   server.get("/users/:userPID/verify", helper.getEmailVerificationToken);
 
