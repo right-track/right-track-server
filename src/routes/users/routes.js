@@ -247,6 +247,9 @@ let routes = function(server) {
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Header) {string} X-Session-Token {User Session Token}
    * @apiParam (Path) {string} userID Public ID
+   * @apiParam (Query) {string} confirm The API Client's confirmation page URL.  This URL 
+   * will allow the User to confirm the verification token.  An email with this URL will 
+   * be sent to the User's registered email address.
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout

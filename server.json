@@ -16,7 +16,8 @@
   "mail": {
     "from": {
       "feedback": "Right Track Feedback <contact@domain.com>",
-      "verification": "Right Track Email Verification <contact@domain.com>"
+      "email_verification": "Right Track Email Verification <contact@domain.com>",
+      "password_reset": "Right Track Password Reset <contact@domain.com>"
     },
     "smtp": {
       "host": "",
