@@ -96,9 +96,9 @@ let routes = function(server) {
    *
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Query) {string} user The User's email address or username
-   * @apiParam (Query) {string} reset The API Client's password reset page URL.  This URL 
-   * will allow the User to confirm the password reset token and create a new password.  
-   * An email with this URL will be sent to the User's registered email address.
+   * @apiParam (Query) {string} url The API Client's password reset page URL.  This URL 
+   * will allow the User to confirm the password reset token and create a new password. An 
+   * email with this URL will be sent to the User's registered email address.
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout

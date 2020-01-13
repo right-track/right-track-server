@@ -418,17 +418,17 @@ function updateUser(req, res, next) {
 function requestEmailVerificationToken(req, res, next) {
   let userPID = req.params.userPID;
   let clientKey = req.APIClientKey;
-  let confirm = req.query.confirm;
+  let url = req.query.url;
 
   // Check for API Access
   if ( auth.checkAuthAccess("registration", req, res, next) ) {
 
     // Check for confirm URL
-    if ( !confirm ) {
+    if ( !url ) {
       let error = Response.buildError(
         400,
         "Bad Request",
-        "A confirmation URL must be provided with the confirm query param."
+        "A confirmation URL must be provided with the url query param."
       );
       res.send(error.code, error.response);
       return next();
@@ -441,7 +441,7 @@ function requestEmailVerificationToken(req, res, next) {
       }
 
       // Send Email
-      email.sendTokenEmail(token, userPID, confirm, function(err, confirmation) {
+      email.sendTokenEmail(token, userPID, url, function(err, confirmation) {
         if ( err ) {
           return next(Response.getInternalServerError());
         }

@@ -208,7 +208,7 @@ function logout(req, res, next) {
  */
 function requestPasswordResetToken(req, res, next) {
   let user = req.query.user;
-  let confirm = req.query.reset;
+  let url = req.query.url;
   let clientKey = req.APIClientKey;
 
   // Check for API Access
@@ -225,12 +225,12 @@ function requestPasswordResetToken(req, res, next) {
       return next();
     }
 
-    // Check for confirm URL
-    if ( !confirm ) {
+    // Check for reset URL
+    if ( !url ) {
       let error = Response.buildError(
         400,
         "Bad Request",
-        "A password reset URL must be provided with the reset query param."
+        "A password reset URL must be provided with the url query param."
       );
       res.send(error.code, error.response);
       return next();
@@ -260,7 +260,7 @@ function requestPasswordResetToken(req, res, next) {
         }
 
         // Send Email
-        email.sendTokenEmail(token, userPID, confirm, function(err, confirmation) {
+        email.sendTokenEmail(token, userPID, url, function(err, confirmation) {
           if ( err ) {
             return next(Response.getInternalServerError());
           }
@@ -382,7 +382,6 @@ function verifyPasswordResetToken(req, res, next) {
                 return next();
 
               });
-
             });
 
           });

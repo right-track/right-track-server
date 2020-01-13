@@ -11,10 +11,10 @@ const tokens = require('../../db/tokens.js');
  * Send a Token Confirmation email, returning the confirmation information
  * @param  {Object}   token      Token information
  * @param  {string}   userPID    PID of recipient User
- * @param  {string}   confirm    The client confirmation link
+ * @param  {string}   url        The client confirmation/reset link
  * @param  {Function} callback   Callback function(err, confirmation)
  */
-function sendTokenEmail(token, userPID, confirm, callback) {
+function sendTokenEmail(token, userPID, url, callback) {
   let config = c.get();
   let replyTo = config.maintainer.email;
   let smtp = config.mail.smtp;
@@ -29,7 +29,7 @@ function sendTokenEmail(token, userPID, confirm, callback) {
     let from = config.maintainer.name + " <" + config.maintainer.email + ">";
     let subject = "";
     let body = "<style type='text/css'>p { padding: 10px 5px; } h2 { border-bottom: 1px solid #999; } </style>";
-    let url = confirm + "?token=" + token.pid;
+    url += "?token=" + token.pid;
     
     // Email Verification
     if ( token.type === tokens.types.email_verification ) {

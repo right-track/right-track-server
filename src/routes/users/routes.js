@@ -247,7 +247,7 @@ let routes = function(server) {
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Header) {string} X-Session-Token {User Session Token}
    * @apiParam (Path) {string} userID Public ID
-   * @apiParam (Query) {string} confirm The API Client's confirmation page URL.  This URL 
+   * @apiParam (Query) {string} url The API Client's confirmation page URL.  This URL 
    * will allow the User to confirm the verification token.  An email with this URL will 
    * be sent to the User's registered email address.
    *
