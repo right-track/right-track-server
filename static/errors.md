@@ -41,6 +41,8 @@ error response in the following format:
  401  | Unauthorized | The request for the resource is not authorized.  When logging in, make sure the User's login and password are correct.  When requesting User resources (such as favorites) make sure the User Session token is valid.
  4011 | Authentication Header Not Sent | The User's Session Token (returned after successfully logged in) must be sent in the `X-Session-Token` header
  4012 | Session Expired | The User's Session Token has expired due to inactivity or automatically due to maximum session length
+ 4013 | Token Expired | The User's email verification or password reset Token has expired.  A new one will have to be requested.
+ 4014 | Token Invalid | The Token does not match the User or requested type
  4019 | User Not Registered | User Login: The sent login is not associated with a registered account
  
  
