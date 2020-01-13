@@ -501,8 +501,6 @@ function verifyEmailVerificationToken(req, res, next) {
         return next(Response.getInternalServerError());
       }
 
-      console.log("CHECK TOKEN: " + code);
-
       // Expired Token
       if ( code === tokens.validity_codes.expired ) {
         let error = Response.buildError(
