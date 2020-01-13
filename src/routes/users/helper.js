@@ -6,6 +6,7 @@ const Response = require('../../response');
 const validators = require('./validators.js');
 const users = require('../../db/users.js');
 const sessions = require('../../db/sessions.js');
+const tokens = require('../../db/tokens.js');
 const authHelper = require('../auth/helper.js');
 
 
@@ -48,6 +49,21 @@ function buildUser(user, sessions) {
     sessions: sessionModels
   }
 
+}
+
+
+/**
+ * Build the Token model
+ * @param  {Object}   token   Token information
+ * @return {object}           the Response Model
+ */
+function buildToken(token) {
+  return {
+    type: token.type,
+    value: token.pid,
+    created: token.created,
+    expires: token.expires
+  }
 }
 
 
@@ -252,6 +268,9 @@ function getUser(req, res, next) {
 }
 
 
+
+// ==== USER MODIFICATION FUNCTIONS ==== //
+
 /**
  * Update the provided User properties
  * @param req API Request
@@ -297,6 +316,7 @@ function updateUser(req, res, next) {
               });
             });
           });
+
         });
       });
     });
@@ -405,6 +425,46 @@ function updateUser(req, res, next) {
 }
 
 
+/**
+ * Get an email verification Token for the specified User
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getEmailVerificationToken(req, res, next) {
+  let userPID = req.params.userPID;
+  let clientKey = req.APIClientKey;
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("registration", req, res, next) ) {
+
+    // Create Email Veritication Token
+    tokens.createEmailVerificationToken(userPID, clientKey, function(err, token) {
+
+      // Server Error
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+
+      // Build Token Model
+      let tokenModel = buildToken(token);
+      
+      // Send the Response
+      let response = Response.buildResponse(
+        {
+          token: tokenModel
+        }
+      );
+      res.send(response.code, response.response);
+      return next();
+
+    });
+
+  }
+
+}
+
+
 
 
 // Export the functions
@@ -413,5 +473,6 @@ module.exports = {
   registerUser: registerUser,
   removeUser: removeUser,
   getUser: getUser,
-  updateUser: updateUser
+  updateUser: updateUser,
+  getEmailVerificationToken: getEmailVerificationToken
 };

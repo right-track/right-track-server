@@ -12,7 +12,7 @@ const DateTime = require('right-track-core/modules/utils/DateTime.js');
 // ==== TOKEN TYPES ==== //
 
 const TOKEN_TYPE_EMAIL_VERIFICATION = "email_verification";
-const TOKEN_TYPE_PASSWORD_REST = "password_reset";
+const TOKEN_TYPE_PASSWORD_RESET = "password_reset";
 
 
 // ==== TOKEN EXPIRATION TIMES (HOURS) ==== //
@@ -34,13 +34,13 @@ const TOKEN_EXPIRED = 2;
  * Create an Email Verification Token for the specified User
  * @param  {string}     userPID   User PID
  * @param  {string}     clientKey Client API Key
- * @param  {Function}   callback  Callback function(err, token)
+ * @param  {Function}   callback  Callback function(err, token, expires)
  */
 function createEmailVerificationToken(userPID, clientKey, callback) {
   createToken(
     userPID, 
     clientKey, 
-    TOKEN_EXPIRATION_EMAIL_VERIFICATION, 
+    TOKEN_TYPE_EMAIL_VERIFICATION, 
     TOKEN_EXPIRATION_EMAIL_VERIFICATION, 
     callback
   );
@@ -51,13 +51,13 @@ function createEmailVerificationToken(userPID, clientKey, callback) {
  * Create a Password Reset Token for the specified User
  * @param  {string}     userPID   User PID
  * @param  {string}     clientKey Client API Key
- * @param  {Function}   callback  Callback function(err, token)
+ * @param  {Function}   callback  Callback function(err, token, expires)
  */
 function createPasswordResetToken(userPID, clientKey, callback) {
   createToken(
     userPID, 
     clientKey, 
-    TOKEN_TYPE_PASSWORD_REST, 
+    TOKEN_TYPE_PASSWORD_RESET, 
     TOKEN_EXPIRATION_PASSWORD_RESEST, 
     callback
   );
@@ -87,27 +87,44 @@ function createToken(userPID, clientKey, type, expiration, callback) {
       }
 
       // Set Timestamps
-      let now = DateTime.now().toMySQLString();
-      let expires = DateTime.now().deltaMins(60*expiration).toMySQLString();
+      let now_mysql = DateTime.now().toMySQLString();
+      let expires = DateTime.now().deltaMins(60*expiration);
+      let expires_mysql = expires.toMySQLString();
 
       // Generate Token
       let token = utils.genPid();
 
       // Add the token to the Database
       let insert = "INSERT INTO tokens (pid, user_id, client_id, type, created, expires) VALUES " + 
-        "('" + token + "', " + user.id + ", " + client.id + ", '" + type + "', '" + now + "', '" + expires + "');";
-      mysql.insert(insert, function(err) ) {
+        "('" + token + "', " + user.id + ", " + client.id + ", '" + type + "', '" + now_mysql + "', '" + expires_mysql + "');";
+      mysql.insert(insert, function(err) {
         if ( err ) {
           return callback(err);
         }
 
         // Return the token
-        return callback(null, token);
-      }
+        return getToken(token, callback);
+
+      });
     });
   });
 
 }
+
+
+/**
+ * Get the Token information for the specified Token
+ * @param  {string}   token    Token Value / PID
+ * @param  {Function} callback Callback function(err, token)
+ */
+function getToken(token, callback) {
+  let select = "SELECT id, pid, user_id, client_id, type, created, expires " + 
+    "FROM tokens WHERE pid = '" + token + "'";
+  mysql.get(select, function(err, token) {
+    return callback(err, token);
+  });
+}
+
 
 
 /**
@@ -170,5 +187,15 @@ module.exports = {
   createEmailVerificationToken: createEmailVerificationToken,
   createPasswordResetToken: createPasswordResetToken,
   createToken: createToken,
-  deleteToken: deleteToken
+  getToken: getToken,
+  deleteToken: deleteToken,
+  types: {
+    email_verification: TOKEN_TYPE_EMAIL_VERIFICATION,
+    password_reset: TOKEN_TYPE_PASSWORD_RESET
+  },
+  validity_codes: {
+    valid: TOKEN_VALID,
+    invalid: TOKEN_INVALID,
+    expired: TOKEN_EXPIRED
+  }
 }

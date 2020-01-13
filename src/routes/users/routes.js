@@ -178,6 +178,7 @@ let routes = function(server) {
    */
   server.del("/users/:userPID", helper.removeUser);
 
+
   /**
    * @api {PUT} /users/:userID Update User
    * @apiName updateUser
@@ -204,7 +205,7 @@ let routes = function(server) {
    * @apiError (401 Error Codes) 4012 Session Expired
    * @apiError (404 Error Codes) 4043 User Not Found
    *
-  * @apiSuccessExample {json} Example Response:
+   * @apiSuccessExample {json} Example Response:
    * HTTP/1.1 200 OK
    * {
    *   "status": "success",
@@ -235,6 +236,32 @@ let routes = function(server) {
    */
   server.put("/users/:userPID", helper.updateUser);
 
+
+  /**
+   * @api {GET} /users/:userID/verify Get Email Verification Token
+   * @apiName getEmailVerificationToken
+   * @apiGroup Users
+   * @apiDescription Request an email verification Token for the specified User.
+   * @apiPermission registration
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Header) {string} X-Session-Token {User Session Token}
+   * @apiParam (Path) {string} userID Public ID
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (401 Error Codes) 401 Not Authorized
+   * @apiError (401 Error Codes) 4011 X-Session-Token Header Not Sent
+   * @apiError (401 Error Codes) 4012 Session Expired
+   * @apiError (404 Error Codes) 4043 User Not Found
+   *
+   * @apiSuccessExample {json} Example Response:
+   * HTTP/1.1 200 OK
+   */
+  server.get("/users/:userPID/verify", helper.getEmailVerificationToken);
 
 };
 
