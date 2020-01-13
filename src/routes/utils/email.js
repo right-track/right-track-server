@@ -48,9 +48,18 @@ function sendTokenEmail(token, userPID, confirm, callback) {
 
     // Password Reset
     else if ( token.type === tokens.types.password_reset ) {
+      url += "&user=" + userPID;
       from = config.mail.from.password_reset;
       subject = "[Right Track] Password Reset";
-      body = "Put password reset link here [" + url + "]";
+      body += "<h2>Right Track Password Reset</h2>";
+      body += "<p>Hi " + user.username + ",</p>";
+      body += "<p>This email is being sent to you in order to reset the password for your ";
+      body += "Right Track account.  To reset your password, click or paste the following ";
+      body += "link into your web browswer: <a href='" + url + "'>" + url + "</a>.</p>";
+      body += "<p>If you did not request a password reset, please contact us at ";
+      body += "<a href='mailto:" + config.maintainer.email + "'>" + config.maintainer.email + "</a>.</p>";
+      body += "<p>Thanks,</p>";
+      body += "<p>The Right Track Team</p>";
     }
 
     // Confirmation Info
@@ -63,7 +72,7 @@ function sendTokenEmail(token, userPID, confirm, callback) {
     // Send Email
     sendEmail(from, user.email, replyTo, subject, body, function(err) {
       return callback(err, confirmation);
-    })
+    });
     
   });
 }

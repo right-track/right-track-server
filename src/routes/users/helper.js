@@ -51,26 +51,6 @@ function buildUser(user, sessions) {
 
 }
 
-/**
- * Build the Token request model
- * @param  {Object} token        Token information
- * @param  {Object} confirmation Confirmation information
- * @return {object}              Token Request Model
- */
-function buildTokenRequest(token, confirmation) {
-  return {
-    token: {
-      type: token.type,
-      created: token.created,
-      expires: token.expires
-    },
-    confirmation: {
-      from: confirmation.from,
-      subject: confirmation.subject
-    }
-  }
-}
-
 
 
 
@@ -456,8 +436,6 @@ function requestEmailVerificationToken(req, res, next) {
 
     // Create Email Veritication Token
     tokens.createEmailVerificationToken(userPID, clientKey, function(err, token) {
-
-      // Server Error
       if ( err ) {
         return next(Response.getInternalServerError());
       }
@@ -469,7 +447,7 @@ function requestEmailVerificationToken(req, res, next) {
         }
 
         // Build the Model
-        let tokenRequestModel = buildTokenRequest(token, confirmation);
+        let tokenRequestModel = authHelper.buildTokenRequest(token, confirmation);
 
         // Send the Response
         let response = Response.buildResponse(tokenRequestModel);
@@ -477,11 +455,9 @@ function requestEmailVerificationToken(req, res, next) {
         return next();
 
       });
-
     });
 
   }
-
 }
 
 

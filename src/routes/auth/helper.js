@@ -3,7 +3,9 @@
 const auth = require('../../handlers/authorization.js');
 const users = require('../../db/users.js');
 const sessions = require('../../db/sessions.js');
+const tokens = require('../../db/tokens.js');
 const Response = require('../../response');
+const email = require('../utils/email.js');
 
 
 // ==== BUILD MODELS ==== //
@@ -38,6 +40,26 @@ function buildUser(user) {
     verified: user.verified === 1,
     lastModifiedUser: user.user_modified,
     lastModifiedPassword: user.password_modified,
+  }
+}
+
+/**
+ * Build the Token request model
+ * @param  {Object} token        Token information
+ * @param  {Object} confirmation Confirmation information
+ * @return {object}              Token Request Model
+ */
+function buildTokenRequest(token, confirmation) {
+  return {
+    token: {
+      type: token.type,
+      created: token.created,
+      expires: token.expires
+    },
+    confirmation: {
+      from: confirmation.from,
+      subject: confirmation.subject
+    }
   }
 }
 
@@ -174,9 +196,100 @@ function logout(req, res, next) {
 
 
 
+// ==== PASSWORD RESET FUNCTIONS ==== //
+
+
+/**
+ * Request a password reset Token for the specified User
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Chain
+ */
+function requestPasswordResetToken(req, res, next) {
+  let user = req.query.user;
+  let confirm = req.query.reset;
+  let clientKey = req.APIClientKey;
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("auth", req, res, next) ) {
+
+    // Check for user info
+    if ( !user ) {
+      let error = Response.buildError(
+        400,
+        "Bad Request",
+        "A username or email must be provided with the user query param."
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+
+    // Check for confirm URL
+    if ( !confirm ) {
+      let error = Response.buildError(
+        400,
+        "Bad Request",
+        "A password reset URL must be provided with the reset query param."
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+
+    // Get the User
+    users.getUserPIDByLogin(user, function(err, userPID) {
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+
+      // USER NOT FOUND
+      if ( !userPID ) {
+        let error = Response.buildError(
+          4043,
+          "User Not Found",
+          "There is no user registered with the specified username or email address."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+      // Create the Token
+      tokens.createPasswordResetToken(userPID, clientKey, function(err, token) {
+        if ( err ) {
+          return next(Response.getInternalServerError());
+        }
+
+        // Send Email
+        email.sendTokenEmail(token, userPID, confirm, function(err, confirmation) {
+          if ( err ) {
+            return next(Response.getInternalServerError());
+          }
+
+          // Build the Model
+          let model = buildTokenRequest(token, confirmation);
+
+          // Send the Response
+          let response = Response.buildResponse(model);
+          res.send(response.code, response.response);
+          return next();
+
+        });
+      });
+    });
+
+  }
+}
+
+function verifyPasswordResetToken(req, res, next) {
+
+}
+
+
 // Export the functions
 module.exports = {
   login: login,
   logout: logout,
-  buildSession: buildSession
+  buildSession: buildSession,
+  buildTokenRequest: buildTokenRequest,
+  requestPasswordResetToken: requestPasswordResetToken,
+  verifyPasswordResetToken: verifyPasswordResetToken
 };

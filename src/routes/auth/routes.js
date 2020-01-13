@@ -87,6 +87,49 @@ let routes = function(server) {
   server.del("/auth/logout/:userPID", helper.logout);
 
 
+  /**
+   * @api {GET} /auth/reset Reset User Password
+   * @apiName userPasswordReset
+   * @apiGroup Auth
+   * @apiDescription Request a password reset token be sent to the specified User
+   * @apiPermission auth
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Query) {string} user The User's email address or username
+   * @apiParam (Query) {string} reset The API Client's password reset page URL.  This URL 
+   * will allow the User to confirm the password reset token and create a new password.  
+   * An email with this URL will be sent to the User's registered email address.
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (404 Error Codes) 4043 User Not Found
+   *
+   * @apiSuccessExample {json} Example Response:
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
+   *      "token": {
+   *          "type": "email_verification",
+   *          "created": "2020-01-13T19:43:49.000Z",
+   *          "expires": "2020-01-20T19:43:49.000Z"
+   *      },
+   *      "confirmation": {
+   *          "from": "Right Track <webmaster@righttrack.io>",
+   *          "subject": "[Right Track] Email Verification"
+   *      }
+   *   }
+   * }
+   */
+  server.get("/auth/reset", helper.requestPasswordResetToken);
+
+
+  server.put("/auth/reset", helper.verifyPasswordResetToken);
+
+
 };
 
 
