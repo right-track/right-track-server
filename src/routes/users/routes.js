@@ -238,7 +238,7 @@ let routes = function(server) {
 
 
   /**
-   * @api {GET} /users/:userID/verify Get Email Verification Token
+   * @api {GET} /users/:userID/verify Request Email Verification Token
    * @apiName getEmailVerificationToken
    * @apiGroup Users
    * @apiDescription Request an email verification Token for the specified User.
@@ -278,7 +278,7 @@ let routes = function(server) {
    *   }
    * }
    */
-  server.get("/users/:userPID/verify", helper.getEmailVerificationToken);
+  server.get("/users/:userPID/verify", helper.requestEmailVerificationToken);
 
 
   /**

@@ -1,6 +1,5 @@
 'use strict';
 
-const nodemailer = require('nodemailer');
 const c = require('../../config/server.js');
 const auth = require('../../handlers/authorization.js');
 const Response = require('../../response');
@@ -9,7 +8,7 @@ const users = require('../../db/users.js');
 const sessions = require('../../db/sessions.js');
 const tokens = require('../../db/tokens.js');
 const authHelper = require('../auth/helper.js');
-
+const email = require('../utils/email.js');
 
 
 // ==== BUILD MODELS ==== //
@@ -431,12 +430,12 @@ function updateUser(req, res, next) {
 
 
 /**
- * Get an email verification Token for the specified User
+ * Request an email verification Token for the specified User
  * @param req API Request
  * @param res API Response
  * @param next API Handler Stack
  */
-function getEmailVerificationToken(req, res, next) {
+function requestEmailVerificationToken(req, res, next) {
   let userPID = req.params.userPID;
   let clientKey = req.APIClientKey;
   let confirm = req.query.confirm;
@@ -464,13 +463,18 @@ function getEmailVerificationToken(req, res, next) {
       }
 
       // Send Email
-      _sendEmail(token, userPID, confirm, function(err, confirmation) {
+      email.sendTokenEmail(token, userPID, confirm, function(err, confirmation) {
         if ( err ) {
           return next(Response.getInternalServerError());
         }
 
-        // Send Response
-        _sendTokenRequestResponse(req, res, next, token, confirmation);
+        // Build the Model
+        let tokenRequestModel = buildTokenRequest(token, confirmation);
+
+        // Send the Response
+        let response = Response.buildResponse(tokenRequestModel);
+        res.send(response.code, response.response);
+        return next();
 
       });
 
@@ -479,7 +483,6 @@ function getEmailVerificationToken(req, res, next) {
   }
 
 }
-
 
 
 /**
@@ -560,103 +563,6 @@ function verifyEmailVerificationToken(req, res, next) {
 }
 
 
-// ==== USER MODIFICATION HELPER FUNCTIONS ==== //
-
-
-
-/**
- * Send the specified Token confirmation information to the Response
- * @param  {object} token         Token information
- * @param  {object} confirmation  Confirmation information
- * @private
- */
-function _sendTokenRequestResponse(req, res, next, token, confirmation) {
-
-  // Build the Model
-  let tokenRequestModel = buildTokenRequest(token, confirmation);
-
-  // Send the Response
-  let response = Response.buildResponse(tokenRequestModel);
-  res.send(response.code, response.response);
-  return next();
-
-}
-
-
-/**
- * Send a Token Confirmation email, returning the confirmation information
- * @param  {Object}   token      Token information
- * @param  {string}   userPID    PID of recipient User
- * @param  {string}   confirm    The client confirmation link
- * @param  {Function} callback   Callback function(err, confirmation)
- */
-function _sendEmail(token, userPID, confirm, callback) {
-  let config = c.get();
-  let replyTo = config.maintainer.email;
-  let smtp = config.mail.smtp;
-
-  // Get User Info
-  users.getUser(userPID, function(err, user) {
-    if ( err ) {
-      return callback(err);
-    }
-
-    // Set Token-specific properties
-    let from = config.maintainer.name + " <" + config.maintainer.email + ">";
-    let subject = "";
-    let body = "<style type='text/css'>p { padding: 10px 5px; } h2 { border-bottom: 1px solid #999; } </style>";
-    let url = confirm + "?token=" + token.pid;
-    
-    // Email Verification
-    if ( token.type === tokens.types.email_verification ) {
-      from = config.mail.from.email_verification;
-      subject = "[Right Track] Email Verification";
-      body += "<h2>Right Track Email Verification</h2>";
-      body += "<p>Hi " + user.username + ",</p>";
-      body += "<p>This email is being sent to you in order to verify the email address associated ";
-      body += "with your Right Track account.  To verify your email address, click or paste the following ";
-      body += "link into your web browswer: <a href='" + url + "'>" + url + "</a>.</p>";
-      body += "<p>If you did not create a Right Track account, please contact us at ";
-      body += "<a href='mailto:" + config.maintainer.email + "'>" + config.maintainer.email + "</a>.</p>";
-      body += "<p>Thanks,</p>";
-      body += "<p>The Right Track Team</p>";
-    }
-
-    // Password Reset
-    else if ( token.type === tokens.types.password_reset ) {
-      from = config.mail.from.password_reset;
-      subject = "[Right Track] Password Reset";
-      body = "Put password reset link here [" + url + "]";
-    }
-
-    // Set up transporter
-    let transporter = nodemailer.createTransport(smtp);
-
-    // Set up Email
-    let msg = {
-      from: from,
-      to: user.email,
-      replyTo: replyTo,
-      subject: subject,
-      html: body
-    }
-
-    // Confirmation Info
-    let confirmation = {
-      url: url,
-      from: from,
-      subject: subject
-    }
-
-    // Send Mail
-    transporter.sendMail(msg, function(err, info) {
-      return callback(err, confirmation);
-    });
-
-  });
-
-}
-
 
 
 
@@ -667,6 +573,6 @@ module.exports = {
   removeUser: removeUser,
   getUser: getUser,
   updateUser: updateUser,
-  getEmailVerificationToken: getEmailVerificationToken,
+  requestEmailVerificationToken: requestEmailVerificationToken,
   verifyEmailVerificationToken: verifyEmailVerificationToken
 };

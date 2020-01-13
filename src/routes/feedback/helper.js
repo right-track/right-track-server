@@ -6,6 +6,7 @@ const c = require("../../config/");
 const Response = require("../../response");
 const clients = require("../../db/clients");
 const users = require("../../db/users");
+const email = require('../utils/email.js');
 
 
 // ==== HELPER FUNCTIONS ==== //
@@ -30,36 +31,6 @@ let _buildList = function(object) {
   return html;
 }
 
-/**
- * Send an Email with the specified properties
- * @param  {string}   recipient The Email recipient
- * @param  {string}   replyTo   Reply to Address
- * @param  {string}   subject   Email subject
- * @param  {string}   body      HTML Email body
- * @param  {Function} callback  Callback function(err)
- */
-function _sendEmail(recipient, replyTo, subject, body, callback) {
-  let config = c.server.get();
-  let from = config.mail.from.feedback;
-  let smtp = config.mail.smtp;
-
-  // Set up transporter
-  let transporter = nodemailer.createTransport(smtp);
-
-  // Set up Email
-  let msg = {
-    from: from,
-    to: recipient,
-    replyTo: replyTo,
-    subject: "[Feedback] " + subject,
-    html: body
-  }
-
-  // Send Mail
-  transporter.sendMail(msg, function(err, info) {
-    return callback(err);
-  });
-}
 
 /**
  * Get the About Model and send the Response
@@ -69,6 +40,7 @@ function _sendEmail(recipient, replyTo, subject, body, callback) {
  */
 function submit(req, res, next) {
   let server_config = c.server.get();
+  let from = server_config.mail.from.feedback;
 
   // Check the API access
   if ( auth.checkAuthAccess("feedback", req, res, next) ) {
@@ -128,7 +100,8 @@ function submit(req, res, next) {
         }
 
         // Send Email
-        _sendEmail(recipient, replyTo, subject, body, function(err) {
+        subject = "[Feedback] " + subject;
+        email.sendEmail(from, recipient, replyTo, subject, body, function(err) {
 
           // Send Error Response
           if ( err ) {
