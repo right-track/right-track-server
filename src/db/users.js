@@ -271,7 +271,7 @@ function updatePassword(pid, password, session, callback) {
       mysql.update(update, function(err) {
 
         // Keep all sessions...
-        if ( err || !session ) {
+        if ( err ) {
           return callback(err);
         }
 
@@ -282,8 +282,14 @@ function updatePassword(pid, password, session, callback) {
           }
 
           // Build DELETE statement
-          let del = "DELETE FROM sessions WHERE user_id = " + user.id + " AND " + 
-            "pid <> '" + session + "';";
+          let del = "";
+          if ( session ) {
+            del = "DELETE FROM sessions WHERE user_id = " + user.id + " AND " + 
+              "pid <> '" + session + "';";
+          }
+          else {
+            del = "DELETE FROM sessions WHERE user_id = " + user.id + ";";
+          }
 
           // Remove the sessions
           mysql.delet(del, function(err) {

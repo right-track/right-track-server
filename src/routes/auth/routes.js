@@ -88,8 +88,8 @@ let routes = function(server) {
 
 
   /**
-   * @api {GET} /auth/reset Reset User Password
-   * @apiName userPasswordReset
+   * @api {GET} /auth/reset Request Password Reset Token
+   * @apiName requestPasswordResetToken
    * @apiGroup Auth
    * @apiDescription Request a password reset token be sent to the specified User
    * @apiPermission auth
@@ -127,6 +127,33 @@ let routes = function(server) {
   server.get("/auth/reset", helper.requestPasswordResetToken);
 
 
+  /**
+   * @api {POST} /auth/reset Reset User Password
+   * @apiName resetUserPassword
+   * @apiGroup Auth
+   * @apiDescription Reset a User's password with a password reset token
+   * @apiPermission auth
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Body) {string} user User Public ID
+   * @apiParam (Body) {Object} password User password properties
+   * @apiParam (Body) {string} password.token Password reset token
+   * @apiParam (Body) {string} password.new New User password
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (404 Error Codes) 4043 User Not Found
+   *
+   * @apiSuccessExample {json} Example Response:
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {}
+   * }
+   */
   server.put("/auth/reset", helper.verifyPasswordResetToken);
 
 

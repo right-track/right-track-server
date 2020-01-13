@@ -6,6 +6,7 @@ const sessions = require('../../db/sessions.js');
 const tokens = require('../../db/tokens.js');
 const Response = require('../../response');
 const email = require('../utils/email.js');
+const validators = require('../users/validators.js');
 
 
 // ==== BUILD MODELS ==== //
@@ -279,8 +280,119 @@ function requestPasswordResetToken(req, res, next) {
   }
 }
 
-function verifyPasswordResetToken(req, res, next) {
 
+/**
+ * Verify the password reset token and update password if valid
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Chain
+ */
+function verifyPasswordResetToken(req, res, next) {
+  let userPID = req.body.user;
+  let password = req.body.password;
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("auth", req, res, next) ) {
+
+    // Check for user info
+    if ( !userPID ) {
+      let error = Response.buildError(
+        400,
+        "Bad Request",
+        "The User PID must be provided with the user body param."
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+
+    // Check for password info
+    if ( !password || !password.token || !password.new ) {
+      let error = Response.buildError(
+        400,
+        "Bad Request",
+        "The password token and new password must be provided with the password body param."
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+
+    // Get the User
+    users.getUser(userPID, function(err, user) {
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+
+      // USER NOT FOUND
+      if ( !user ) {
+        let error = Response.buildError(
+          4043,
+          "User Not Found",
+          "There is no user registered user with the specified PID."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+      // Check the Token
+      tokens.checkToken(password.token, userPID, tokens.types.password_reset, function(err, code) {
+
+        // Expired Token
+        if ( code === tokens.validity_codes.expired ) {
+          let error = Response.buildError(
+            4013,
+            "Token Expired",
+            "The email verification token has expired.  You will need to request a new one."
+          );
+          res.send(error.code, error.response);
+          return next();
+        }
+
+        // Invalid Token
+        else if ( code === tokens.validity_codes.invalid ) {
+          let error = Response.buildError(
+            4014,
+            "Token Invalid",
+            "The email verification token is not valid."
+          );
+          res.send(error.code, error.response);
+          return next();
+        }
+
+        // Valid Token
+        else if ( code === tokens.validity_codes.valid ) {
+
+          // Validate the password
+          validators.validatePassword(req, res, next, user.username, password.new, function() {
+
+            // Update the password
+            users.updatePassword(userPID, password.new, function(err) {
+              if ( err ) {
+                return next(Response.getInternalServerError());
+              }
+
+              // Remove the Token
+              tokens.deleteToken(password.token, function(err) {
+                if ( err ) {
+                  return next(Response.getInternalServerError());
+                }
+
+                // Return Valid Response
+                let response = Response.buildResponse({});
+                res.send(response.code, response.response);
+                return next();
+
+              });
+
+            });
+
+          });
+
+        }
+
+      });
+    });
+
+  }
 }
 
 
