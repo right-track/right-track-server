@@ -31,7 +31,7 @@
   },
   "cors": {
     "origins": ["*"],
-    "methods": "HEAD, GET, POST, DELETE, OPTIONS",
+    "methods": "HEAD, GET, POST, PUT, DELETE, OPTIONS",
     "headers": "content-type,authorization,x-session-token",
     "maxAge": 86400
   },

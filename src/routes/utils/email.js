@@ -29,7 +29,12 @@ function sendTokenEmail(token, userPID, url, callback) {
     let from = config.maintainer.name + " <" + config.maintainer.email + ">";
     let subject = "";
     let body = "<style type='text/css'>p { padding: 10px 5px; } h2 { border-bottom: 1px solid #999; } </style>";
-    url += "?token=" + token.pid;
+    if ( url.includes("?") ) {
+      url += "&token=" + token.pid;
+    }
+    else {
+      url += "?token=" + token.pid;
+    }
     
     // Email Verification
     if ( token.type === tokens.types.email_verification ) {

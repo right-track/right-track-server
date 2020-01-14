@@ -341,7 +341,7 @@ function verifyPasswordResetToken(req, res, next) {
           let error = Response.buildError(
             4013,
             "Token Expired",
-            "The email verification token has expired.  You will need to request a new one."
+            "The password reset token has expired.  You will need to request a new one."
           );
           res.send(error.code, error.response);
           return next();
@@ -352,7 +352,7 @@ function verifyPasswordResetToken(req, res, next) {
           let error = Response.buildError(
             4014,
             "Token Invalid",
-            "The email verification token is not valid."
+            "The password reset token is not valid.  You will need to request a new one."
           );
           res.send(error.code, error.response);
           return next();
