@@ -28,7 +28,7 @@ let routes = function(server) {
    *   "response": {}
    * }
    */
-  server.get("/admin/reload", helper.reloadConfig);
+  server.get("/admin/reload", helper.reload);
 
 
   /**
@@ -86,6 +86,30 @@ let routes = function(server) {
    */
   server.get("/admin/state", helper.getState);
 
+
+  /**
+   * @api {GET} /admin/clean Clean Server
+   * @apiName cleanServer
+   * @apiGroup Admin
+   * @apiDescription Remove expired sessions and tokens from the API Server MySQL Database
+   * @apiPermission admin
+   *
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   *
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   *
+   * @apiSuccessExample {json} Example Response:
+   * HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {}
+   * }
+   */
+  server.get("/admin/clean", helper.clean);
 
 };
 

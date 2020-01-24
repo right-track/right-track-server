@@ -12,37 +12,64 @@ const mysql = require('../../db/mysql.js');
 
 /**
  * Build the Server State Model
+ * @param {Function} callback Callback function
  * @returns {object} Server State Model
  */
-function buildState() {
+function buildState(callback) {
 
   let mem = process.memoryUsage();
   let mem_mb = mem.rss / 1024 / 1204;
   let mem_percent = (mem.rss / os.totalmem) * 100;
 
-  return {
-    system: {
-      platform: os.platform(),
-      arch: os.arch(),
-      cpus: os.cpus().length,
-    },
-    command: {
-      cwd: process.cwd(),
-      argv: process.argv,
-      uid: process.getuid(),
-      gid: process.getgid()
-    },
-    process: {
-      pid: process.pid,
-      title: process.title,
-      memory: {
-        mb: mem_mb,
-        percent: mem_percent,
-        bytes: mem
-      },
-      uptime: _secsToHRTime(process.uptime())
-    }
-  };
+  // Get User Stats
+  let sql = "SELECT COUNT(id) AS user_count, MAX(user_modified) AS last_user_modified FROM users;";
+  mysql.get(sql, function(err, stats) {
+    let user_count = stats && stats.user_count ? stats.user_count : "unknown";
+    let last_user_modified = stats && stats.last_user_modified ? stats.last_user_modified : "unknown";
+
+    // Get Session Stats
+    sql = "SELECT COUNT(id) AS session_count, MAX(accessed) AS last_session_modified FROM sessions;";
+    mysql.get(sql, function(err, stats) {
+      let session_count = stats && stats.session_count ? stats.session_count : "unknown";
+      let last_session_modified = stats && stats.last_session_modified ? stats.last_session_modified : "unknown";
+
+      let state = {
+        system: {
+          platform: os.platform(),
+          arch: os.arch(),
+          cpus: os.cpus().length,
+        },
+        command: {
+          cwd: process.cwd(),
+          argv: process.argv,
+          uid: process.getuid(),
+          gid: process.getgid()
+        },
+        process: {
+          pid: process.pid,
+          title: process.title,
+          memory: {
+            mb: mem_mb,
+            percent: mem_percent,
+            bytes: mem
+          },
+          uptime: _secsToHRTime(process.uptime())
+        },
+        stats: {
+          users: {
+            count: user_count,
+            lastModified: last_user_modified
+          },
+          sessions: {
+            count: session_count,
+            lastModified: last_session_modified
+          }
+        }
+      }
+
+      return callback(state);
+    });
+  });
 
 }
 
@@ -65,44 +92,62 @@ function _secsToHRTime(secs) {
 }
 
 
-// ==== HELPER FUNCTIONS ==== //
+// ==== REQUEST FUNCTIONS ==== //
 
 
 /**
  * Reload the server and agency configurations (along with agency
- * databases) as well as reconnect to the MySQL server.  Display
- * the new configuration if debug is enabled.
+ * databases) as well as reconnect to the MySQL server.
  * @param req API Request
  * @param res API Response
  * @param next API Handler Stack
  */
-function reloadConfig(req, res, next) {
+function reload(req, res, next) {
 
   // Check for API Access
   if ( auth.checkAuthAccess("admin", req, res, next) ) {
 
     // Reload the config files
-    c.clear();
-    c.server.read();
-    if ( process.argv.length === 3 ) {
-      c.server.read(process.argv[2]);
-    }
+    c.reload();
 
     // Reconnect to the MySQL server
-    mysql.close(
-      function() {},
-      function() {
-        mysql.connect();
-      }
-    );
+    mysql.reconnect(function() {
 
-    // Rebuild the Index HTML
-    index.buildHTML();
+      // Rebuild the Index HTML
+      index.buildHTML();
 
-    // Return Empty Response
-    let response = Response.buildResponse({});
-    res.send(response.code, response.response);
-    return next();
+      // Return Empty Response
+      let response = Response.buildResponse({});
+      res.send(response.code, response.response);
+      return next();
+
+    });
+
+  }
+
+}
+
+
+/**
+ * Clean the MySQL Database
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function clean(req, res, next) {
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("admin", req, res, next) ) {
+
+    // Clean the MySQL Database
+    mysql.clean(function() {
+
+      // Return Empty Response
+      let response = Response.buildResponse({});
+      res.send(response.code, response.response);
+      return next();
+
+    });
 
   }
 
@@ -120,10 +165,15 @@ function getState(req, res, next) {
   // Check for API Access
   if ( auth.checkAuthAccess("admin", req, res, next) ) {
 
+    // Build Server State
+    buildState(function(state) {
+
       // Send Response
-    let response = Response.buildResponse(buildState());
-    res.send(response.code, response.response);
-    return next();
+      let response = Response.buildResponse(state);
+      res.send(response.code, response.response);
+      return next();
+
+    });
 
   }
 
@@ -131,6 +181,7 @@ function getState(req, res, next) {
 
 
 module.exports = {
-  reloadConfig: reloadConfig,
+  reload: reload,
+  clean: clean,
   getState: getState
 };

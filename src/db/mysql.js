@@ -8,12 +8,20 @@ const c = require('../config/server.js');
 // Set initial state of variables
 let pool = undefined;
 
+// MySQL DB Auto-Cleaner
+let CLEAN_TIMER = undefined;
+let CLEAN_TIMER_INTERVAL_MINS = 60;
+
+
+
+// ==== ADMIN FUNCTIONS ==== //
 
 /**
  * Connect to the Right Track API Server Database.  This establishes
  * a connection pool to be used by the getConnection() function.
+ * @param {Function} [callback] Callback function()
  */
-function connect() {
+function connect(callback) {
   let config = c.get();
 
   // Set up connection pool
@@ -36,8 +44,15 @@ function connect() {
       process.exit(1);
     }
     else {
-      console.log("--> Connected to MySQL server @ " + config.database.host + "...");
-      clearInvalidSessions();
+      console.log("--> Connected to MySQL database " + config.database.name + " @ " + config.database.host + "...");
+      
+      // Start Clean Timer
+      if ( CLEAN_TIMER ) clearInterval(CLEAN_TIMER);
+      CLEAN_TIMER = setInterval(clean, CLEAN_TIMER_INTERVAL_MINS * 60 * 1000);
+      
+      // Perform initial clean
+      clean(callback);
+
     }
   });
 
@@ -70,6 +85,82 @@ function getConnection(callback) {
     });
   }
 }
+
+
+/**
+ * Reconnect to the MySQL Database
+ * @param  {Function} [callback] Callback function()
+ */
+function reconnect(callback) {
+  close(
+    function() {
+      if ( callback ) return callback();
+    },
+    function() {
+      connect(function() {
+        if ( callback ) return callback();
+      });
+    }
+  );
+}
+
+
+/**
+ * Clean the MySQL Database - remove expired sessions and tokens
+ * @param  {Function} [callback] Callback function
+ */
+function clean(callback) {
+  let now = DateTime.now().toMySQLString();
+  
+  // Remove invalid user sessions
+  let del = "DELETE FROM sessions WHERE inactive <= '" + now + "' OR expires <= '" + now + "';";
+  delet(del, function(err) {
+    if ( !err ) {
+      console.log("... Invalid sessions removed from the database...");
+    }
+
+    // Remove invalid tokens
+    del = "DELETE FROM tokens WHERE expires <= '" + now + "';";
+    delet(del, function(err) {
+      if ( !err ) {
+        console.log("... Invalid tokens remove from the database...");
+      }
+
+      // Return to callback
+      if ( callback ) return callback();
+
+    });
+  });
+}
+
+
+/**
+ * Close the connection to the Right Track API Server database
+ * @param error Optional error callback function
+ * @param callback Optional callback function
+ */
+let close = function(error, callback) {
+  if ( CLEAN_TIMER ) clearInterval(CLEAN_TIMER);
+  if ( pool !== undefined ) {
+    console.log("--> Closing connection to MySQL server...");
+    pool.end(function (err) {
+      if (err) {
+        console.warn("... could not close connection to MySQL server");
+        if ( error ) return error(err);
+      }
+      else {
+        if ( callback ) return callback();
+      }
+    });
+  }
+  else {
+    if ( error ) return error(new Error("Connection Pool undefined"));
+  }
+};
+
+
+
+// ==== QUERY FUNCTIONS ==== //
 
 
 /**
@@ -261,52 +352,17 @@ let delet = function(statement, callback) {
 };
 
 
-/**
- * Close the connection to the Right Track API Server database
- * @param error Optional error callback function
- * @param callback Optional callback function
- */
-let close = function(error, callback) {
-  if ( pool !== undefined ) {
-    console.log("--> Closing connection to MySQL server...");
-    pool.end(function (err) {
-      if (err) {
-        console.warn("... could not close connection to MySQL server");
-        if (error !== undefined) {
-          error(err);
-        }
-      }
-      else if (callback !== undefined) {
-        callback();
-      }
-    });
-  }
-};
-
-
-/**
- * Remove inactive and expired sessions from the Database
- */
-let clearInvalidSessions = function() {
-  let now = DateTime.now().toMySQLString();
-  let del = "DELETE FROM sessions WHERE inactive <= '" + now + "' OR expires <= '" + now + "';";
-  delet(del, function(err) {
-    if ( !err ) {
-      console.log("... Invalid sessions removed from the database...");
-    }
-  });
-};
-
-
 
 // Export the connection
 module.exports = {
   connect: connect,
   getConnection: getConnection,
+  reconnect: reconnect,
+  clean: clean,
+  close: close,
   get: get,
   select: select,
   insert: insert,
   update: update,
-  delet: delet,
-  close: close
+  delet: delet
 };

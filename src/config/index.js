@@ -13,9 +13,21 @@ function clear() {
   transit.clear();
 }
 
+/**
+ * Clear and reload the server and agency configurations
+ */
+function reload() {
+  clear();
+  server.read();
+  if ( process.argv.length === 3 ) {
+    server.read(process.argv[2]);
+  }
+}
+
 module.exports = {
   server: server,
   agencies: agencies,
   transit: transit,
-  clear: clear
+  clear: clear,
+  reload: reload
 };
