@@ -434,6 +434,16 @@ function requestEmailVerificationToken(req, res, next) {
       return next();
     }
 
+    // Re-encode URL query params
+    let parsed = URL.parse(url);
+    let query = parsed && parsed.query ? JSON.parse(JSON.stringify(querystring.parse(parsed.query))) : {};
+    let clean_url = parsed.protocol + '//' + parsed.host + parsed.pathname + '?';
+    for ( let name in query ) {
+      if ( query.hasOwnProperty(name) ) {
+        clean_url += name + '=' + encodeURIComponent(query[name]) + '&';
+      }
+    }
+
     // Create Email Veritication Token
     tokens.createEmailVerificationToken(userPID, clientKey, function(err, token) {
       if ( err ) {
@@ -441,7 +451,7 @@ function requestEmailVerificationToken(req, res, next) {
       }
 
       // Send Email
-      email.sendTokenEmail(token, userPID, url, function(err, confirmation) {
+      email.sendTokenEmail(token, userPID, clean_url, function(err, confirmation) {
         if ( err ) {
           return next(Response.getInternalServerError());
         }

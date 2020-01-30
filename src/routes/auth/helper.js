@@ -1,5 +1,8 @@
 'use strict';
 
+const URL = require('url');
+const querystring = require('querystring');
+
 const auth = require('../../handlers/authorization.js');
 const users = require('../../db/users.js');
 const sessions = require('../../db/sessions.js');
@@ -236,6 +239,16 @@ function requestPasswordResetToken(req, res, next) {
       return next();
     }
 
+    // Re-encode URL query params
+    let parsed = URL.parse(url);
+    let query = parsed && parsed.query ? JSON.parse(JSON.stringify(querystring.parse(parsed.query))) : {};
+    let clean_url = parsed.protocol + '//' + parsed.host + parsed.pathname + '?';
+    for ( let name in query ) {
+      if ( query.hasOwnProperty(name) ) {
+        clean_url += name + '=' + encodeURIComponent(query[name]) + '&';
+      }
+    }
+
     // Get the User
     users.getUserPIDByLogin(user, function(err, userPID) {
       if ( err ) {
@@ -260,7 +273,7 @@ function requestPasswordResetToken(req, res, next) {
         }
 
         // Send Email
-        email.sendTokenEmail(token, userPID, url, function(err, confirmation) {
+        email.sendTokenEmail(token, userPID, clean_url, function(err, confirmation) {
           if ( err ) {
             return next(Response.getInternalServerError());
           }
