@@ -71,17 +71,38 @@ function connect(callback) {
  */
 function getConnection(callback) {
   if ( pool === undefined ) {
-    console.warn("Not connected to MySQL database...");
+    console.error("ERROR: Not connected to MySQL database...");
+    _reconnect()
   }
   else {
     pool.getConnection(function(err, connection) {
-      if (err) {
-        connection.release();
-        console.error("Lost connection to MySQL database");
+      if (err || !connection ) {
+        console.error("ERROR: Lost connection to MySQL database");
         console.error(err);
-        return callback(err);
+        try {
+          if ( connection ) connection.release();
+        }
+        catch (err2) {}
+        _reconnect();
       }
       return callback(null, connection);
+    });
+  }
+
+  /**
+   * Try to reconnect to the database and try once 
+   * more to get a connection
+   */
+  function _reconnect() {
+    reconnect(function() {
+      pool.getConnection(function(err, connection) {
+        if ( err || !connection ) {
+          console.error("...Could not reconnect");
+          return callback(err);
+        }
+        console.error("...Reconnected");
+        return callback(null, connection);
+      });
     });
   }
 }
@@ -92,16 +113,12 @@ function getConnection(callback) {
  * @param  {Function} [callback] Callback function()
  */
 function reconnect(callback) {
-  close(
-    function() {
+  close(_connect, _connect);
+  function _connect() {
+    connect(function() {
       if ( callback ) return callback();
-    },
-    function() {
-      connect(function() {
-        if ( callback ) return callback();
-      });
-    }
-  );
+    });
+  }
 }
 
 
