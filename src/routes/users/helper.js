@@ -1,5 +1,8 @@
 'use strict';
 
+const URL = require('url');
+const querystring = require('querystring');
+
 const c = require('../../config/server.js');
 const auth = require('../../handlers/authorization.js');
 const Response = require('../../response');
