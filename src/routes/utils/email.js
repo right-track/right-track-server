@@ -44,7 +44,7 @@ function sendTokenEmail(token, userPID, url, callback) {
       body += "<p>Hi " + user.username + ",</p>";
       body += "<p>This email is being sent to you in order to verify the email address associated ";
       body += "with your Right Track account.  To verify your email address, click or paste the following ";
-      body += "link into your web browswer: <a href='" + url + "'>" + url + "</a>.</p>";
+      body += "link into your web browser: <a href='" + url + "'>" + url + "</a>.</p>";
       body += "<p>If you did not create a Right Track account, please contact us at ";
       body += "<a href='mailto:" + config.maintainer.email + "'>" + config.maintainer.email + "</a>.</p>";
       body += "<p>Thanks,</p>";
@@ -60,7 +60,7 @@ function sendTokenEmail(token, userPID, url, callback) {
       body += "<p>Hi " + user.username + ",</p>";
       body += "<p>This email is being sent to you in order to reset the password for your ";
       body += "Right Track account.  To reset your password, click or paste the following ";
-      body += "link into your web browswer: <a href='" + url + "'>" + url + "</a>.</p>";
+      body += "link into your web browser: <a href='" + url + "'>" + url + "</a>.</p>";
       body += "<p>If you did not request a password reset, please contact us at ";
       body += "<a href='mailto:" + config.maintainer.email + "'>" + config.maintainer.email + "</a>.</p>";
       body += "<p>Thanks,</p>";
