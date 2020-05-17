@@ -63,6 +63,7 @@ error response in the following format:
  4042 | GTFS Data Not Found | The requested GTFS resource could not be found.  Most likely, the ID of the requested resource does not exists in the GTFS data.
  4043 | Information Not Found | The information of the requested resource could not be found
  4044 | Unsupported Transit Agency | The transit agency code provided in the request path does not correspond to a transit agency supported by the API Server
+ 4045 | Unknown App Host | The specified app host is not a recognized app
  4049 | File Not Found | A file associated with the requested resource could not be found on the Server
 
 
