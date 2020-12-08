@@ -71,7 +71,11 @@ function buildDeparture(departure) {
         seconds: departure.status.estDeparture.getTimeSeconds(),
         date: departure.status.estDeparture.getDateInt()
       },
-      track: departure.status.track,
+      track: {
+        track: departure.status.track.track,
+        scheduled: departure.status.track.scheduled,
+        changed: departure.status.track.changed
+      },
       remarks: departure.status.remarks
     }
   }
