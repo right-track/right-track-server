@@ -104,6 +104,23 @@ let routes = function(server) {
    *         }
    *       },
    *       {
+   *         "type": 3,
+   *         "sequence": 3,
+   *         "agency": {
+   *           "id": "mta",
+   *           "name": "Metropolitan Transportation Authority"
+   *         },
+   *         "division": {
+   *           "code": "subway",
+   *           "name": "Subway"
+   *         },
+   *         "line": {
+   *           "code": "123",
+   *           "name": "123"
+   *         },
+   *         options: {}
+   *       },
+   *       {
    *         "...": "..."
    *       }
    *     ]
@@ -158,6 +175,25 @@ let routes = function(server) {
    *     "allowTransfers": true
    *   }
    * }
+   * 
+   * @apiExample Example Favorite Transit
+   * {
+   *   "type": 3,
+   *   "sequence": 3,
+   *   "agency": {
+   *     "id": "mta",
+   *     "name": "Metropolitan Transportation Authority"
+   *   },
+   *   "division": {
+   *     "code": "subway",
+   *     "name": "Subway"
+   *   },
+   *   "line": {
+   *     "code": "123",
+   *     "name": "123"
+   *   },
+   *   options: {}
+   * }
    *
    * @apiPermission favorites
    *
@@ -211,6 +247,23 @@ let routes = function(server) {
    *         "options": {
    *           "allowTransfers": true
    *         }
+   *       },
+   *       {
+   *         "type": 3,
+   *         "sequence": 3,
+   *         "agency": {
+   *           "id": "mta",
+   *           "name": "Metropolitan Transportation Authority"
+   *         },
+   *         "division": {
+   *           "code": "subway",
+   *           "name": "Subway"
+   *         },
+   *         "line": {
+   *           "code": "123",
+   *           "name": "123"
+   *         },
+   *         options: {}
    *       },
    *       {
    *         "...": "..."

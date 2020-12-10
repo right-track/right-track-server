@@ -22,7 +22,7 @@
     "password-validator": "^4.0.0",
     "restify": "^6.3.4",
     "restify-errors": "^5.0.0",
-    "right-track-core": "^1.5.3",
+    "right-track-core": "^1.7.0",
     "right-track-db-sqlite3": "^1.2.4",
     "uuid": "^3.1.0"
   },

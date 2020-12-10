@@ -55,6 +55,31 @@ function buildFavorite(favorite) {
     }
   }
 
+  // Favorite Transit
+  if ( favorite.type === Favorite.FAVORITE_TYPE_TRANSIT ) {
+    let rtn = {
+      type: favorite.type,
+      sequence: favorite.sequence,
+      agency: {
+        id: favorite.parameters.agency.id,
+        name: favorite.parameters.agency.name
+      }
+    }
+    if ( favorite.parameters.division ) {
+      rtn.division = {
+        code: favorite.parameters.division.code,
+        name: favorite.parameters.division.name
+      }
+    }
+    if ( favorite.parameters.line ) {
+      rtn.line = {
+        code: favorite.parameters.line.code,
+        name: favorite.parameters.line.name
+      }
+    }
+    return rtn;
+  }
+
 }
 
 
@@ -232,6 +257,29 @@ function addFavs(req, res, next) {
               parsed = false;
             }
 
+          }
+
+          // Favorite Transit
+          else if ( type === Favorite.FAVORITE_TYPE_TRANSIT ) {
+
+            // Check for agency properties
+            if ( favorite.agency !== undefined ) {
+
+              // Check for options
+              let options = {};
+              if ( favorite.options !== undefined ) {
+                options = favorite.options;
+              }
+
+              // Add Transit to list
+              add.push(Favorite.createTransit(favorite.agency, favorite.division, favorite.line, sequence, options));
+
+            }
+
+            // No agency provided
+            else {
+              parsed = false;
+            }
 
           }
 
