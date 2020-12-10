@@ -1095,6 +1095,11 @@ define({ "api": [
         "title": "Example Favorite Trip",
         "content": "{\n  \"type\": 2,\n  \"sequence\": 2,\n  \"origin\": {\n    \"id\": \"1\",\n    \"name\": \"Grand Central Terminal\"\n  },\n  \"destination\": {\n    \"id\": \"110\",\n    \"name\": \"Larchmont\"\n  },\n  \"options\": {\n    \"allowTransfers\": true\n  }\n}",
         "type": "json"
+      },
+      {
+        "title": "Example Favorite Transit",
+        "content": "{\n  \"type\": 3,\n  \"sequence\": 3,\n  \"agency\": {\n    \"id\": \"mta\",\n    \"name\": \"Metropolitan Transportation Authority\"\n  },\n  \"division\": {\n    \"code\": \"subway\",\n    \"name\": \"Subway\"\n  },\n  \"line\": {\n    \"code\": \"123\",\n    \"name\": \"123\"\n  },\n  options: {}\n}",
+        "type": "json"
       }
     ],
     "permission": [
@@ -1244,7 +1249,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Example Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"response\": {\n    \"agency\": \"mnr\",\n    \"lastModified\": \"Mon Sep 25 2017 18:55:41 GMT-0400 (EDT)\",\n    \"favorites\": [\n      {\n        \"type\": 1,\n        \"sequence\": 1,\n        \"stop\": {\n          \"id\": \"56\",\n          \"name\": \"Fordham\"\n        },\n        \"options\": {}\n      },\n      {\n        \"type\": 2,\n        \"sequence\": 2,\n        \"origin\": {\n          \"id\": \"1\",\n          \"name\": \"Grand Central Terminal\"\n        },\n        \"destination\": {\n          \"id\": \"110\",\n          \"name\": \"Larchmont\"\n        },\n        \"options\": {\n          \"allowTransfers\": true\n        }\n      },\n      {\n        \"...\": \"...\"\n      }\n    ]\n  }\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"response\": {\n    \"agency\": \"mnr\",\n    \"lastModified\": \"Mon Sep 25 2017 18:55:41 GMT-0400 (EDT)\",\n    \"favorites\": [\n      {\n        \"type\": 1,\n        \"sequence\": 1,\n        \"stop\": {\n          \"id\": \"56\",\n          \"name\": \"Fordham\"\n        },\n        \"options\": {}\n      },\n      {\n        \"type\": 2,\n        \"sequence\": 2,\n        \"origin\": {\n          \"id\": \"1\",\n          \"name\": \"Grand Central Terminal\"\n        },\n        \"destination\": {\n          \"id\": \"110\",\n          \"name\": \"Larchmont\"\n        },\n        \"options\": {\n          \"allowTransfers\": true\n        }\n      },\n      {\n        \"type\": 3,\n        \"sequence\": 3,\n        \"agency\": {\n          \"id\": \"mta\",\n          \"name\": \"Metropolitan Transportation Authority\"\n        },\n        \"division\": {\n          \"code\": \"subway\",\n          \"name\": \"Subway\"\n        },\n        \"line\": {\n          \"code\": \"123\",\n          \"name\": \"123\"\n        },\n        options: {}\n      },\n      {\n        \"...\": \"...\"\n      }\n    ]\n  }\n}",
           "type": "json"
         }
       ]
@@ -1379,7 +1384,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Example Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"response\": {\n    \"agency\": \"mnr\",\n    \"lastModified\": \"Mon Sep 25 2017 18:55:41 GMT-0400 (EDT)\",\n    \"favorites\": [\n      {\n        \"type\": 1,\n        \"sequence\": 1,\n        \"stop\": {\n          \"id\": \"1\",\n          \"name\": \"Grand Central Terminal\"\n        },\n        \"options\": {}\n      },\n      {\n        \"type\": 2,\n        \"sequence\": 2,\n        \"origin\": {\n          \"id\": \"1\",\n          \"name\": \"Grand Central Terminal\"\n        },\n        \"destination\": {\n          \"id\": \"110\",\n          \"name\": \"Larchmont\"\n        },\n          \"options\": {\n          \"allowTransfers\": true\n        }\n      },\n      {\n        \"...\": \"...\"\n      }\n    ]\n  }\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"response\": {\n    \"agency\": \"mnr\",\n    \"lastModified\": \"Mon Sep 25 2017 18:55:41 GMT-0400 (EDT)\",\n    \"favorites\": [\n      {\n        \"type\": 1,\n        \"sequence\": 1,\n        \"stop\": {\n          \"id\": \"1\",\n          \"name\": \"Grand Central Terminal\"\n        },\n        \"options\": {}\n      },\n      {\n        \"type\": 2,\n        \"sequence\": 2,\n        \"origin\": {\n          \"id\": \"1\",\n          \"name\": \"Grand Central Terminal\"\n        },\n        \"destination\": {\n          \"id\": \"110\",\n          \"name\": \"Larchmont\"\n        },\n          \"options\": {\n          \"allowTransfers\": true\n        }\n      },\n      {\n        \"type\": 3,\n        \"sequence\": 3,\n        \"agency\": {\n          \"id\": \"mta\",\n          \"name\": \"Metropolitan Transportation Authority\"\n        },\n        \"division\": {\n          \"code\": \"subway\",\n          \"name\": \"Subway\"\n        },\n        \"line\": {\n          \"code\": \"123\",\n          \"name\": \"123\"\n        },\n        options: {}\n      },\n      {\n        \"...\": \"...\"\n      }\n    ]\n  }\n}",
           "type": "json"
         }
       ]
