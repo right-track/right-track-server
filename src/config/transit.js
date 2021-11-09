@@ -12,16 +12,20 @@ let TRANSIT = [];
 function parseTransitAgencies(transit) {
 
   // Parse transit agency declarations
-  if ( transit !== undefined ) {
+  if ( transit ) {
 
     // Load Transit Agency modules
     for ( let i = 0; i < transit.length; i++ ) {
       let req = transit[i].require;
+      let transitAgencyConfigPath = transit[i].config;
 
       console.log("==> Loading Transit Agency Module (" + req + ")...");
 
       // Load the Transit Agency
       let ta = require(req);
+      if ( transitAgencyConfigPath ) {
+        ta.readConfig(transitAgencyConfigPath);
+      }
 
       // Check if Transit Agency is already loaded
       if ( isTransitAgencySupported(ta.id) ) {

@@ -15,7 +15,7 @@ let AGENCIES = [];
 function parseAgencyConfigs(agencies) {
 
   // Parse agency declarations
-  if ( agencies !== undefined ) {
+  if ( agencies ) {
 
     // Load Agency Modules
     for ( let i = 0; i < agencies.length; i++ ) {
@@ -26,7 +26,7 @@ function parseAgencyConfigs(agencies) {
 
       // Load agency and read config file
       let agency = require(req);
-      if ( agencyConfigPath !== undefined ) {
+      if ( agencyConfigPath ) {
         agency.readConfig(agencyConfigPath);
       }
 
