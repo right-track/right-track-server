@@ -7,6 +7,7 @@ const Response = require('../../response');
 const c = require("../../config/");
 
 const DateTime = require('right-track-core').utils.DateTime;
+const { doubleclicksearch } = require('googleapis/build/src/apis/doubleclicksearch');
 
 
 /**
@@ -24,8 +25,8 @@ function buildTransitAgency(code) {
 
   // Set Icon URL
   let icon = undefined;
-  if ( ta.iconPath ) {
-    if ( fs.existsSync(ta.iconPath) ) {
+  if ( ta.config.icon ) {
+    if ( fs.existsSync(ta.config.icon) ) {
       icon = '/transit/' + ta.id + '/icon';
     }
   }
@@ -91,34 +92,46 @@ function buildTransitFeed(ta, feed) {
 
   // PARSE DIVISIONS
   for ( let i = 0; i < rtn.divisions.length; i++ ) {
-
-    // Set Icon Path
-    if ( rtn.divisions[i].iconPath !== undefined ) {
-      if ( fs.existsSync(rtn.divisions[i].iconPath) ) {
-        rtn.divisions[i].icon = "/transit/" + ta + "/" + rtn.divisions[i].code + "/icon";
-        rtn.divisions[i].iconPath = undefined;
-      }
-    }
-
-    // Set Event Count
-    rtn.divisions[i].eventCount = rtn.divisions[i].getEventCount();
-
-
-    // PARSE LINES
-    for ( let j = 0; j < rtn.divisions[i].lines.length; j++ ) {
-
-      // Set Event Count
-      rtn.divisions[i].lines[j].eventCount = rtn.divisions[i].lines[j].getEventCount();
-
-    }
-
+    rtn.divisions[i] = _parseDivision(ta, rtn.divisions[i]);
   }
 
   // Return the Model
   return rtn;
 
-}
+  /**
+   * Parse the Transit Division to set its:
+   * - icon: API URL for fetching division icon
+   * - eventCount: number of events in division or its child divisions
+   * Recursively parse each of the child divisions
+   * @param {String} ta Transit Agency Code
+   * @param {TransitDivision} division Division to parse
+   * @param {String[]} [parents] Array of parent division codes
+   * @returns {TransitDivision} parsed Transit Division
+   */
+  function _parseDivision(ta, division, parents=[]) {
+    if ( division.iconPath ) {
+      if ( fs.existsSync(division.iconPath) ) {
+        let parents_path = "";
+        if ( parents && parents.length > 0 ) {
+          parents_path = parents.join('/') + '/';
+        }
+        division.icon = "/transit/" + ta + "/" + parents_path + division.code + "/icon";
+      }
+      division.iconPath = undefined;
+    }
+    division.eventCount = division.getEventCount();
 
+    if ( division.divisions ) {
+      let new_parents = parents.splice();
+      new_parents.push(division.code);
+      for ( let i = 0; i < division.divisions.length; i++ ) {
+        division.divisions[i] = _parseDivision(ta, division.divisions[i], new_parents);
+      }
+    }
+
+    return division;
+  }
+}
 
 /**
  * Build a response that returns the specified icon image
@@ -271,7 +284,7 @@ function getTransitAgencyIcon(req, res, next) {
   let ta = c.transit.getTransitAgency(code);
 
   // Send the Icon file
-  buildIcon(ta.iconPath, res, next);
+  buildIcon(ta.config.icon, res, next);
 
 }
 
@@ -284,8 +297,8 @@ function getTransitAgencyIcon(req, res, next) {
 function getTransitDivisionIcon(req, res, next) {
 
   // Get the Transit Agency and Division Codes
-  let agency = req.params.transitAgency;
-  let division = req.params.transitDivision;
+  let agency = req.params[0];
+  let divisions = req.params[1].split('/');
 
   // Check if Transit Agency is Supported
   if ( !c.transit.isTransitAgencySupported(agency) ) {
@@ -301,9 +314,46 @@ function getTransitDivisionIcon(req, res, next) {
   // Get the Transit Agency class
   let ta = c.transit.getTransitAgency(agency);
 
-  // Send the Division Icon file
-  buildIcon(ta.getDivisionIconPath(division), res, next);
+  // Get the requsted Transit Division
+  ta.getDivision(divisions, function(err, division) {
+    
+    // Error: could not get Transit Division from the Transit Feed
+    if ( err ) {
+      let error = Response.buildError(
+        5004,
+        'Could not get Transit Division',
+        "The Transit Division could not be fetched via the Transit Feed [" + err + "]."
+      );
+      res.send(error.code, error.response);
+      return next(false);
+    }
 
+    // Error: No Division found
+    if ( !division ) {
+      let error = Response.buildError(
+        4044,
+        'Unsupported Transit Agency Division',
+        "The transit agency division code " + divisions.join('/') + " does not correspond to a supported transit agency division."
+      );
+      res.send(error.code, error.response);
+      return next(false);
+    }
+
+    // Error: Division does not have an icon
+    if ( !division.iconPath || division.iconPath === '' ) {
+      let error = Response.buildError(
+        4049,
+        'Transit Division Icon Not Found',
+        "The Transit Division does not have an icon"
+      );
+      res.send(error.code, error.response);
+      return next(false);
+    }
+
+    // Send the Division Icon
+    buildIcon(division.iconPath, res, next);    
+
+  });
 }
 
 

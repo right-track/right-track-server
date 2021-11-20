@@ -124,14 +124,14 @@ let routes = function(server) {
 
 
   /**
-   * @api {GET} /transit/:transitAgency/:transitDivision/icon Get Transit Division Icon
+   * @api {GET} /transit/:transitAgency/:transitDivision(s)/icon Get Transit Division Icon
    * @apiName getTransitDivisionIcon
    * @apiGroup Transit Feeds
    * @apiDescription Get the icon for the specified transit division.
    * @apiPermission public
    *
    * @apiParam (Path) {string} transitAgency RT Transit Agency Code
-   * @apiParam (Path) {string} transitDivision RT Transit Division Code
+   * @apiParam (Path) {string} transitDivision(s) RT Transit Division Code(s)
    *
    * @apiError (5xx Error Codes) 500 Internal Server Error
    * @apiError (5xx Error Codes) 5001 API Server Timeout
@@ -140,7 +140,7 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4049 Transit Division Icon Not Found
    *
    */
-  server.get("/transit/:transitAgency/:transitDivision/icon", helper.getTransitDivisionIcon);
+  server.get(/transit\/([^\/]+)\/(.*)\/icon/, helper.getTransitDivisionIcon);
 
 };
 
