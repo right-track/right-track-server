@@ -63,19 +63,12 @@ function buildFavorite(favorite) {
       agency: {
         id: favorite.parameters.agency.id,
         name: favorite.parameters.agency.name
-      }
-    }
-    if ( favorite.parameters.division ) {
-      rtn.division = {
+      },
+      division: {
         code: favorite.parameters.division.code,
         name: favorite.parameters.division.name
-      }
-    }
-    if ( favorite.parameters.line ) {
-      rtn.line = {
-        code: favorite.parameters.line.code,
-        name: favorite.parameters.line.name
-      }
+      },
+      divisionCodes: favorite.parameters.divisionCodes
     }
     return rtn;
   }
@@ -272,7 +265,7 @@ function addFavs(req, res, next) {
               }
 
               // Add Transit to list
-              add.push(Favorite.createTransit(favorite.agency, favorite.division, favorite.line, sequence, options));
+              add.push(Favorite.createTransit(favorite.agency, favorite.division, favorite.divisionCodes, sequence, options));
 
             }
 
