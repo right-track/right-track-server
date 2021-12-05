@@ -7,7 +7,6 @@ const Response = require('../../response');
 const c = require("../../config/");
 
 const DateTime = require('right-track-core').utils.DateTime;
-const { doubleclicksearch } = require('googleapis/build/src/apis/doubleclicksearch');
 
 
 /**
@@ -117,7 +116,6 @@ function buildTransitFeed(ta, feed) {
         }
         division.icon = "/transit/" + ta + "/" + parents_path + division.code + "/icon";
       }
-      division.iconPath = undefined;
     }
     division.eventCount = division.getEventCount();
 
