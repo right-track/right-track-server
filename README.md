@@ -1,7 +1,6 @@
 Right Track API Server
 ========================
 
-**node module:** [right-track-server](https://www.npmjs.com/package/right-track-server)  
 **GitHub repo:** [right-track/right-track-server](https://github.com/right-track/right-track-server)
 
 --- 
@@ -70,7 +69,7 @@ or remotely with the proper network and access settings.
 Install the Right Track API Server globally via `npm`:
 
 ```shell
-npm install -g right-track-server
+npm install -g right-track/right-track-server
 ``` 
 
 This will install the executable `right-track-server` into your `$PATH`.
@@ -80,8 +79,8 @@ This will install the executable `right-track-server` into your `$PATH`.
 Use `npm` to install one or more Right Track Agencies:
 
 ```shell
-npm install -g right-track-agency-mnr
-npm install -g right-track-agency-lirr
+npm install -g right-track/right-track-agency-mnr
+npm install -g right-track/right-track-agency-lirr
 ```
 
 It is recommended to install these globally or as dependencies in the 
