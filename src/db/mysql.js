@@ -28,6 +28,8 @@ function connect(callback) {
   pool = mysql.createPool({
     connectionLimit: 20,
     host: config.database.host,
+    port: config.database.port,
+    socketPath: config.database.socketPath,
     user: config.database.username,
     password: config.database.password,
     database: config.database.name
