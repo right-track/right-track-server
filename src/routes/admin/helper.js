@@ -23,14 +23,14 @@ function buildState(callback) {
   // Get User Stats
   let sql = "SELECT COUNT(id) AS user_count, MAX(user_modified) AS last_user_modified FROM users;";
   mysql.get(sql, function(err, stats) {
-    let user_count = stats && stats.user_count ? stats.user_count : "unknown";
-    let last_user_modified = stats && stats.last_user_modified ? stats.last_user_modified : "unknown";
+    let user_count = stats && stats.user_count ? stats.user_count : 0;
+    let last_user_modified = stats && stats.last_user_modified ? stats.last_user_modified : 0;
 
     // Get Session Stats
     sql = "SELECT COUNT(*) AS session_count, MAX(accessed) AS last_session_accessed FROM sessions WHERE accessed >= NOW() - INTERVAL 15 MINUTE;";
     mysql.get(sql, function(err, stats) {
-      let session_count = stats && stats.session_count ? stats.session_count : "unknown";
-      let last_session_accessed = stats && stats.last_session_accessed ? stats.last_session_accessed : "unknown";
+      let session_count = stats && stats.session_count ? stats.session_count : 0;
+      let last_session_accessed = stats && stats.last_session_accessed ? stats.last_session_accessed : 0;
 
       // Build state model
       let state = {
@@ -101,7 +101,7 @@ rt_sessions_count ${state.stats.sessions.count}
 # HELP rt_sessions_last_accessed The timestamp of when the last session was accessed
 # TYPE rt_sessions_last_accessed count
 rt_sessions_last_accessed ${new Date(state.stats.sessions.lastAccessed).getTime()}
-  `;
+`;
 }
 
 
