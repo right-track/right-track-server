@@ -6,6 +6,7 @@ const auth = require('../../handlers/authorization.js');
 const c = require('../../config');
 const Response = require('../../response');
 const mysql = require('../../db/mysql.js');
+const buildAgencies = require('../about/helper.js').buildAgencies;
 
 // ==== BUILD MODELS ==== //
 
@@ -16,6 +17,7 @@ const mysql = require('../../db/mysql.js');
  */
 function buildState(callback) {
 
+  // Get Memory Stats
   let mem = process.memoryUsage();
   let mem_mb = mem.rss / 1024 / 1024;
   let mem_percent = (mem.rss / os.totalmem) * 100;
@@ -70,7 +72,26 @@ function buildState(callback) {
         }
       }
 
-      return callback(state);
+      // Add agency information
+      buildAgencies(false, function(err, agencyModels) {
+        let agencies = [];
+        for ( let i = 0; i < agencyModels.length; i++ ) {
+          let am = agencyModels[i];
+          let a = {
+            id: am.id,
+            name: am.name,
+            database: {
+              version: am.database.version,
+              published: am.database.publish,
+              compiled: am.database.compile
+            }
+          }
+          agencies.push(a);
+        }
+        state.agencies = agencies;
+        return callback(state);
+      });
+
     });
   });
 
@@ -83,7 +104,9 @@ function buildState(callback) {
  * @returns {string} Prometheus text metrics
  */
 function buildMetrics(state) {
-  return `# HELP rt_process_memory The memory used in bytes by the RT API Server process
+
+  // Build server metrics
+  let metrics = `# HELP rt_process_memory The memory used in bytes by the RT API Server process
 # TYPE rt_process_memory gauge
 rt_process_memory ${state.process.memory.bytes.rss}
 # HELP rt_process_uptime The amount of time in seconds the RT API Server has been running
@@ -93,15 +116,32 @@ rt_process_uptime ${state.process.uptime.seconds}
 # TYPE rt_users_count gauge
 rt_users_count ${state.stats.users.count}
 # HELP rt_users_last_modified The timestamp of when the last user was modified
-# TYPE rt_users_last_modified count
+# TYPE rt_users_last_modified counter
 rt_users_last_modified ${new Date(state.stats.users.lastModified).getTime()}
 # HELP rt_sessions_count The number of active sessions in the last 15 minutes
 # TYPE rt_sessions_count gauge
 rt_sessions_count ${state.stats.sessions.count}
 # HELP rt_sessions_last_accessed The timestamp of when the last session was accessed
-# TYPE rt_sessions_last_accessed count
+# TYPE rt_sessions_last_accessed counter
 rt_sessions_last_accessed ${new Date(state.stats.sessions.lastAccessed).getTime()}
 `;
+
+  // Add agency metrics
+  for ( let i = 0; i < state.agencies.length; i++ ) {
+    let a = state.agencies[i];
+    metrics += `# HELP rt_db_version The version of the agency database used by the server
+# TYPE rt_db_version gauge
+rt_db_version{agency=${a.id}} ${a.database.version}
+# HELP rt_db_published The date when the GTFS was published for the agency database used by the server
+# TYPE rt_db_published gauge
+rt_db_published{agency=${a.id}} ${a.database.published}
+# HELP rt_db_compiled The date when the agency database used by the server was compiled
+# TYPE rt_db_compiled gauge
+rt_db_compiled{agency=${a.id}} ${a.database.compiled}
+`
+  }
+
+  return metrics;
 }
 
 

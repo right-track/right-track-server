@@ -433,5 +433,6 @@ module.exports = {
   getAboutAgencies: getAboutAgencies,
   getAboutAgency: getAboutAgency,
   getAboutAgencyIcon: getAboutAgencyIcon,
-  getAboutAgencyLinks: getAboutAgencyLinks
+  getAboutAgencyLinks: getAboutAgencyLinks,
+  buildAgencies: buildAgencies
 };
