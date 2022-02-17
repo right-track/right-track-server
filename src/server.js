@@ -102,7 +102,7 @@ function _setMiddleware() {
 
   // SET HANDLER CHAIN
   SERVER.use(restify.plugins.queryParser());
-  SERVER.use(logger);
+  SERVER.pre(logger);
   SERVER.use(headers);
   SERVER.use(agency);
   SERVER.use(auth.getAuthAccess);
