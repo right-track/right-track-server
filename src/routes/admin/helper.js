@@ -131,13 +131,13 @@ rt_sessions_last_accessed ${new Date(state.stats.sessions.lastAccessed).getTime(
     let a = state.agencies[i];
     metrics += `# HELP rt_db_version The version of the agency database used by the server
 # TYPE rt_db_version gauge
-rt_db_version{agency=${a.id}} ${a.database.version}
+rt_db_version{agency="${a.id}"} ${a.database.version}
 # HELP rt_db_published The date when the GTFS was published for the agency database used by the server
 # TYPE rt_db_published gauge
-rt_db_published{agency=${a.id}} ${a.database.published}
+rt_db_published{agency="${a.id}"} ${a.database.published}
 # HELP rt_db_compiled The date when the agency database used by the server was compiled
 # TYPE rt_db_compiled gauge
-rt_db_compiled{agency=${a.id}} ${a.database.compiled}
+rt_db_compiled{agency="${a.id}"} ${a.database.compiled}
 `
   }
 
