@@ -87,6 +87,9 @@ let routes = function(server) {
   server.get("/admin/state", helper.getState);
 
 
+  server.get("/metrics", helper.getMetrics);
+
+
   /**
    * @api {GET} /admin/clean Clean Server
    * @apiName cleanServer
