@@ -60,15 +60,11 @@ function buildState(callback) {
             seconds: process.uptime()
           }
         },
-        stats: {
-          users: {
-            count: user_count,
-            lastModified: last_user_modified
-          },
-          sessions: {
-            count: session_count,
-            lastAccessed: last_session_accessed
-          }
+        users: {
+          count: user_count,
+          lastModified: last_user_modified,
+          active: session_count,
+          lastAccessed: last_session_accessed
         }
       }
 
@@ -112,18 +108,21 @@ rt_process_memory ${state.process.memory.bytes.rss}
 # HELP rt_process_uptime The amount of time in seconds the RT API Server has been running
 # TYPE rt_process_uptime counter
 rt_process_uptime ${state.process.uptime.seconds}
-# HELP rt_users_count The number of registered users
+`;
+
+  // Add user metrics
+  metrics += `# HELP rt_users_count The number of registered users
 # TYPE rt_users_count gauge
-rt_users_count ${state.stats.users.count}
+rt_users_count ${state.users.count}
 # HELP rt_users_last_modified The timestamp of when the last user was modified
 # TYPE rt_users_last_modified counter
-rt_users_last_modified ${new Date(state.stats.users.lastModified).getTime()}
-# HELP rt_sessions_count The number of active sessions in the last 15 minutes
-# TYPE rt_sessions_count gauge
-rt_sessions_count ${state.stats.sessions.count}
-# HELP rt_sessions_last_accessed The timestamp of when the last session was accessed
-# TYPE rt_sessions_last_accessed counter
-rt_sessions_last_accessed ${new Date(state.stats.sessions.lastAccessed).getTime()}
+rt_users_last_modified ${new Date(state.users.lastModified).getTime()}
+# HELP rt_active_users_count The number of active user sessions in the last 15 minutes
+# TYPE rt_active_users_count gauge
+rt_active_users_count ${state.users.active}
+# HELP rt_users_last_accessed The timestamp of when the last user session was accessed
+# TYPE rt_users_last_accessed counter
+rt_users_last_accessed ${new Date(state.users.lastAccessed).getTime()}
 `;
 
   // Add agency metrics
@@ -138,7 +137,7 @@ rt_db_published{agency="${a.id}"} ${a.database.published}
 # HELP rt_db_compiled The date when the agency database used by the server was compiled
 # TYPE rt_db_compiled gauge
 rt_db_compiled{agency="${a.id}"} ${a.database.compiled}
-`
+`;
   }
 
   return metrics;
