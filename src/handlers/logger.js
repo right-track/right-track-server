@@ -2,7 +2,7 @@
 
 const morgan = require('morgan');
 
-morgan.token('auth', function(req, res) {
+morgan.token('auth', function(req) {
   let auth = req.headers['authorization'];
   if ( auth && auth !== '' ) {
     auth = auth.replace('Token ', '');
@@ -11,12 +11,18 @@ morgan.token('auth', function(req, res) {
   else {
     return '-';
   }
-})
+});
+
+morgan.token('resp-time', function(req, res) {
+  return this['response-time'](req, res) + 'ms';
+});
 
 module.exports = morgan(
-  ':remote-addr - :remote-user [:date[iso]] ":method :url HTTP/:http-version" :status :res[content-length] {:auth}', 
+  ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :resp-time {:auth}', 
   {
     skip: function(req) {
-      return req.getPath().startsWith("/doc") && req.getPath() !== "/doc/index.html"
+      let p = req.getPath();
+      return (p.startsWith("/doc") && p !== "/doc/index.html") || p === '/favicon.ico';
+    }
   }
-});
+);

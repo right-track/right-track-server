@@ -6,7 +6,7 @@ const c = require("../../config/");
 const Response = require("../../response");
 const clients = require("../../db/clients");
 const users = require("../../db/users");
-const email = require('../utils/email.js');
+const email = require('../../utils/email.js');
 
 
 // ==== HELPER FUNCTIONS ==== //

@@ -7,6 +7,7 @@ const c = require('../../config');
 const Response = require('../../response');
 const mysql = require('../../db/mysql.js');
 const buildAgencies = require('../about/helper.js').buildAgencies;
+const metrics = require('../../utils/metrics.js');
 
 // ==== BUILD MODELS ==== //
 
@@ -65,6 +66,10 @@ function buildState(callback) {
           lastModified: last_user_modified,
           active: session_count,
           lastAccessed: last_session_accessed
+        },
+        requests: {
+          count: metrics.get.requests(),
+          launches: metrics.get.launches()
         }
       }
 
@@ -101,7 +106,7 @@ function buildState(callback) {
  */
 function buildMetrics(state) {
 
-  // Build server metrics
+  // Add server metrics
   let metrics = `# HELP rt_process_memory The memory used in bytes by the RT API Server process
 # TYPE rt_process_memory gauge
 rt_process_memory ${state.process.memory.bytes.rss}
@@ -125,18 +130,28 @@ rt_active_users_count ${state.users.active}
 rt_users_last_accessed ${new Date(state.users.lastAccessed).getTime()}
 `;
 
-  // Add agency metrics
+  // Add request metrics
+  metrics += `# HELP rt_requests The number of requests since the last scrape
+# TYPE rt_requests gauge
+rt_requests ${state.requests.count}
+`;
+
+  // Add launch metrics, by agency
+  metrics += `# HELP rt_launches The number of app sessions since the last scrape
+# TYPE rt_launches gauge
+`;
+  for ( const agency in state.requests.launches ) {
+    metrics += `rt_launches{agency="${agency}"} ${state.requests.launches[agency]}
+`;
+  }
+
+  // Add database version, by agency
+  metrics += `# HELP rt_db_version The version of the agency database used by the server
+# TYPE rt_db_version gauge
+`;
   for ( let i = 0; i < state.agencies.length; i++ ) {
     let a = state.agencies[i];
-    metrics += `# HELP rt_db_version The version of the agency database used by the server
-# TYPE rt_db_version gauge
-rt_db_version{agency="${a.id}"} ${a.database.version}
-# HELP rt_db_published The date when the GTFS was published for the agency database used by the server
-# TYPE rt_db_published gauge
-rt_db_published{agency="${a.id}"} ${a.database.published}
-# HELP rt_db_compiled The date when the agency database used by the server was compiled
-# TYPE rt_db_compiled gauge
-rt_db_compiled{agency="${a.id}"} ${a.database.compiled}
+    metrics += `rt_db_version{agency="${a.id}"} ${a.database.version}
 `;
   }
 
@@ -259,22 +274,27 @@ function getState(req, res, next) {
  */
 function getMetrics(req, res, next) {
 
-  // Build Server State
-  buildState(function(state) {
+  // Check for API Access
+  if ( auth.checkAuthAccess("admin", req, res, next) ) {
 
-    // Build the Prometheus Metrics
-    let metrics = buildMetrics(state);
+    // Build Server State
+    buildState(function(state) {
 
-    // Send Response
-    res.writeHead(200, {
-      'Content-Length': Buffer.byteLength(metrics),
-      'Content-Type': 'text/plain'
+      // Build the Prometheus Metrics
+      let metrics = buildMetrics(state);
+
+      // Send Response
+      res.writeHead(200, {
+        'Content-Length': Buffer.byteLength(metrics),
+        'Content-Type': 'text/plain'
+      });
+      res.write(metrics);
+      res.end();
+      return next();
+
     });
-    res.write(metrics);
-    res.end();
-    return next();
 
-  });
+  }
 
 }
 

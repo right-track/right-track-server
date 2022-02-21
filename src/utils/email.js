@@ -1,9 +1,9 @@
 'use strict';
 
 const nodemailer = require('nodemailer');
-const c = require('../../config/server.js');
-const users = require('../../db/users.js');
-const tokens = require('../../db/tokens.js');
+const c = require('../config/server.js');
+const users = require('../db/users.js');
+const tokens = require('../db/tokens.js');
 
 
 

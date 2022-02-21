@@ -20,6 +20,7 @@ const auth = require('./handlers/authorization.js');
 const authentication = require('./handlers/authentication.js');
 const timeout = require('./handlers/timeout.js');
 const index = require('./handlers/index.js');
+const metrics = require('./handlers/metrics.js');
 
 
 // Restify Server Instance
@@ -101,6 +102,7 @@ function _setListeners() {
 function _setMiddleware() {
 
   // SET HANDLER CHAIN
+  SERVER.pre(cors);
   SERVER.use(restify.plugins.queryParser());
   SERVER.pre(logger);
   SERVER.use(headers);
@@ -115,6 +117,7 @@ function _setMiddleware() {
     return next();
   });
   SERVER.use(restify.plugins.bodyParser());
+  SERVER.use(metrics);
 
 }
 
@@ -144,13 +147,6 @@ function _serveStatic() {
  * @private
  */
 function _serveRoutes() {
-
-  // CORS
-  SERVER.opts('/\.*/', cors, function(req, res, next) {
-    return next();
-  });
-
-  // LOAD ROUTES
   require('./routes/about/routes.js')(SERVER);
   require('./routes/admin/routes.js')(SERVER);
   require('./routes/favorites/routes.js')(SERVER);
@@ -166,7 +162,6 @@ function _serveRoutes() {
   require('./routes/updates/apps/routes.js')(SERVER);
   require('./routes/transit/routes.js')(SERVER);
   require('./routes/feedback/routes.js')(SERVER);
-
 }
 
 

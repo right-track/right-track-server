@@ -11,7 +11,7 @@ const users = require('../../db/users.js');
 const sessions = require('../../db/sessions.js');
 const tokens = require('../../db/tokens.js');
 const authHelper = require('../auth/helper.js');
-const email = require('../utils/email.js');
+const email = require('../../utils/email.js');
 
 
 // ==== BUILD MODELS ==== //

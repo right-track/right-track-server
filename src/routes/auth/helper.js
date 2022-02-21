@@ -8,7 +8,7 @@ const users = require('../../db/users.js');
 const sessions = require('../../db/sessions.js');
 const tokens = require('../../db/tokens.js');
 const Response = require('../../response');
-const email = require('../utils/email.js');
+const email = require('../../utils/email.js');
 const validators = require('../users/validators.js');
 
 

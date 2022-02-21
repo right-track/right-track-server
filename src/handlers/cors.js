@@ -31,12 +31,18 @@ function setCORSResponse(req, res, next) {
   res.setHeader('Access-Control-Allow-Headers', config.cors.headers);
   res.setHeader('Access-Control-Max-Age', config.cors.maxAge)
   
-  // Set Empty Response
-  res.setHeader('Content-Type', 'text/plain');
-  res.setHeader('Content-Length', 0);
-  res.send(204);
-  
-  return next();
+  // Set Empty Response for OPTIONS request
+  if ( req.method === 'OPTIONS' ) {
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Length', 0);
+    res.send(204);
+    return next(false);
+  }
+
+  // Keep processing all other methods
+  else {
+    return next();
+  }
 }
 
 
