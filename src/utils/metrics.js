@@ -32,9 +32,7 @@ function putRequest() {
  * @returns {int} The number of requests
  */
 function getRequests() {
-  let rtn = METRICS.requests;
-  METRICS.requests = 0;
-  return rtn;
+  return METRICS.requests;
 }
 
 
@@ -56,11 +54,7 @@ function putLaunch(agency) {
  * @returns {int} The number of launches
  */
 function getLaunches() {
-  let rtn = { ...METRICS.launches };
-  for ( let i = 0; i < agencyCodes.length; i++ ) {
-    METRICS.launches[agencyCodes[i]] = 0;
-  }
-  return rtn;
+  return METRICS.launches;
 }
 
 

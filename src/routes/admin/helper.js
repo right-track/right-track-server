@@ -120,25 +120,25 @@ rt_process_uptime ${state.process.uptime.seconds}
 # TYPE rt_users_count gauge
 rt_users_count ${state.users.count}
 # HELP rt_users_last_modified The timestamp of when the last user was modified
-# TYPE rt_users_last_modified counter
+# TYPE rt_users_last_modified gauge
 rt_users_last_modified ${new Date(state.users.lastModified).getTime()}
 # HELP rt_active_users_count The number of active user sessions in the last 15 minutes
 # TYPE rt_active_users_count gauge
 rt_active_users_count ${state.users.active}
 # HELP rt_users_last_accessed The timestamp of when the last user session was accessed
-# TYPE rt_users_last_accessed counter
+# TYPE rt_users_last_accessed gauge
 rt_users_last_accessed ${new Date(state.users.lastAccessed).getTime()}
 `;
 
   // Add request metrics
-  metrics += `# HELP rt_requests The number of requests since the last scrape
-# TYPE rt_requests gauge
+  metrics += `# HELP rt_requests The number of requests to the API Server
+# TYPE rt_requests counter
 rt_requests ${state.requests.count}
 `;
 
   // Add launch metrics, by agency
-  metrics += `# HELP rt_launches The number of app sessions since the last scrape
-# TYPE rt_launches gauge
+  metrics += `# HELP rt_launches The number of app sessions by agency
+# TYPE rt_launches counter
 `;
   for ( const agency in state.requests.launches ) {
     metrics += `rt_launches{agency="${agency}"} ${state.requests.launches[agency]}
