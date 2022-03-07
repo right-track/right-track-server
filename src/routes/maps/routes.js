@@ -262,6 +262,29 @@ let routes = function(server) {
    * @apiError (404 Error Codes) 4042 Stop Not Found
    * 
    * @apiSuccessExample {json} Example Response
+   *   HTTP/1.1 200 OK
+   * {
+   *   "status": "success",
+   *   "response": {
+   *     "type": "Feature",
+   *     "geometry": {
+   *       "type": "Point",
+   *       "coordinates": [
+   *         -73.882394,
+   *         41.189903
+   *       ]
+   *     },
+   *     "properties": {
+   *       "id": "33",
+   *       "name": "Croton-Harmon",
+   *       "lat": 41.189903,
+   *       "lon": -73.882394,
+   *       "url": "http://as0.mta.info/mnr/stations/station_detail.cfm?key=38",
+   *       "wheelchairBoarding": 1,
+   *       "hasFeed": true
+   *     }
+   *   }
+   * }
    */
   server.get("/maps/stops/:agency/:id", helper.getStopById);
 
