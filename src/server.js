@@ -153,6 +153,7 @@ function _serveRoutes() {
   require('./routes/routes/routes.js')(SERVER);
   require('./routes/stops/routes.js')(SERVER);
   require('./routes/trips/routes.js')(SERVER);
+  require('./routes/shapes/routes.js')(SERVER);
   require('./routes/auth/routes.js')(SERVER);
   require('./routes/users/routes.js')(SERVER);
   require('./routes/stations/routes.js')(SERVER);
