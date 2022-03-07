@@ -5,6 +5,7 @@ const auth = require('../../handlers/authorization.js');
 const agencies = require('../../config/agencies.js');
 const Response = require('../../response');
 const routeHelper = require('../routes/helper.js');
+const stopHelper = require('../stops/helper.js');
 
 
 // ==== BUILD MODELS ==== //
@@ -69,6 +70,43 @@ let buildShapes = function(shapes, routes) {
   };
 }
 
+/**
+ * Build the Stop model, formatted as a GeoJSON Point feature
+ * @param {Stop} stop Stop to model
+ * @returns {Object} Stop Model
+ */
+let buildStop = function(stop) {
+  let stopModel = stopHelper.buildStop(stop);
+  return {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [stop.lon, stop.lat]
+    },
+    "properties": stopModel
+  }
+}
+
+/**
+ * Build the Shapes model, formatted as a GeoJSON Feature Collection of Point features
+ * @param {Stop[]} stops Array of Stops
+ * @returns {Object} Stops Model
+ */
+let buildStops = function(stops) {
+
+  // Build each Stop Model
+  let stopModels = [];
+  for ( let i = 0; i < stops.length; i++ ) {
+    stopModels.push(buildStop(stops[i]));
+  }
+
+  return {
+    "type": "FeatureCollection",
+    "features": stopModels
+  }
+
+}
+
 
 // ==== HELPER FUNCTIONS ==== //
 
@@ -129,7 +167,7 @@ function getShapes(req, res, next) {
 }
 
 /**
- * Get the Shape Model for the specified Shape and send the Response
+ * Get the Shape Model for the specified Shape
  * @param req API Request
  * @param res API Response
  * @param next API Handler Stack
@@ -185,7 +223,13 @@ function getShapesById(req, res, next) {
 }
 
 
-function getShapesCenter(req, res, next) {
+/**
+ * Get the Center of all of the Shapes from the specified Agency
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getCenter(req, res, next) {
   let agency = req.params.agency;
   let db = agencies.getAgencyDB(agency);
 
@@ -201,7 +245,7 @@ function getShapesCenter(req, res, next) {
       }
 
       // Send the Response
-      let response = Response.buildResponse({agency: agency, center: center});
+      let response = Response.buildResponse(center);
       res.send(response.code, response.response);
       return next();
 
@@ -210,7 +254,13 @@ function getShapesCenter(req, res, next) {
 }
 
 
-function getShapesByIdCenter(req, res, next) {
+/**
+ * Get the Center of the specified Shape
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getShapeCenter(req, res, next) {
   let agency = req.params.agency;
   let id = req.params.id;
   let db = agencies.getAgencyDB(agency);
@@ -227,7 +277,7 @@ function getShapesByIdCenter(req, res, next) {
       }
 
       // Send the Response
-      let response = Response.buildResponse({agency: agency, shape: id, center: center});
+      let response = Response.buildResponse(center);
       res.send(response.code, response.response);
       return next();
 
@@ -235,11 +285,105 @@ function getShapesByIdCenter(req, res, next) {
   }
 }
 
+/**
+ * Get all of the Stops for the specified Agency 
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getStops(req, res, next) {
+  let agency = req.params.agency;
+  let db = agencies.getAgencyDB(agency);
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+
+    // Get the Stops
+    core.query.stops.getStops(db, function(err, stops) {
+
+      // Server Error
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+
+      // No Stops Found
+      if ( !stops || stops.length === 0 ) {
+        let error = Response.buildError(
+          4042,
+          "Stops Not Found",
+          "The requested agency has no stops"
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+      // Build the Stops Model
+      let stopsModel = buildStops(stops);
+
+      // Send the Response
+      let response = Response.buildResponse(stopsModel);
+      res.send(response.code, response.response);
+      return next();
+
+    });
+
+  }
+}
+
+/**
+ * Get the specified Stop
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getStopById(req, res, next) {
+  let agency = req.params.agency;
+  let id = req.params.id;
+  let db = agencies.getAgencyDB(agency);
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+
+    // Get the Stop
+    core.query.stops.getStop(db, id, function(err, stop) {
+
+      // Server Error
+      if ( err ) {
+        return next(Response.getInternalServerError());
+      }
+
+      // No Shapes Found
+      if ( !stop ) {
+        let error = Response.buildError(
+          4042,
+          "Stop Not Found",
+          "The requested Stop (" + id + ") could not be found."
+        );
+        res.send(error.code, error.response);
+        return next();
+      }
+
+      // Build the Stop Model
+      let stopModel = buildStop(stop);
+
+      // Send the Response
+      let response = Response.buildResponse(stopModel);
+      res.send(response.code, response.response);
+      return next();
+
+    });
+
+  }
+}
+
+
 
 // Export the functions
 module.exports = {
   getShapes: getShapes,
   getShapesById: getShapesById,
-  getShapesCenter: getShapesCenter,
-  getShapesByIdCenter: getShapesByIdCenter
+  getCenter: getCenter,
+  getShapeCenter: getShapeCenter,
+  getStops: getStops,
+  getStopById: getStopById
 }

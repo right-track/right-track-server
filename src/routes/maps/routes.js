@@ -6,9 +6,9 @@ const helper = require('./helper.js');
 let routes = function(server) {
   
   /**
-   * @api {GET} /shapes/center/:agency Get Center of All Shapes
-   * @apiName getShapesCenter
-   * @apiGroup Shapes
+   * @api {GET} /maps/center/:agency Get Center of All Shapes
+   * @apiName getCenter
+   * @apiGroup Maps
    * @apiDescription Get the center coordinates of all of the Shapes from 
    * the specified agency.
    * @apiPermission gtfs
@@ -28,20 +28,17 @@ let routes = function(server) {
    *   {
    *     "status": "success",
    *     "response": {
-   *       "agency": "mnr",
-   *       "center": {
-   *         "lat": 41.131178220752275,
-   *         "lon": -73.63585835536362
-   *       }
+   *       "lat": 41.131178220752275,
+   *       "lon": -73.63585835536362
    *     }
    *   }
    */
-  server.get("/shapes/center/:agency", helper.getShapesCenter);
+  server.get("/maps/center/:agency", helper.getCenter);
 
   /**
-   * @api {GET} /shapes/:agency/:id Get Center of Shape
+   * @api {GET} /maps/center/:agency/:id Get Center of Shape
    * @apiName getShapeCenter
-   * @apiGroup Shapes
+   * @apiGroup Maps
    * @apiDescription Get the center coordinates of the specified Shape.
    * @apiPermission gtfs
    * 
@@ -61,21 +58,17 @@ let routes = function(server) {
    *   {
    *     "status": "success",
    *     "response": {
-   *       "agency": "mnr",
-   *       "shape": "5",
-   *       "center": {
-   *         "lat": 41.05241571428575,
-   *         "lon": -73.47929891806727
-   *       }
+   *       "lat": 41.05241571428575,
+   *       "lon": -73.47929891806727
    *     }
    *   }
    */
-  server.get("/shapes/center/:agency/:id", helper.getShapesByIdCenter);
+  server.get("/maps/center/:agency/:id", helper.getShapeCenter);
 
   /**
-   * @api {GET} /shapes/:agency Get All Shapes
+   * @api {GET} /maps/shapes/:agency Get All Shapes
    * @apiName getShapes
-   * @apiGroup Shapes
+   * @apiGroup Maps
    * @apiDescription Get all of the GTFS Shape Points for the specified agency.  The response 
    * is formatted as a GeoJSON Feature Collection of LineStrings.
    * @apiPermission gtfs
@@ -134,12 +127,12 @@ let routes = function(server) {
    *     }
    *   }
    */
-  server.get("/shapes/:agency", helper.getShapes);
+  server.get("/maps/shapes/:agency", helper.getShapes);
 
   /**
-   * @api {GET} /shapes/:agency/:id Get Shape
+   * @api {GET} /maps/shapes/:agency/:id Get Shape
    * @apiName getShape
-   * @apiGroup Shapes
+   * @apiGroup Maps
    * @apiDescription Get the GTFS Shape Points for the specified Shape.  The response 
    * is formatted as a GeoJSON LineString feature.
    * @apiPermission gtfs
@@ -194,7 +187,83 @@ let routes = function(server) {
    *     }
    *   }
    */
-  server.get("/shapes/:agency/:id", helper.getShapesById);
+  server.get("/maps/shapes/:agency/:id", helper.getShapesById);
+
+  /**
+   * @api {GET} /maps/stops/:agency Get All Stops
+   * @apiName getStopsGeo
+   * @apiGroup Maps
+   * @apiDescription Get all of the Stops for the specified agency.  The response 
+   * is formatted as a GeoJSON Feature Collection of Points.
+   * @apiPermission gtfs
+   * 
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Path) {string} agency RT Agency Code
+   * 
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (404 Error Codes) 4041 Unsupported Agency
+   * @apiError (404 Error Codes) 4042 Stops Not Found
+   * 
+   * @apiSuccessExample {json} Example Response
+   *   HTTP/1.1 200 OK
+   *   {
+   *     "status": "success",
+   *     "response": {
+   *       "type": "FeatureCollection",
+   *       "features": [
+   *         {
+   *           "type": "Feature",
+   *           "geometry": {
+   *             "type": "Point",
+   *             "coordinates": [
+   *               -73.079892,
+   *               41.344156
+   *             ]
+   *           },
+   *           "properties": {
+   *             "id": "168",
+   *             "name": "Ansonia",
+   *             "lat": 41.344156,
+   *             "lon": -73.079892,
+   *             "url": "http://as0.mta.info/mnr/stations/station_detail.cfm?key=292",
+   *             "wheelchairBoarding": 0,
+   *             "hasFeed": false
+   *           }
+   *         },
+   *         ...
+   *       ]
+   *     }
+   *   }
+   */
+  server.get("/maps/stops/:agency", helper.getStops);
+
+  /**
+   * @api {GET} /maps/stops/:agency/:id Get Stop
+   * @apiName getStopGeo
+   * @apiGroup Maps
+   * @apiDescription Get the specified Stop from the specified Agency.  The response 
+   * is formatted as a GeoJSON Point feature.
+   * @apiPermission gtfs
+   * 
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Path) {string} agency RT Agency Code
+   * @apiParam (Path) {string} id GTFS Stop ID
+   * 
+   * @apiError (5xx Error Codes) 500 Internal Server Error
+   * @apiError (5xx Error Codes) 5001 API Server Timeout
+   * @apiError (5xx Error Codes) 5002 API Server Error
+   * @apiError (403 Error Codes) 403 API Access Denied
+   * @apiError (403 Error Codes) 4039 Authorization Header Format Error
+   * @apiError (404 Error Codes) 4041 Unsupported Agency
+   * @apiError (404 Error Codes) 4042 Stop Not Found
+   * 
+   * @apiSuccessExample {json} Example Response
+   */
+  server.get("/maps/stops/:agency/:id", helper.getStopById);
 
 }
 
