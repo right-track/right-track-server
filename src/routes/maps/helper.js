@@ -6,6 +6,7 @@ const agencies = require('../../config/agencies.js');
 const Response = require('../../response');
 const routeHelper = require('../routes/helper.js');
 const stopHelper = require('../stops/helper.js');
+const tripHelper = require('../trips/helper.js');
 
 
 // ==== BUILD MODELS ==== //
@@ -88,7 +89,7 @@ let buildStop = function(stop) {
 }
 
 /**
- * Build the Shapes model, formatted as a GeoJSON Feature Collection of Point features
+ * Build the Stops model, formatted as a GeoJSON Feature Collection of Point features
  * @param {Stop[]} stops Array of Stops
  * @returns {Object} Stops Model
  */
@@ -108,6 +109,52 @@ let buildStops = function(stops) {
 }
 
 
+/**
+ * Build the vehicle model, formatted as a GeoJSON Point feature
+ * @param {VehicleFeed} vehicle Vehicle to Model
+ * @returns {Object} Vehicle Model
+ */
+let buildVehicle = function(vehicle) {
+  return {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [vehicle.position.lon, vehicle.position.lat]
+    },
+    "properties": {
+      "id": vehicle.id,
+      "updated": vehicle.position.updated.getTimeReadable(),
+      "status": {
+        "status": vehicle.position.status,
+        "stop": stopHelper.buildStop(vehicle.position.stop)
+      },
+      "trip": tripHelper.buildTrip(vehicle.trip),
+      "stops": tripHelper.buildStopTimes(vehicle.stops)
+    }
+  }
+}
+
+/**
+ * Build the Vehicles model, formatted as a GeoJSON Feature Collection of Point features
+ * @param {VehicleFeed[]} vehicles Array of Vehicle Feeds 
+ * @returns {Object[]} Vehicles Model
+ */
+let buildVehicles = function(vehicles) {
+
+  // Build each Vehicle Model
+  let vehicleModels = [];
+  for ( let i = 0; i < vehicles.length; i++ ) {
+    vehicleModels.push(buildVehicle(vehicles[i]));
+  }
+
+  return {
+    "type": "FeatureCollection",
+    "features": vehicleModels
+  }
+
+}
+
+
 // ==== HELPER FUNCTIONS ==== //
 
 /**
@@ -122,7 +169,7 @@ function getShapes(req, res, next) {
   let db = agencies.getAgencyDB(agency);
 
   // Check for API Access
-  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+  if ( auth.checkAuthAccess("maps", req, res, next) ) {
 
     // Get All of the Shapes
     core.query.shapes.getShapes(db, function(err, shapes) {
@@ -178,7 +225,7 @@ function getShapesById(req, res, next) {
   let db = agencies.getAgencyDB(agency);
 
   // Check for API Access
-  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+  if ( auth.checkAuthAccess("maps", req, res, next) ) {
 
     // Query the DB for the specified Shape
     core.query.shapes.getShape(db, id, function(err, shapes) {
@@ -234,7 +281,7 @@ function getCenter(req, res, next) {
   let db = agencies.getAgencyDB(agency);
 
   // Check for API Access
-  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+  if ( auth.checkAuthAccess("maps", req, res, next) ) {
 
     // Query the DB for the center of all Shapes
     core.query.shapes.getShapeCenter(db, function(err, center) {
@@ -266,7 +313,7 @@ function getShapeCenter(req, res, next) {
   let db = agencies.getAgencyDB(agency);
 
   // Check for API Access
-  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+  if ( auth.checkAuthAccess("maps", req, res, next) ) {
 
     // Query the DB for the center of specified Shape
     core.query.shapes.getShapeCenter(db, id, function(err, center) {
@@ -296,7 +343,7 @@ function getStops(req, res, next) {
   let db = agencies.getAgencyDB(agency);
 
   // Check for API Access
-  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+  if ( auth.checkAuthAccess("maps", req, res, next) ) {
 
     // Get the Stops
     core.query.stops.getStops(db, function(err, stops) {
@@ -342,7 +389,7 @@ function getStopById(req, res, next) {
   let db = agencies.getAgencyDB(agency);
 
   // Check for API Access
-  if ( auth.checkAuthAccess("gtfs", req, res, next) ) {
+  if ( auth.checkAuthAccess("maps", req, res, next) ) {
 
     // Get the Stop
     core.query.stops.getStop(db, id, function(err, stop) {
@@ -377,6 +424,62 @@ function getStopById(req, res, next) {
 }
 
 
+/**
+ * Get the Vehicles for the specified Agency
+ * @param req API Request
+ * @param res API Response
+ * @param next API Handler Stack
+ */
+function getVehicles(req, res, next) {
+  let agency = req.params.agency;
+  let db = agencies.getAgencyDB(agency);
+
+  // Check for API Access
+  if ( auth.checkAuthAccess("maps", req, res, next) ) {
+
+    // VEHICLE FEED NOT SUPPORTED
+    if ( !agencies.isAgencyVehicleFeedSupported(agency) ) {
+      let error = Response.buildError(
+        4053,
+        "Vehicle Feed Not Supported",
+        "The specified agency (" + agency + ") does not support real-time vehicle feeds."
+      );
+      res.send(error.code, error.response);
+      return next();
+    }
+
+
+    // Load the Vehicle Feeds
+    agencies.loadAgencyVehicleFeeds(agency, db, function(err, feeds) {
+
+      // VEHICLE FEED ERROR
+      if ( err ) {
+        try {
+          let parts = err.message.split('|');
+          let error = new Response.buildError(
+            parseInt(parts[0]),
+            parts[1],
+            parts[2]
+          );
+          res.send(error.code, error.response);
+          return next();
+        }
+        catch (err) {
+          return next(Response.getInternalServerError());
+        }
+      }
+
+      // BUILD AND SEND THE RESPONSE
+      let response = Response.buildResponse(buildVehicles(feeds));
+      res.send(response.code, response.response);
+      return next();
+
+    });
+
+  }
+}
+
+
 
 // Export the functions
 module.exports = {
@@ -385,5 +488,6 @@ module.exports = {
   getCenter: getCenter,
   getShapeCenter: getShapeCenter,
   getStops: getStops,
-  getStopById: getStopById
+  getStopById: getStopById,
+  getVehicles: getVehicles
 }

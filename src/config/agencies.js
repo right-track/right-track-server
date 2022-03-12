@@ -142,6 +142,24 @@ function loadAgencyFeed(agency, db, origin, callback) {
 }
 
 
+/**
+ * Check if the specified agency supports real-time Vehicle Feeds.
+ * @param {string} agency agency code
+ * @returns {boolean} True if the agency has implemented Vehicle Feeds
+ */
+function isAgencyVehicleFeedSupported(agency) {
+  return AGENCIES[agency].agency.isVehicleFeedSupported();
+}
+
+/**
+ * Load the Vehicle Feeds for the specified Agency
+ * @param {string} agency agency code
+ * @param {RightTrackDB} db The Right Track DB to query
+ * @param {function} callback The Vehicle Feed callback function
+ */
+function loadAgencyVehicleFeeds(agency, db, callback) {
+  return AGENCIES[agency].agency.loadVehicleFeeds(db, callback);
+}
 
 
 module.exports = {
@@ -152,5 +170,7 @@ module.exports = {
   getAgencyConfig: getAgencyConfig,
   getAgencyDB: getAgencyDB,
   isAgencyStationFeedSupported: isAgencyStationFeedSupported,
-  loadAgencyFeed: loadAgencyFeed
+  loadAgencyFeed: loadAgencyFeed,
+  isAgencyVehicleFeedSupported: isAgencyVehicleFeedSupported,
+  loadAgencyVehicleFeeds: loadAgencyVehicleFeeds
 };

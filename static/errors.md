@@ -74,6 +74,7 @@ error response in the following format:
  405  | Method Not Allowed | The requests's HTTP Method is not allowed for the requested resource
  4051 | Station Feeds Not Supported | The requested agency does not support real-time station feeds
  4052 | Transit Feeds Not Supported | The requested transit agency does not support real-time transit feeds
+ 4053 | Vehicle Feeds Not Supported | The requested agency does not support real-time vehicle feeds
  
 
 ### HTTP Status: 500

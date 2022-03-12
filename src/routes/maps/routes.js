@@ -11,7 +11,7 @@ let routes = function(server) {
    * @apiGroup Maps
    * @apiDescription Get the center coordinates of all of the Shapes from 
    * the specified agency.
-   * @apiPermission gtfs
+   * @apiPermission maps
    * 
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Path) {string} agency RT Agency Code
@@ -40,7 +40,7 @@ let routes = function(server) {
    * @apiName getShapeCenter
    * @apiGroup Maps
    * @apiDescription Get the center coordinates of the specified Shape.
-   * @apiPermission gtfs
+   * @apiPermission maps
    * 
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Path) {string} agency RT Agency Code
@@ -71,7 +71,7 @@ let routes = function(server) {
    * @apiGroup Maps
    * @apiDescription Get all of the GTFS Shape Points for the specified agency.  The response 
    * is formatted as a GeoJSON Feature Collection of LineStrings.
-   * @apiPermission gtfs
+   * @apiPermission maps
    * 
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Path) {string} agency RT Agency Code
@@ -135,7 +135,7 @@ let routes = function(server) {
    * @apiGroup Maps
    * @apiDescription Get the GTFS Shape Points for the specified Shape.  The response 
    * is formatted as a GeoJSON LineString feature.
-   * @apiPermission gtfs
+   * @apiPermission maps
    * 
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Path) {string} agency RT Agency Code
@@ -195,7 +195,7 @@ let routes = function(server) {
    * @apiGroup Maps
    * @apiDescription Get all of the Stops for the specified agency.  The response 
    * is formatted as a GeoJSON Feature Collection of Points.
-   * @apiPermission gtfs
+   * @apiPermission maps
    * 
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Path) {string} agency RT Agency Code
@@ -247,7 +247,7 @@ let routes = function(server) {
    * @apiGroup Maps
    * @apiDescription Get the specified Stop from the specified Agency.  The response 
    * is formatted as a GeoJSON Point feature.
-   * @apiPermission gtfs
+   * @apiPermission maps
    * 
    * @apiParam (Header) {string} Authorization Token {API Key}
    * @apiParam (Path) {string} agency RT Agency Code
@@ -287,6 +287,19 @@ let routes = function(server) {
    * }
    */
   server.get("/maps/stops/:agency/:id", helper.getStopById);
+
+  /**
+   * @api {GET} /maps/vehicles/:agency Vehicle Feeds
+   * @apiName vehicleFeeds
+   * @apiGroup Vehicle Feeds
+   * @apiDescription Get the real-time position and trip properties of the Agency's vehicles. 
+   * The response is formatted as a GeoJSON Feature Collection of Points.
+   * @apiPermission maps
+   * 
+   * @apiParam (Header) {string} Authorization Token {API Key}
+   * @apiParam (Path) {string} agency RT Agency Code
+   */
+  server.get("/maps/vehicles/:agency", helper.getVehicles);
 
 }
 

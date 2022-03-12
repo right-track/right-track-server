@@ -228,5 +228,6 @@ module.exports = {
   getTrip: getTrip,
   getTrips: getTrips,
   buildTrip: buildTrip,
-  buildStopTime: buildStopTime
+  buildStopTime: buildStopTime,
+  buildStopTimes: buildStopTimes
 };

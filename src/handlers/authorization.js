@@ -5,7 +5,7 @@ const clients = require('../db/clients.js');
 const config = require('../config').server.get();
 
 // List of available API access levels
-const access_levels = ['auth','registration','favorites','transit','gtfs','stations','search','updates','admin'];
+const access_levels = ['auth','registration','favorites','transit','gtfs','maps','stations','search','updates','admin'];
 
 
 /**
@@ -25,7 +25,6 @@ function getAuthAccess(req, res, next) {
   // DEVELOPMENT MODE: no API key required
   if ( config.mode === "development" ) {
     req.access = req.access.concat(access_levels);
-    return next();
   }
 
   // Get Authorization header
