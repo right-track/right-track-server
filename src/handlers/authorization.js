@@ -25,7 +25,6 @@ function getAuthAccess(req, res, next) {
   // DEVELOPMENT MODE: no API key required
   if ( config.mode === "development" ) {
     req.access = req.access.concat(access_levels);
-    return next();
   }
 
   // Get Authorization header
