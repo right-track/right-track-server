@@ -55,6 +55,20 @@ function buildDeparture(departure) {
   let destination = buildStop(departure.destination);
   let trip = buildTrip(departure.trip);
 
+  let position;
+  if ( departure.position ) {
+    position = {
+      lat: departure.position.lat,
+      lon: departure.position.lon,
+      description: departure.position.description,
+      updated: {
+        time: departure.position.updated.getTimeReadable(),
+        seconds: departure.position.updated.getTimeSeconds(),
+        date: departure.position.updated.getDateInt()
+      }
+    }
+  }
+
   return {
     departure: {
       time: departure.departure.getTimeReadable(),
@@ -77,7 +91,8 @@ function buildDeparture(departure) {
         changed: departure.status.track.changed
       },
       remarks: departure.status.remarks
-    }
+    },
+    position: position
   }
 }
 
