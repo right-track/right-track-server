@@ -1,6 +1,6 @@
 {
   "name": "",
-  "version": "1.14.2",
+  "version": "1.16.0",
   "description": "Right Track API Server Endpoint Documentation",
   "title": "API Server Documentation",
   "template": {
@@ -55,7 +55,7 @@
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2022-03-07T16:45:33.506Z",
+    "time": "2022-06-22T19:52:00.568Z",
     "url": "http://apidocjs.com",
     "version": "0.17.7"
   }

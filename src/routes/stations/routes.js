@@ -117,6 +117,16 @@ let routes = function(server) {
    *               "seconds": 57420,
    *               "date": 20171004
    *             }
+   *           },
+   *           "position": {
+   *             "lat": 40.9947509765625,
+   *             "lon": -73.8843765258789,
+   *             "description": "Stopped at Hastings-on-Hudson",
+   *             "updated": {
+   *               "time": "8:05 AM",
+   *               "seconds": 29125,
+   *               "date": 20171004
+   *             }
    *           }
    *         },
    *         {

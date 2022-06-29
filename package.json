@@ -1,6 +1,6 @@
 {
   "name": "right-track-server",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Right Track Server",
   "author": "David Waring <dev@davidwaring.net> (https://davidwaring.net)",
   "license": "MIT",
@@ -23,8 +23,8 @@
     "password-validator": "^4.0.0",
     "restify": "^6.3.4",
     "restify-errors": "^5.0.0",
-    "right-track-core": "github:right-track/right-track-core",
-    "right-track-db-sqlite3": "github:right-track/right-track-db-sqlite3",
+    "right-track-core": "right-track/right-track-core",
+    "right-track-db-sqlite3": "right-track/right-track-db-sqlite3",
     "uuid": "^3.1.0"
   },
   "optionalDependencies": {
