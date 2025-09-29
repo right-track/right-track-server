@@ -29,6 +29,7 @@
   },
   "optionalDependencies": {
     "googleapis": "^46.0.0",
+    "minio": "^8.0.6",
     "tmp": "^0.1.0"
   },
   "devDependencies": {

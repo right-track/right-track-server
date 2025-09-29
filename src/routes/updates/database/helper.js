@@ -136,8 +136,13 @@ function buildDatabaseArchiveList(agencyCode, max, callback) {
   let archiveInfo = agencyConfig.db.archive;
   let archiveSource = archiveInfo && archiveInfo.source ? archiveInfo.source : "none";
 
+  // Source: S3
+  if ( archiveSource === "s3" ) {
+    _buildDatabaseArchiveList_s3(agencyCode, max, archiveInfo.location, callback);
+  }
+
   // Source: Goolge Drive
-  if ( archiveSource === "google_drive" ) {
+  else if ( archiveSource === "google_drive" ) {
     _buildDatabaseArchiveList_gdrive(agencyCode, max, archiveInfo.location, callback);
   }
 
@@ -156,6 +161,49 @@ function buildDatabaseArchiveList(agencyCode, max, callback) {
     );
   }
 
+}
+
+/**
+ * Build agency database archive list Response for archives stored in an S3 bucket
+ * @param  agencyCode  Right Track Agency code
+ * @param  max         Max number of items to return
+ * @param  storage     S3 Storage Options (bucket, path, accessKey, secretKey)
+ * @param  callback    Callback function(Response)
+ */
+function _buildDatabaseArchiveList_s3(agencyCode, max, storage, callback) {
+
+  // Setup Minio Clinet
+  const Minio = require('minio');
+  const client = new Minio.Client({
+    endPoint: storage.endPoint,
+    useSSL: true,
+    accessKey: storage.accessKey,
+    secretKey: storage.secretKey
+  });
+
+  // List Objects
+  const archive = [];
+  const stream = client.listObjectsV2(storage.bucket, storage.path, true);
+  stream.on('data', function (obj) {
+    try {
+      archive.push(obj.name.replace('.zip', '').split('/').pop());
+    }
+    catch (err) {}
+  });
+  stream.on('end', function () {
+    archive.sort();
+    return callback(Response.buildResponse({
+      agency: agencyCode,
+      archive: max ? archive.slice(-1*max) : archive
+    }));
+  });
+  stream.on('error', function (err) {
+    return callback(Response.buildError(
+      500,
+      "Server Error",
+      `Could not read agency database archive [${err}]`
+    ))
+  });
 }
 
 
@@ -286,8 +334,13 @@ function sendDatabaseArchive(agencyCode, version, zip, res, callback) {
   let archiveInfo = agencyConfig.db.archive;
   let archiveSource = archiveInfo && archiveInfo.source ? archiveInfo.source : "none";
 
+  // Source S3
+  if ( archiveSource === "s3" ) {
+    _sendDatabaseArchive_s3(agencyCode, version, zip, archiveInfo.location, res, callback);
+  }
+
   // Source: Google Drive
-  if ( archiveSource === "google_drive" ) {
+  else if ( archiveSource === "google_drive" ) {
     _sendDatabaseArchive_gdrive(agencyCode, version, zip, archiveInfo.location, res, callback);
   }
 
@@ -308,6 +361,53 @@ function sendDatabaseArchive(agencyCode, version, zip, res, callback) {
     return callback();
   }
 
+}
+
+
+/**
+ * Send the Archived Database file from an S3 bucket to the Response
+ * @param {string} agencyCode Agency Code
+ * @param {string} version Archived Database version
+ * @param {boolean} zip True if to return a zipped database
+ * @param {Object} storage S3 Storage Options (bucket, path, accessKey, secretKey)
+ * @param {Response} res API Response
+ * @param {function} callback Callback function()
+ */
+function _sendDatabaseArchive_s3(agencyCode, version, zip, storage, res, callback) {
+
+  // Setup Minio Clinet
+  const Minio = require('minio');
+  const client = new Minio.Client({
+    endPoint: storage.endPoint,
+    useSSL: true,
+    accessKey: storage.accessKey,
+    secretKey: storage.secretKey
+  });
+
+  // Setup destination temp file
+  const tmp = require('tmp');
+  const dest = tmp.fileSync();
+
+  // Download archive to temp file
+  client.fGetObject(storage.bucket, `${storage.path}/${version}.zip`, dest.name, function(err) {
+    if ( err ) {
+      let error = Response.buildError(
+        500,
+        "Server Error",
+        `Could not read archived agency database [${err}]`
+      );
+      res.send(error.code, error.response);
+      return callback();
+    }
+
+    // Send the Zipped or Unzipped File
+    if ( zip ) {
+      _sendDatabaseArchiveZip(agencyCode, version, dest.name, res, callback);
+    }
+    else {
+      _sendDatabaseArchive(agencyCode, version, dest.name, res, callback);
+    }
+  });
 }
 
 
@@ -352,7 +452,7 @@ function _sendDatabaseArchive_gdrive(agencyCode, version, zip, folderId, res, ca
       let error = Response.buildError(
         500,
         "Server Error",
-        "Could not read archived agency database"
+        `Could not read archived agency database [${err}]`
       );
       res.send(error.code, error.response);
       return callback();
